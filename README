@@ -1,0 +1,156 @@
+findent, what?
+
+   findent is an indenter for Fortran programs, fixed and free format.
+   findent can also translate fixed format to free format.
+
+   findent will take care of:
+
+      continuation lines
+      multi-statement lines
+      labelled and unlabelled do-loops
+      if
+      if ... then ... endif
+      where
+      forall
+      where constructs
+      forall constructs
+      etc. see findent.y for more details
+
+   findent will remove trailing spaces and tabs, and convert
+   tabs at the start of a line into spaces. By default, statement 
+   labels are placed at the start of a line. Apart from this and
+   indenting, findent will not alter the input, trying to
+   preserve alignment. For example, the alignment in:
+
+      x = 3.0*a + 4*b +  &
+      &   2  *c +   y
+
+   will remain intact.
+
+   Usage:
+
+       findent -h
+
+findent, why?
+
+   There are a number of public domain Fortran indenters, for example:
+
+   - vim is shipped with an simple Fortran indenter
+   - emacs seems to have a Fortran indenter
+   - floppy, only for fixed format: http://www.netlib.org/floppy/
+   - convert.f90: converts from fixed to free format, and indents:
+	ftp://ftp.numerical.rl.ac.uk/pub/MandR/convert.f90
+   - f2f90: based of convert.f90: http://www.fortran.com/f2f90.tar.gz
+   - f90ppr: an impressive piece of software that beautifies
+	Fortran code and contains a macro processor.
+	http://www.ifremer.fr/ditigo/molagnon/fortran90/
+
+   For me, the problem with these indenters/beautifiers is, that 
+
+    - they are too simple (for example, do not recognize labelled 
+      do-loops) 
+    - or do too much (destroying neatly aligned pieces of code)
+    - or are for me too complicated to adapt and extend.
+
+   Therefore I decided, having enough time after my retirement, 
+   to try to build a Fortran indenter, based on flex and bison for
+   readability, which does not touch in-line alignments.
+   As programming language I chose C++, because of the availability
+   of string, queue, stack and deque.
+
+findent, how?
+
+   So, here it is, a Fortran indenter to my taste, based on flex,
+   bison and g++. In hindsight, I could probably have left out
+   bison, but maybe bison can come in handy in the future of findent,
+   so I left it in.
+
+   The code consists of the following files:
+
+    - Makefile: an makefile for usage with GNU make
+    - findent.h include file for some common functions and variables
+    - findent.h include file for the version number
+    - findent.l: input for flex
+    - findent.y: input for bison, also containing the main program
+    - wfindent:  a bash script that calls findent to indent
+                 Fortran sources in-place
+
+   findent.l
+      
+      This file contains the rules to recognize parts of Fortran 
+      statements. Since the parser sometimes calls the lexer to 
+      scan a line, while the lexer is already scanning another 
+      line, a push-pop scheme is implemented.  
+
+   findent.y
+
+      This file contains the bison-parts, the main program
+      and some functions. The method is: read the input until
+      a complete fortran statement is collected. This statement
+      is presented to the lexer, and the indent for this or the 
+      next output line is determined. The original lines are
+      preserved and output with indent, trailing spaces and tabs
+      removed.
+
+findent, usage?
+
+   The command
+
+      findent -h
+
+   gives an overview of the possible flags and there effect. Most
+   interesting are:
+
+      -i<n>  
+	example: -i5
+	which determines the amount of indent to be used by every
+	item that calls for indenting
+      -Ia
+	The starting indent is determined from the first line (more
+	or less), useful when using findent within vim, for example
+	to intent a selected region:
+
+	   '<,'>:!findent -Ia
+
+      -ofree
+	converts from fixed format to free format.
+
+   NOTE 1: findent does not honour line lengths
+           if your fixed-source file contains characters after
+           column 72 that should be ignored, use:
+             cut -c 1-72 oldprog.f | findent > prognew.f
+   NOTE 2: findent silently ignores errors in the flags
+
+findent and vim
+
+   Take care that findent can be found via the PATH environment variable.
+   In your .vimrc add the following:
+
+augroup fortfiletype
+  autocmd!
+  autocmd Filetype fortran :execute ":setl sw=3"
+  autocmd Filetype fortran :execute ":setl equalprg=findent\\ -Ia\\ -i3"
+  autocmd Filetype fortran :execute ":setl expandtab"
+augroup END
+
+  Now, the standard formatting ( see :help = ) is for Fortran programs
+  replaced by findent. For example, to format the whole file, enter:
+
+     gg=G
+
+wfindent
+
+  wfindent will indent Fortran source in-place.
+
+  Usage:
+
+     wfindent [ findent flags ] files
+
+   example
+
+     wfindent -I4 *.f90
+
+I am happy to receive comments, error reports and suggestions for
+improvements.
+
+Feb 2015, Willem Vermin, wvermin@gmail.com

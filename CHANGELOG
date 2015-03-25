@@ -1,0 +1,144 @@
+findent-1.6.1:
+   findent.l: get rid of flex message: "warning, dangerous trailing context"
+                by slight redefinition of statement-label
+              simplified else, elseif, elsewhere recognition
+
+findent-1.6.0:
+   Makefile:
+      slight change in rule to make .o from .cpp
+   wfindent:
+      added
+   findent.l:
+      fixed recognition of elseif by better definition of {nc}
+   README:
+      describe wfindent
+   INSTALL:
+      install wfindent
+
+findent-1.5.9:
+   findent.l:
+      recognize 'label :' ('label:' was already recognized)
+      recognize false type as in 'typecode = 10'
+      better discrimination between fixed and free
+   findent.y:
+      recognize '123 enddo', do not double-de-indent
+
+findent-1.5.8:
+   findent.y:
+      fill indent-stack from 0 to start_indent with the default indent
+   findent.l: 
+      support for construct name in 'do' 'if' 'select' 'block' 
+      recognize some forms of false end
+      recognize 'abstract type' and 'abstract interface'
+
+findent-1.5.7
+   findent.l:
+      recognize strings in 'rest' state
+      more precise definition of function
+      recognize 'endprogram'
+      do not confuse 'do (i) =' witha do statement
+   findent.y:
+      fixed form: put an ' ' as possible separator between label and code
+
+
+findent-1.5.6
+   Makefile:
+      added support for cross compiling to windows:
+         make clean
+	 make MINGW=1
+      creates a windows 32 bit findent.exe
+   findent.l:
+      ticket 1: 
+         more precise recognition of function statement
+
+findent-1.5.5
+   findent.y:
+      added support for conditional preprocessor statements. Example:
+      #ifdef USEMPI
+      subroutine mysub(a,b)
+      real a,b
+      #else
+      subroutine mysub(a)
+      real a
+      #endif
+      end subroutine mysub
+
+      indents correctly now.
+
+findent-1.5.4
+   findent.y: 
+      recognize ' x = 3 & ! comment' as a line needing a continuation
+      preprocessor statements are handled on ad-hoc basis
+   findent.l:
+      preprocessor statements are not recognized any more
+
+findent-1.5.3
+   findent.y:
+      add fixed-to-free: add check if this is a preprocessor line
+      fixed-to-free: fixed fortran can have a trailing comment,
+         starting with !, and have a continuation line.
+         This is fixed.
+      fixed-to-free: fixed bad handling of otherwise empty continuation lines
+   findent.l: 
+      better recognition of fixed and free
+      recognize 'integer(kind=8) function func1(a,b)' as a function
+              Thanks to Dusan Jovic
+      removed 'select' from definition of explicitly not-handled keywords
+
+
+findent-1.5.2
+   findent.l:
+      let lexer recognise 'type, public :: mytype' Thanks to Dusan Jovic
+findent-1.5.1
+   findent.l:
+      added some patterns to distinguish between fixed and fixed format
+   findent.y:
+      fix for files that do not end with \n
+      fix for correct indenting continuation line while converting 
+findent-1.5
+   README:
+      add recipe to use equalprg in vim
+   findent.y:
+      add ';' in to rules to quiet bison-2.5
+      fix placement of preprocessor lines if they are in a 
+         continuation suite
+      enlarge number of lines to be considered when determining
+         fixed or free from 10 to 1000
+   findent.l:
+      fix definition of {neol}
+
+findent-1.4
+   findent.y:
+      make sure that string(n,' ') is always called with n >= 0
+findent-1.3
+   version.h:
+      set version to 1.3
+   findent.h:
+      add definition for lexer_set()
+   findent.l:
+      add lexer_set()
+      in lexer_init(): change lexer_push() to lexer_set()
+   findent.y:
+      replace lexer_pop()...lexer_push() sequences by lexer_set()
+   minor code cleaning.
+   Makefile: 
+     'test' dependent of 'all'
+     'clean' also cleans test directory
+   test/progfixed_dos.f:
+      add -ifixed in first line
+   test/progfree_dos.f:
+      add -ifree in first line
+   README:
+      minor adaptations
+   CHANGELOG added
+
+findent-1.2
+   findent.l:
+      fix error in lexer_push
+
+findent-1.1
+   findent.l:
+      fix error in lexer_pop
+
+findent-1.0
+   initial release

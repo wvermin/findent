@@ -1,0 +1,31 @@
+Prerequisites:
+
+   c++ compiler (g++ will do perfectly)
+   flex
+   bison
+   GNU make
+
+In this directory:
+
+   make clean
+   make
+
+Testing:
+   
+   make test
+
+Install findent and the script wfindent in your favorite location, 
+for example:
+
+   sudo install findent /usr/local/bin
+   sudo install wfindent /usr/local/bin
+
+WINDOWS:
+
+   install mingw32
+
+   create findent.exe (windows 32 bit executable):
+      make clean
+      make MINGW=1
+
+USE AT YOUR OWN RISK.

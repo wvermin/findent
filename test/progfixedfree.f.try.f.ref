@@ -183,6 +183,22 @@
    end subroutine
    subroutine two(a)
         continue
+!d         print *,'debug i=',i
+        !
+!D         print *,'debug j=',j
+        x = 4 +&
+        !next line starts with <tab>
+        &5 +&
+        !next line starts with <sp><tab>
+        &5+&
+        !next line starts with <sp><sp><tab>
+        &5+&
+        !next line starts with <sp><sp><sp><tab>
+        &5+&
+        !next line starts with <sp><sp><sp><sp><tab>
+        &5+&
+        !next line starts with <sp><sp><sp><sp><sp><tab>
+        &5
         return
    endsubroutine
    subroutine three(a)

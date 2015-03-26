@@ -1,7 +1,22 @@
+findent-1.6.2:
+      regcognise tabbed source: 
+          <tab>[1-9] 
+          is recognised as a continuation line
+      fixed bug when tab follows label: ltab2sp now takes in acccount 
+          a statement label
+
 findent-1.6.1:
-   findent.l: get rid of flex message: "warning, dangerous trailing context"
+   findent.l: 
+      get rid of flex message: "warning, dangerous trailing context"
                 by slight redefinition of statement-label
               simplified else, elseif, elsewhere recognition
+   findent.y: 
+      recognize debug lines in fixed format ('d' or 'D' in colimn 1),
+         treating them as comment lines.
+	 Special treatment with -ofree: debug line as:
+	    'd        print *,"debug",i'
+	 will be output after conversion to free format as:
+	    '!d        print *,"debug",i'
 
 findent-1.6.0:
    Makefile:

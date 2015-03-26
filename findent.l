@@ -148,7 +148,7 @@ ckey  call|close|common|continue|case|contains|cycle|class|codimension|contiguou
 
 <ff>{
 
-^[^cC#!* 0-9].*\n {
+^[^dDcC#!* 0-9].*\n {
                   D(O("FREE");Y;)
 		  return FREE;
                }

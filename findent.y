@@ -293,38 +293,38 @@ int main(int argc, char*argv[])
    while((c=getopt(argc,argv,"a:b:c:C:d:e:E:f:F:hi:I:j:l:m:o:qr:s:t:vw:x:"))!=-1)
       switch(c)
          {
-	   case('a'):
+	   case 'a' :
 	      associate_indent  = atoi(optarg);
 	      break;
-	   case('b'):
+	   case 'b' :
 	      block_indent      = atoi(optarg);
 	      break;
-	   case('c'):
+	   case 'c' :
 	      case_indent       = atoi(optarg);
 	      break;
-	   case('C'):
+	   case 'C' :
 	      contains_indent   = atoi(optarg);
 	      break;
-	   case('d'):
+	   case 'd' :
 	      do_indent         = atoi(optarg);
 	      break;
-	   case('e'):
+	   case 'e' :
 	      entry_indent      = atoi(optarg);
 	      break;
-	   case('E'):
+	   case 'E' :
 	      enum_indent       = atoi(optarg);
 	      break;
-	   case('f'):
+	   case 'f' :
 	      if_indent         = atoi(optarg);
 	      break;
-	   case('F'):   
+	   case 'F' :   
 	      forall_indent     = atoi(optarg);
 	      break;
-	   case('h'):
+	   case 'h' :
 	      usage();
 	      return 0;
 	      break;
-	   case('i'):
+	   case 'i' :
 	      if      (string(optarg) == "fixed")
 	         input_format = FIXED;
 	      else if (string(optarg) == "free")
@@ -341,53 +341,53 @@ int main(int argc, char*argv[])
 		if (input_format == FREE)  O("free")
 		)
 	      break;
-	   case('I'):
+	   case 'I' :
 	      if (optarg[0] == 'a')
 	         auto_firstindent = 1;
 	      else
 		 start_indent   = atoi(optarg);
 	      break;
-	   case('j'):
+	   case 'j' :
 	      interface_indent  = atoi(optarg);
 	      break;
-	   case('l'):
+	   case 'l' :
 	      label_left        = (atoi(optarg) != 0);
 	      break;
-	   case('m'):
+	   case 'm' :
 	      module_indent     = atoi(optarg);
 	      break;
-	   case('o'):
+	   case 'o' :
 	      if(string(optarg) == "free")
 	         output_format = FREE;
 	      break;
-	   case('q'):
+	   case 'q' :
 	      rc = determine_fix_or_free(0);
 	      switch(rc)
 	      {
-	         case(FIXED): cout << "fixed" << endl;
+	         case FIXED : cout << "fixed" << endl;
 		 break;
-		 case(FREE): cout << "free" << endl;
+		 case FREE : cout << "free" << endl;
 		 break;
 	      }
 	      return 0;
 	      break;
-	   case('r'):
+	   case 'r' :
 	      routine_indent    = atoi(optarg);
 	      break;
-	   case('s'):
+	   case 's' :
 	      select_indent     = atoi(optarg);
 	      break;
-	   case('t'):
+	   case 't' :
 	      type_indent       = atoi(optarg);
 	      break;
-	   case('v'):
+	   case 'v' :
 	      cout << "findent version "<<VERSION<<endl;
 	      return 0;
 	      break;
-	   case('w'):
+	   case 'w' :
 	      where_indent      = atoi(optarg);
 	      break;
-	   case('x'):
+	   case 'x' :
 	      critical_indent   = atoi(optarg);
 	      break;
 	 }
@@ -443,21 +443,54 @@ string trim(const string& str)
 }
 
 string ltab2sp(const string& s)
-{  // convert leading tabs to spaces and removes trailing white space
+{  // converts leading white space and white space after a statement label
+   //   to spaces and removes trailing white space
+   // if line starts with 0-5 spaces followed by a 1 tab, followed
+   //   by 1-9, this is counted as 5 spaces, it appears that many compilers
+   //   assume that 
+   //   <tab>1  <some code>
+   //   is a continuation statement, if the continuation character is 1-9
 
    int si         = 0;
    bool ready     = 0;
    const int tabl = 8;
+   bool firsttab  = 1;
+   string leader  = "";
+   int removed    = 0;
 
    for (unsigned int j=0; j<s.length(); j++)
    {
       switch (s[j])
       {
-	 case(' '):
+	 case ' ' :
 	    si ++;
+	    removed++;
+	    leader = leader + " ";
 	    break;
-	 case('\t'):
+	 case '\t' :
+	    if (firsttab)
+	    {
+	       firsttab = 0;
+	       if (si < 6)
+	          // investigate next char: if 1-9, count this tab as 5 spaces
+	          if (s.length() > j+1)
+		     if (s[j+1] >= '1' && s[j+1] <= '9')
+		     {
+		        si = 5;
+			removed++;
+			leader = string(5,' ');
+			break;
+		     }
+	    }
 	    si = (si/tabl)*tabl + tabl;
+	    leader = leader + string(si - leader.length(),' ');
+	    break;
+	    case '0': case '1': case '2': case '3': case '4':
+	    case '5': case '6': case '7': case '8': case '9':
+	    si++;
+	    removed++;
+	    leader += s[j];
+	    firsttab = 0;
 	    break;
 	 default:
 	    ready = 1;
@@ -466,8 +499,7 @@ string ltab2sp(const string& s)
       if(ready)
 	 break;
    }
-
-   return string(si,' ')+trim(s);
+   return leader + trim(s.substr(removed));
 }
 
 string mygetline()
@@ -618,9 +650,9 @@ bool handle_free(string s)
 
    switch(rc)
    {
-      case(CMT):
+      case CMT :
 	 cs = trim(cs.substr(0, max(p-1,0)));
-      case(EOL):
+      case EOL :
 	 expect_continuation = ( cs[cs.length()-1] == '&');
    }
 
@@ -645,8 +677,8 @@ bool handle_fixed(string s)
    s = ltab2sp(s);
    D(O("fixed:");O("s");O(s);)
 
-   if (trim(s) == "" || s[0] == 'c' || s[0] == 'C' || s[0] == '!' || s[0] == '*' || s[0] == '#')
-   {  // this is a blank or comment line
+   if (isfixedcmt(s))
+   {  // this is a blank or comment or preprocessor line
       lines.push_back(trim(s));
       if (lines.size() ==1)
          return 0;   // do not expect continuation lines
@@ -693,7 +725,7 @@ int guess_indent(const string s)
    if (input_format == FIXED)
    {
       string s1 = ltab2sp(s);
-      si        =  s1.find_first_not_of(' ') -6;
+      si        = s1.find_first_not_of(' ') -6;
       if (si <0)
          si = 0;
       return si;
@@ -703,14 +735,14 @@ int guess_indent(const string s)
    {
       switch (s[j])
       {
-	 case(' '): case('0'): case('1'): case('2'): case('3'): case('4'): case('5'): case('6'): case('7'): case('8'): case('9'):
+	 case ' ' : case '0' : case '1' : case '2' : case '3' : case '4' : case '5' : case '6' : case '7' : case '8' : case '9' :
 	    si ++;
 	    break;
-	 case('&'):
+	 case '&' :
 	    si++;
 	    ready = 1;
 	    break;
-	 case('\t'):
+	 case '\t' :
 	    si = (si/tabl)*tabl + tabl;
 	    break;
 	 default:
@@ -798,10 +830,19 @@ void output_line()
 	          cout << endline;
 	       else
 	       {
-	          if (s[0] == '#')
-		     cout << trim(s) << endline;
-		  else
-		     cout << string(max(cur_indent,0),' ') << "!" << trim(s.substr(1)) << endline;
+	          switch (s[0])
+		  {
+	             // special hack for lines starting with 'd' or 'D'
+	             case 'd' :
+		     case 'D' :
+		        cout << "!" + trim(s) << endline;
+			break;
+	             case '#' :
+			cout << trim(s) << endline;
+			break;
+	             default:
+			cout << string(max(cur_indent,0),' ') << "!" << trim(s.substr(1)) << endline;
+		  }
 	       }
 	    }
 	 }
@@ -832,7 +873,7 @@ void output_line()
 
 		  switch(prevquote)
 		  {
-		     case(' '):   // no dangling strings, output with indent
+		     case ' ' :   // no dangling strings, output with indent
 			cout << string(max(adjust_indent+cur_indent,0),' ') << trim(s.substr(6));
 			break;
 		     default:  // dangling string, output asis
@@ -1122,16 +1163,16 @@ int determine_fix_or_free(const bool store)
       rc = guess_fixedfree(s);
       switch(rc)
       {
-         case(UNSURE): 
+         case UNSURE : 
 	    D(O("UNSURE");) 
 	    break;
-	 case(PROBFREE): 
+	 case PROBFREE : 
 	    D(O("PROBFREE");) 
 	    break;
-	 case(FREE): 
+	 case FREE : 
 	    D(O("FREE");) 
 	    return FREE;
-	 case(FIXED): 
+	 case FIXED : 
 	    D(O("FIXED");) 
 	    return FIXED;
       }
@@ -1164,10 +1205,11 @@ string handle_dos(const string s)
 bool isfixedcmt(const string s)
 {
 // returns 1 if this is a fixed empty line or fixed comment line or preprocessor line
+//                                         or debug line ('d' or 'D' in column 1)
    if (s == "" || trim(s) == "")
       return 1;
    char c = s[0];
-   return (c == 'C' || c == 'c' || c == '!' || c == '*' || c == '#'); 
+   return (c == 'C' || c == 'c' || c == '!' || c == '*' || c == '#' || c == 'd' || c == 'D'); 
 }
 
 char fixedmissingquote(const string s)
@@ -1185,13 +1227,13 @@ char fixedmissingquote(const string s)
    char result = ' ';
    switch (rc)
    {
-      case (EOL):
+      case  EOL :
 	 result = ' ';
 	 break;
-      case (DQUOTE):         // unterminated string
+      case  DQUOTE :         // unterminated string
 	 result = '"';
 	 break;
-      case (SQUOTE):
+      case  SQUOTE :
 	 result = '\'';
 	 break;
    }

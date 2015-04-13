@@ -1,5 +1,6 @@
 #ifndef FINDENT_H
 #define FINDENT_H
+using namespace std;
 void lexer_init();
 int yyparse();
 void yyerror(const char *c);
@@ -10,6 +11,11 @@ void lexer_set(const string s, int start);
 
 extern int  lexer_position;
 extern bool stlabel_found;
+extern struct rstruct 
+{
+   int kind;
+   string name;
+} rprop;
 
 #define O(x) {cerr << " [" << x << "] ";}
 #define Y O(yytext)

@@ -1,8 +1,18 @@
-  ! -I2 -i5 -a1 -b2 -d3 -f4 -m5
+  ! -I2 -i5 -a1 -b2 -d3 -f4 -m5 -Rr
   ! ticket 1
+
+  block data pblockdata
+       common /xcomm/ p
+  end blockdata pblockdata
+
   module some_module
 
        complex ccc
+       interface myinterface
+            subroutine tx(a,b)
+                 real a,b
+            end subroutine tx
+       end interface
   contains
        real function alpha_integral_function(x)
             implicit none
@@ -10,7 +20,7 @@
             alpha_integral_function = 0
        end function alpha_integral_function
 
-  end module some_module
+  end module some_module ! end of this module
   ! /ticket 1
 
   module m1
@@ -183,7 +193,7 @@
     entry myentry
        continue
        return
-  end subroutine
+  end subroutine one
   subroutine two(a)
        continue
        a = 3 + &! comment1
@@ -207,7 +217,7 @@
        typecode = 9
        continue
        return
-  end
+  end subroutine three
   subroutine four(a)
        continue
        return
@@ -216,7 +226,7 @@
   &tine five
        continue
        return
-  end
+  end subroutine five
   subroutine seven
        a = 1&
        &+ 2   &! comment 1
@@ -232,4 +242,4 @@
        &+ 5 syntax error&
 #endif
        &+ 6
-  end
+  end subroutine seven

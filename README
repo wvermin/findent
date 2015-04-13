@@ -27,6 +27,18 @@ findent, what?
 
    will remain intact.
 
+   Optionally, findent will refactor single 'end' statements:
+
+   subroutine sub
+   ...
+   end
+
+   will become:
+
+   subroutine sub
+   ...
+   end subroutine sub
+
    Usage:
 
        findent -h

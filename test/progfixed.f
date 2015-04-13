@@ -1,4 +1,4 @@
-! -I0 -i5 -a1 -b2 -d3 -f4 -m5
+! -I0 -i5 -a1 -b2 -d3 -f4 -m5 -Rr
          module m1
          integer k
          enum, bind(c)
@@ -17,7 +17,7 @@
        print *,"abcd
      8        efgh"
        return
-       end function
+       end 
 #ifdef usempi
            function f1(x,m)
                 real x,m
@@ -30,7 +30,7 @@
 #endif
                 continue
            end function f1
-       end module
+       end 
       
       program progfixed
          type mytype  ! mytype

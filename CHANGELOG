@@ -1,3 +1,9 @@
+findent-1.6.3:
+   findent.l, findent.y, findent.h:
+      implement refactor routines
+   findent.y:
+      bug fixes for fixed form continuation lines
+         
 findent-1.6.2:
       regcognise tabbed source: 
           <tab>[1-9] 

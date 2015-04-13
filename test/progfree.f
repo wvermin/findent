@@ -1,16 +1,26 @@
-! -I2 -i5 -a1 -b2 -d3 -f4 -m5
+! -I2 -i5 -a1 -b2 -d3 -f4 -m5 -Rr
 ! ticket 1
+
+block data pblockdata
+   common /xcomm/ p
+   end 
+
 module some_module
 
 complex ccc
+interface myinterface
+   subroutine tx(a,b)
+      real a,b
+   end 
+end interface
 contains
 real function alpha_integral_function(x)
 implicit none
 real:: x
 alpha_integral_function = 0
-end function alpha_integral_function
+end
 
-end module some_module
+end ! end of this module
 ! /ticket 1
 
 module m1
@@ -183,7 +193,7 @@ END ASSOCIATE
          entry myentry
          continue
          return
-      end subroutine
+      end 
       subroutine two(a)
          continue
          a = 3 + &! comment1

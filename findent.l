@@ -19,9 +19,13 @@ stack<int>             lexer_start_stack;
 void quiet_compiler();
 void lexer_set_state(int k);
 
+struct rstruct rprop;
 
 %}
-%x cmt rest dolabel wf wf1 ff scanstrcmt untermstr
+%x cmt rest dolabel wf wf1 ff scanstrcmt untermstr routinename modulename
+
+   // allowed fortran identifiers
+fident [[:alpha:]][_[:alnum:]]*
 
    // end of line, including ; and !
 eol [\n;!]
@@ -32,7 +36,7 @@ neol [^\n;!\'\"]
    // blank character
 b [ \t]
 
-   // a character that can't be part of a word
+   // a character that cannot be part of a word
 nc [ \t\n;!\(\)]
 
    // an alphanumeric character or % or _ or space or tab or *
@@ -94,6 +98,40 @@ ckey  call|close|common|continue|case|contains|cycle|class|codimension|contiguou
 {neol}*  {
 	    D(O("REST"); Y;)
 	 }
+}
+
+<routinename>{   // find optional name of subroutine etc
+{fident}       {
+                   D(O("Fortran identifier");Y);
+		   rprop.name=yytext;
+		   BEGIN rest;
+		   return ROUTINESTART;
+               }
+
+{b}*/\n        {
+                   D(O("No identifier");Y)
+		   BEGIN rest;
+		   return ROUTINESTART;
+	       }
+
+.              {}
+
+}
+
+<modulename>{   // find optional name of module
+{fident}       {
+                   D(O("Fortran identifier");Y);
+		   rprop.name=yytext;
+		   BEGIN rest;
+		   return MODULESTART;
+               }
+{b}*/\n        {
+                   D(O("No identifier");Y)
+		   BEGIN rest;
+		   return ROUTINESTART;
+	       }
+
+.              {}
 }
 
 <dolabel>{        // find label after do as in: do 100 i=1,9
@@ -283,14 +321,25 @@ ckey  call|close|common|continue|case|contains|cycle|class|codimension|contiguou
 				       BEGIN rest;
 				   }
                                   
-^{b}*end/{nc}+                     |
+^{b}*end/{nc}+                     {  // generic end
+					  D(O("GENERIC END");Y;)
+					  BEGIN rest;
+			  		  return GENERIC_END;
+				   }
+
 ^{b}*end{b}*function/{nc}+         |
 ^{b}*end{b}*program/{nc}+          |
 ^{b}*end{b}*subroutine/{nc}+       |
-^{b}*end{b}*do/{nc}+               |
-^{b}*end{b}*if/{nc}+               |
 ^{b}*end{b}*module/{nc}+           |
 ^{b}*end{b}*submodule/{nc}+        |
+^{b}*end{b}*block{b}*data/{nc}+    {
+					  D(O("ROUTINE_END");Y;)
+					  BEGIN rest;
+			  		  return ROUTINE_END;
+				    }
+
+^{b}*end{b}*do/{nc}+               |
+^{b}*end{b}*if/{nc}+               |
 ^{b}*end{b}*where/{nc}+            |
 ^{b}*end{b}*associate/{nc}+        |
 ^{b}*end{b}*type/{nc}+             |
@@ -298,22 +347,42 @@ ckey  call|close|common|continue|case|contains|cycle|class|codimension|contiguou
 ^{b}*end{b}*forall/{nc}+           |
 ^{b}*end{b}*critical/{nc}+         |
 ^{b}*end{b}*enum/{nc}+             |
-^{b}*end{b}*while/{nc}+             {  // generic end
-					  D(O("END");Y;)
+^{b}*end{b}*interface/{nc}+        |
+^{b}*end{b}*while/{nc}+             {  // specific end
+					  D(O("SPECIFIC_END");Y;)
 					  BEGIN rest;
-			  		  return END;
+			  		  return SPECIFIC_END;
 				    }
+^{b}*end{b}+.                      {
+				      D(O("UNKNOWN_END");Y;)
+				      BEGIN rest;
+				      return UNKNOWN_END;
+				   }
+^{bc}*subroutine{b}+               { 
+                                     rprop.kind = KIND_SUBROUTINE; 
+                                     D(O("SUBROUTINE");Y)
+				     BEGIN routinename;
+				   }
 
-^{bc}*subroutine{b}+               |
-^{b}*program{b}*/[;\n![:alpha:]]   |
-^[^\'\"!]*{b}+function{b}          |
+^{b}*program{b}*/[;\n![:alpha:]]   {
+                                     rprop.kind = KIND_PROGRAM; 
+                                     D(O("PROGRAM");Y)
+				     BEGIN routinename;
+				   }
+
+^[^\'\"!]*{b}+function{b}          | 
 ^[^\'\"!]*\)function{b}            |
-^{b}*function{b}                   |
-^{b}*block{b}*data/{nc}             {   // generic routine
-				       D(O("ROUTINESTART");Y;)
-				       BEGIN rest;
-				       return ROUTINESTART;
-				    }
+^{b}*function{b}                   {
+                                     rprop.kind = KIND_FUNCTION; 
+                                     D(O("FUNCTION");Y)
+				     BEGIN routinename;
+				   }
+
+^{b}*block{b}*data/{nc}            {
+                                      rprop.kind = KIND_BLOCKDATA; 
+				      D(O("BLOCKDATA");Y;)
+				      BEGIN routinename;
+				   }
 
 ^{bc}*enum/({b}*,)                  {   // enum
                                         D(O("ENUM");Y;)
@@ -326,9 +395,9 @@ ckey  call|close|common|continue|case|contains|cycle|class|codimension|contiguou
 				    }
                                      
 
-^{b_cname}do{b}*while/{nc}          |
-^{b_cname}do/{nc}                   |
-^{b_cname}do{b}*concurrent/{nc}     {  D(O("DOSTART");Y;)
+^{b_cname}do{b}*while/{nc}+          |
+^{b_cname}do/{nc}+                   |
+^{b_cname}do{b}*concurrent/{nc}+     {  D(O("DOSTART");Y;)
 				       BEGIN dolabel;
 				       return DOSTART;
 				    }
@@ -348,14 +417,15 @@ ckey  call|close|common|continue|case|contains|cycle|class|codimension|contiguou
                                        BEGIN rest;
 				    }
 
-^{b}*module/{nc}                 |
-^{b}*sub{b}*module/{nc}             {  // module
+^{b}*module/{nc}+                 |
+^{b}*sub{b}*module/{nc}+             {  // module
+                                       rprop.kind = KIND_MODULE; 
 				       D(O("MODULESTART");Y;)
-				       BEGIN rest;
-				       return MODULESTART;
+				       BEGIN modulename;
 				    }
-^{b}*abstract{b}+interface/{nc}    |
-^{b}*interface/{nc}                 {  // module
+
+^{b}*abstract{b}+interface/{nc}+    |
+^{b}*interface/{nc}+                 {  // module
 				       D(O("INTERFACE");Y;)
 				       BEGIN rest;
 				       return INTERFACE;
@@ -485,6 +555,8 @@ void lexer_set_state(int k)
    switch(k)
    {
       case(FREE): 
+         rprop.name = "";
+	 rprop.kind = -1;
          BEGIN INITIAL;
          D(O("BEGIN INITIAL");O(YY_START);)
 	 return;

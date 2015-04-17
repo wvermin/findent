@@ -1,3 +1,9 @@
+findent-1.6.4:
+   findent.y:
+      determine if input comes from terminal, warn user
+      and accept a single dot ('.') as end-of file
+      Extended usage() with examples
+
 findent-1.6.3:
    findent.l, findent.y, findent.h:
       implement refactor routines

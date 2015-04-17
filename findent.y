@@ -33,6 +33,8 @@ void handle_pre(const string s);
 
 void shorten_full_statement();
 
+void handle_reading_from_tty();
+
 int pop_dolabel();
 int top_dolabel();
 void push_dolabel(int l);
@@ -47,6 +49,8 @@ string handle_dos(const string s);
 
 int input_format, output_format;
 int guess_indent(const string str);
+bool reading_from_tty = 0;
+int lines_read        = 0;
 int determine_fix_or_free(const bool store);
 bool isfixedcmt(const string s);
 char fixedmissingquote(const string s);
@@ -410,6 +414,7 @@ int main(int argc, char*argv[])
 	         output_format = FREE;
 	      break;
 	   case 'q' :
+	      handle_reading_from_tty();
 	      rc = determine_fix_or_free(0);
 	      switch(rc)
 	      {
@@ -451,12 +456,14 @@ int main(int argc, char*argv[])
 	      break;
 	 }
 
+   handle_reading_from_tty();
 
    if (input_format == 0)
       input_format = determine_fix_or_free(1);
 
    if(output_format == 0)
       output_format = input_format;
+
    labelleng        = 0;
    end_of_file      = 0;
    simple_end_found = 0;
@@ -472,6 +479,22 @@ int main(int argc, char*argv[])
 
 void yyerror(const char *s)
 {
+}
+
+void handle_reading_from_tty()
+{
+   reading_from_tty = isatty(fileno(stdin));
+   if (reading_from_tty)
+   {
+      cerr << "! Warning: reading from terminal"                << endl;
+      cerr << "! End this session by typing a single dot ('.')" << endl;
+      cerr << "!     on a new line"                             << endl;
+      cerr << "! "                                              << endl;
+      cerr << "! Examples of typical usage:"                    << endl;
+      cerr << "!   help:    findent -h"                         << endl;
+      cerr << "!   indent:  findent < in.f > out.f"             << endl;
+      cerr << "!   convert: findent -ofree < prog.f > prog.f90" << endl;
+   }
 }
 
 void init_indent()
@@ -577,7 +600,8 @@ string mygetline()
    // reads next line from cin.
    // side effects:
    //   end_of_file is set if endoffile condition is met
-   //   endline is onde set to \n or \r\n
+   //   endline is set to \n or \r\n
+   //   lines_read is incremented
 
    string s;
 
@@ -586,6 +610,11 @@ string mygetline()
 
    // sometimes, files do not end with (cr)lf, hence the test for s=="":
    end_of_file = (cin.eof() && s == "");
+
+   lines_read ++;
+
+   if (!end_of_file && reading_from_tty)
+      end_of_file = (s == ".");
 
    return handle_dos(s);
 
@@ -603,7 +632,6 @@ void get_full_statement()
    {
       if (!linestack.empty())
       {
-         D()
          s = linestack.top();
 	 linestack.pop();
       }
@@ -615,6 +643,8 @@ void get_full_statement()
       {
          s = linebuffer.front();
 	 linebuffer.pop();
+	 if (reading_from_tty && s == ".")
+	    end_of_file = 1;
       }
 
       num_lines++;
@@ -1283,6 +1313,12 @@ void usage()
    cout << "-c n     : case      negative indent"    << endl;
    cout << "-C n     : contains  negative indent"    << endl;
    cout << "-e n     : entry     negative indent"    << endl;
+   cout << ""                                        << endl;
+   cout << "Examples"                                         << endl;
+   cout << "  indent:  findent < in.f > out.f"                << endl;
+   cout << "           findent -i2 -r0 < in.f > out.f"        << endl;
+   cout << "  convert: findent -ofree < prog.f > prog.f90"    << endl;
+   cout << "  refactor 'end': findent -Rr < in.f90 > out.f90" << endl;
 }
 
 int guess_fixedfree(const string s)
@@ -1312,10 +1348,18 @@ int determine_fix_or_free(const bool store)
       n++;
       s = mygetline();
       if (end_of_file)
+      {
+         // to avoid to have to type twice a dot to
+	 // end input from terminal:
+
+         if(store && reading_from_tty)
+	    linebuffer.push(s);       // s == "."
          break;
+      }
 
       if (store)
-         linebuffer.push(s);
+	 linebuffer.push(s);
+
       rc = guess_fixedfree(s);
       switch(rc)
       {

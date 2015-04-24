@@ -1,0 +1,15 @@
+#!/bin/bash
+make clean                                         || exit 1
+make                                               || exit 1
+version=`./findent -v | awk '{print $3}'`          || exit 1
+echo "version = $version"
+make clean                                         || exit 1
+cd ..                                              || exit 1
+mkdir -p versions                                  || exit 1
+cp findent/README.1st versions/README              || exit 1
+cd versions                                        || exit 1
+unix2dos README                                    || exit 1
+rm -rf "findent-$version"
+cp -r ../findent "findent-$version"                || exit 1
+tar zcf "findent-$version.tgz" "findent-$version"  || exit 1
+rm -rf "findent-$version"

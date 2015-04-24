@@ -127,10 +127,20 @@ findent, usage?
       -ofree
 	converts from fixed format to free format.
 
-   NOTE 1: findent does not honour line lengths
-           if your fixed-source file contains characters after
-           column 72 that should be ignored, use:
-             cut -c 1-72 oldprog.f | findent > prognew.f
+      -L<n>
+        example: -L72
+	limit input line length to 72 characters.
+
+   NOTE 1: findent knows about tab input: for fixed-format input,
+           the following transformations are made, examples:
+
+	   10<tab>i=   -> 10<sp><sp><sp><sp>i=
+	   <tab>1k*j   -> <sp><sp><sp><sp><sp>1k*j
+	   <tab>x=y    -> <sp><sp><sp><sp><sp><sp>x=y
+
+	   So, a tab followed by 1-9 is transformed to a continuation line,
+	   otherwize to a normal line, starting in column 7.
+
    NOTE 2: findent silently ignores errors in the flags
 
 findent and vim

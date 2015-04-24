@@ -20,7 +20,7 @@ for example:
    sudo install findent /usr/local/bin
    sudo install wfindent /usr/local/bin
 
-WINDOWS:
+Create a Windows executable:
 
    install mingw32
 

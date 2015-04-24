@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <unistd.h>
 #include <algorithm>
+#include <string.h>
 using namespace std;
 #include "findent.h"
 #include "version.h"
@@ -51,6 +52,8 @@ int input_format, output_format;
 int guess_indent(const string str);
 bool reading_from_tty = 0;
 int lines_read        = 0;
+int input_line_length = 0;
+bool input_format_gnu = 0;
 int determine_fix_or_free(const bool store);
 bool isfixedcmt(const string s);
 char fixedmissingquote(const string s);
@@ -343,7 +346,7 @@ int main(int argc, char*argv[])
 
    int c,rc;
    opterr = 0;
-   while((c=getopt(argc,argv,"a:b:c:C:d:e:E:f:F:hi:I:j:l:m:o:qr:R:s:t:vw:x:"))!=-1)
+   while((c=getopt(argc,argv,"a:b:c:C:d:e:E:f:F:hi:I:j:l:L:m:o:qr:R:s:t:vw:x:"))!=-1)
       switch(c)
          {
 	   case 'a' :
@@ -406,6 +409,9 @@ int main(int argc, char*argv[])
 	   case 'l' :
 	      label_left        = (atoi(optarg) != 0);
 	      break;
+	   case 'L' :
+	      input_line_length = atoi(optarg);
+	      input_format_gnu  = (optarg[strlen(optarg)-1] == 'g');
 	   case 'm' :
 	      module_indent     = atoi(optarg);
 	      break;
@@ -538,15 +544,18 @@ string rtrim(const string& str)
 string ltab2sp(const string& s)
 {  // converts leading white space and white space after a statement label
    //   to spaces and removes trailing white space
-   // if line starts with 0-5 spaces followed by a 1 tab, followed
+   // if line starts with 0-5 spaces or digits followed by a tab, followed
    //   by 1-9, this is counted as 5 spaces, it appears that many compilers
    //   assume that 
    //   <tab>1  <some code>
    //   is a continuation statement, if the continuation character is 1-9
+   //   If the character is not within 1-9, it is assumed that 
+   //   this character is the first of a statement, so in this case
+   //   this is counted as 6 spaces
 
    int si         = 0;
    bool ready     = 0;
-   const int tabl = 8;
+   const int tabl = 6;
    bool firsttab  = 1;
    string leader  = "";
    int removed    = 0;
@@ -702,6 +711,9 @@ bool handle_free(string s)
       return 0;
    }
 
+   if (input_line_length !=0)
+      s = s.substr(0,input_line_length);
+
    string sl     = trim(s);
 
    if (sl != "" && sl[0] == '&')
@@ -755,11 +767,22 @@ bool handle_fixed(string s)
    if(end_of_file)
       return 0;
 
+   string s0 = s;
+
    D(O("fixed s");O(s);)
 
-   // replace leading tabs by spaces
-   s = ltab2sp(s);
-   D(O("fixed:");O("s");O(s);)
+   if (input_line_length != 0)
+   {
+      // with tabbed input there is a difference between
+      // gfortran and other compilers
+      // other compilers simply count the number of characters.
+      // gfortran always assumes that the
+      // continuation character is in column 6
+      // so this needs extra attention:
+      if (input_format_gnu) // convert leading tabs to spaces
+         s = ltab2sp(s);
+      s = s.substr(0,input_line_length);
+   }
 
    if (isfixedcmt(s))
    {  // this is a blank or comment or preprocessor line
@@ -768,6 +791,10 @@ bool handle_fixed(string s)
          return 0;   // do not expect continuation lines
       return 1;      // but here we do
    }
+
+   // replace leading tabs by spaces
+   s = ltab2sp(s);
+   D(O("fixed:");O("s");O(s);)
 
    string sl;
    sl = s.substr(0,5);
@@ -790,7 +817,9 @@ bool handle_fixed(string s)
    if (s.length() < 6 || s[5] == ' ' || s[5] == '0')
    {  // this is not a continuation line
       // push it back, we will see it later
-      linestack.push(s);
+      // we push back the line in it's original state
+      // to prevent double line truncation
+      linestack.push(s0);
       return 0;          // do not look for further continuation lines
    }
    // this is a continuation line
@@ -1281,7 +1310,11 @@ void usage()
    cout << "-i auto  : determine automatically input format (free or fixed)" << endl;
    cout << "-i fixed : force input format fixed"     << endl;
    cout << "-i free  : force input format free"      << endl;
-   cout << "                                     (default: auto)" << endl;
+   cout << "                                     (default: auto)"     << endl;
+   cout << "-L nnn   : use only first nnn characters of each line"    << endl;
+   cout << "           default=0: take whole lines"                   << endl;
+   cout << "-L nnng  : same as above, but use gfortran convention"    << endl;
+   cout << "           for counting the characters with tabbed lines" << endl;
    cout << "-o free  : force free format output"         << endl;
    cout << "-Rr      : refactor routines: a single"      << endl;
    cout << "           'end' is if possible replaced by" << endl;

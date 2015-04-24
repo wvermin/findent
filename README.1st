@@ -1,0 +1,37 @@
+findent: indents/beautifies/converts Fortran sources
+
+NEW since 1.6.5: findent can limit input line length
+    since 1.6.4: findent warns if input is from terminal.
+    since 1.6.3: findent can refactor simple 'end' statements.
+
+Unix-Linux users: 
+    prerequisites: flex, bison, gnumake, g++
+    make:    download findent-x.y.z.tgz
+             tar xf findent-x.y.z.tgz
+             cd findent-x.y.z
+             make
+    install: install findent wfindent $HOME/bin
+       or    sudo install findent wfindent /usr/local/bin
+
+Windows users: download findent-x.y.z.zip
+               unzip findent-x.y.z.zip
+               copy findent.exe to your Program Files folder
+
+Usage:    findent -h
+Examples: findent < in.f90 > out.f90
+          findent -i4 -Rr < in.f90 > out.f90
+  Unix-Linux: wfindent -i4 -Rr *.f90
+
+(g)vim users:
+   Install findent, and add this to your .vimrc:
+
+   augroup fortfiletype
+     autocmd!
+     autocmd Filetype fortran :execute ":setl sw=3"
+     autocmd Filetype fortran :execute ":setl equalprg=findent\\ -Ia\\ -i3"
+     autocmd Filetype fortran :execute ":setl expandtab"
+   augroup END
+
+   And read
+     :help =
+   in vim or gvim.

@@ -10,7 +10,13 @@ endif
 
 all:        $(EXE)
 
-CPPFLAGS  = -Wall -g -O2 
+tar:
+	./maketar
+
+zip:
+	./makezip
+
+CPPFLAGS  = -Wall -O2 
 INCLUDES  = $(PROG).h $(PROG)_parser.h version.h
 LD        = $(CPP)
 YACC      = bison

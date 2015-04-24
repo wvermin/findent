@@ -1,0 +1,15 @@
+#!/bin/bash
+make clean                                                || exit 1
+make MINGW=1                                              || exit 1
+version=`./findent.exe -v | awk '{print $3}'|tr -d '\r'`  || exit 1
+echo "version = $version"
+cd ..                                                     || exit 1
+mkdir -p versions                                         || exit 1
+cp findent/README.1st versions/README.txt                 || exit 1
+cp findent/README.1st versions/README                     || exit 1
+cp findent/findent.exe versions                           || exit 1
+cd versions                                               || exit 1
+unix2dos README.txt README                                || exit 1
+rm -f "findent-$version.zip"
+zip   "findent-$version.zip" findent.exe README.txt       || exit 1
+rm -f findent.exe README.txt

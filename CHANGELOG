@@ -1,3 +1,16 @@
+findent-1.6.5:
+   Makefile:
+      removed -g flag
+      created 'zip' and 'tar' targets
+   findent.y:
+      added code and help text for the -L flag
+   wfindent:
+      added -L flag
+   README:
+      replaced NOTE 1, it covers now tab input.
+   Added scripts 'makezip' and 'maketar'
+   Added README.1st
+
 findent-1.6.4:
    findent.y:
       determine if input comes from terminal, warn user

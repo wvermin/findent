@@ -1,21 +1,34 @@
 findent: indents/beautifies/converts Fortran sources
+         supports Fortran-2008
 
-NEW since 1.6.5: findent can limit input line length
-    since 1.6.4: findent warns if input is from terminal.
-    since 1.6.3: findent can refactor simple 'end' statements.
+NEW since 2.0: better parser
+               findent is space-insensitive
+
+Linux users: the tar ball contains a static linked executable, 
+             probably you can use that:
+             
+             download findent-x.y.tgz
+	     tar xf findent-x.y.tgz
+	     cd findent-x.y
+	     install findent wfindent $HOME/bin
+	 or: sudo install findent wfindent /usr/local/bin
+
+	     If the precompiled version does not work,
+	     use the next recipe.
 
 Unix-Linux users: 
     prerequisites: flex, bison, gnumake, g++
-    make:    download findent-x.y.z.tgz
+    make:    download findent-x.y.tgz
              tar xf findent-x.y.z.tgz
-             cd findent-x.y.z
+             cd findent-x.y
+	     make clean
              make
     install: install findent wfindent $HOME/bin
        or    sudo install findent wfindent /usr/local/bin
 
-Windows users: download findent-x.y.z.zip
-               unzip findent-x.y.z.zip
-               copy findent.exe to your Program Files folder
+Windows users: download findent-x.y.zip
+               unzip findent-x.y.zip
+               copy findent.exe to your 'Program Files' folder
 
 Usage:    findent -h
 Examples: findent < in.f90 > out.f90

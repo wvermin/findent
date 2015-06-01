@@ -1,4 +1,3 @@
-%{
 #include <cstdio>
 #include <iostream>
 #include <stack>
@@ -10,29 +9,28 @@
 using namespace std;
 #include "findent.h"
 #include "version.h"
+#include "parser.h"
 extern "C" FILE *yyin;
 string mygetline();
 void get_full_statement();
 bool handle_free(string s);
-int remove_trailing_comment(string &s);
+void remove_trailing_comment(string &s);
 bool handle_fixed(string s);
 void output_line();
 int pop_indent();
 int top_indent();
 void push_indent(int p);
 void init_indent();
-string whatprop(struct rstruct p);
+string whatprop(struct propstruct p);
 string stoupper(const string s);
 
-void push_rprops(struct rstruct p);
+void push_rprops(struct propstruct p);
 void init_rprops();
-struct rstruct pop_rprops();
-struct rstruct top_rprops();
-const  struct rstruct empty_rprop={0,""};
+struct propstruct pop_rprops();
+struct propstruct top_rprops();
+const  struct propstruct empty_rprop={0,"","",""};
 
 void handle_pre(const string s);
-
-void shorten_full_statement();
 
 void handle_reading_from_tty();
 
@@ -40,6 +38,7 @@ int pop_dolabel();
 int top_dolabel();
 void push_dolabel(int l);
 void empty_dolabels();
+void indent_and_output();
 
 void set_default_indents();
 void usage();
@@ -63,9 +62,10 @@ stack<stack <int> > indent_stack;  // to store indent stack
 stack<bool> pre_stack;             // to note if there is an #else after #if for indenting
 stack<bool> prep_stack;            // to note if there is an #else after #if for routines
 
-stack<struct rstruct> rprops;     // to store routines (module, subroutine ...)
-stack<stack <struct rstruct> > rprops_stack;
-struct rstruct cur_rprop = empty_rprop;
+struct propstruct prev_props;
+stack<struct propstruct> rprops;     // to store routines (module, subroutine ...)
+stack<stack <struct propstruct> > rprops_stack;
+struct propstruct cur_rprop = empty_rprop;
 
 int cur_indent, start_indent;
 bool auto_firstindent;
@@ -81,8 +81,6 @@ string full_statement;        // current statement, including continuation lines
 deque <string> lines;         // current line, one continuation line per item
 queue <string> linebuffer;    // used when determining fixed or free
 stack <string> linestack;     // used for fixed format
-bool full_statement_has_been_output;
-bool stlabel_found;
 bool end_of_file;
 
 string endline   = "\n";
@@ -114,222 +112,6 @@ bool simple_end_found  = 0;
 
 bool cur_semi_eol;
 
-%}
-
-%code requires {
-    struct lablen {
-        int ival;      // name of label
-        int ilen;      // length of label name
-    };
-}
-
-%union {
-  struct lablen val;
-  bool semi_eol;
-  }
-
-%token ROUTINESTART DOSTART MODULESTART SELECTSTART ENDSELECT CASE
-%token CONTAINS IFCONSTRUCT WHERECONSTRUCT FORALLCONSTRUCT
-%token ELSE ELSEIF ENTRY ELSEWHERE INTERFACE BLOCK CRITICAL
-%token ENUM TYPECONSTRUCT ASSOCIATECONSTRUCT
-%token FREE FIXED PROBFREE PROBFIXED UNSURE FINDFORMAT
-%token CMT SCANSTRCMT DQUOTE SQUOTE UNTERMSTR
-
-%token GENERIC_END SPECIFIC_END ROUTINE_END UNKNOWN_END
-
-%token KIND_SUBROUTINE KIND_FUNCTION KIND_PROGRAM KIND_BLOCKDATA KIND_MODULE 
-
-%token <val> STLABEL
-%token <val> DOLABEL
-
-%token <semi_eol> EOL
-
-%%
-program:   program line
-         | line
-	 ;
-
-line:    STLABEL
-			 {  // STATEMENT LABEL
-			    D(O("STLABEL line ");O($1.ival); O(top_dolabel());)
-			    stlabel_found = 1;
-			    stlabel       = $1.ival;
-			    labelleng     = $1.ilen;
-
-			    if (stlabel >=0)
-			    {
-			       while ( top_dolabel() == stlabel )
-			       {
-				  pop_indent();
-				  pop_dolabel();
-			          cur_indent = top_indent();
-				  indent_handled = 1;
-			       }
-			       shorten_full_statement();
-			     }
-			 }
-	   nolabelline
-         | nolabelline    {
-	                     D(O("nolabelline"));
-			  }
-         | error          {
-	                     output_line();
-			     cout << "! findent error in previous line, maybe misformatted"<<endline;
-			     yyclearin;
-	                     yyerrok;
-			  }
-
-nolabelline:
-           EOL            {  // EOL END OF LINE or ;
-	                     D(O("EOL");O($1);O("lexer_position 1");O(lexer_position))
-			     cur_semi_eol = $1;
-			     output_line();
-	                     D(O("EOL");O($1);O("lexer_position 2");O(lexer_position))
-			     if(cur_semi_eol)
-			        shorten_full_statement();
-			     labelleng  = 0;
-			     cur_indent = top_indent();
-			     D(O("top_indent:");O(top_indent());O("cur_indent:");O(cur_indent););
-			  }
-         | ROUTINESTART   {  // ROUTINE
-	                     D(O("ROUTINESTART");O(whatprop(rprop));O(rprop.name);)
-	                     cur_indent = top_indent();
-			     D(O("cur_indent:");O(cur_indent);)
-			     push_indent(cur_indent + routine_indent);
-			     empty_dolabels();
-			     push_rprops(rprop);
-			  }
-         | MODULESTART    {  // MODULE
-	                     D(O("MODULESTART");O(whatprop(rprop));O(rprop.name);)
-	                     cur_indent = top_indent();
-			     D(O("cur_indent:");O(cur_indent);)
-			     push_indent(cur_indent + module_indent);
-			     empty_dolabels();
-			     push_rprops(rprop);
-			  }
-         | BLOCK          {  // BLOCK
-	                     D(O("BLOCK");)
-	                     cur_indent = top_indent();
-			     push_indent(cur_indent + block_indent);
-			  }
-         | CRITICAL       {  // CRITICAL
-	                     D(O("CRITICAL");)
-	                     cur_indent = top_indent();
-			     push_indent(cur_indent + critical_indent);
-			  }
-         | ENUM           {  // ENUM
-	                     D(O("ENUM");)
-			     cur_indent = top_indent();
-			     push_indent(cur_indent + enum_indent);
-			     empty_dolabels();
-			  }
-         | INTERFACE      {  //INTERFACE
-	                     D(O("INTERFACE");)
-	                     cur_indent = top_indent();
-			     push_indent(cur_indent + interface_indent);
-			     empty_dolabels();
-			  }
-	 | DOSTART DOLABEL  { // LABELLED DO
-			     D(O("DOSTART LABEL");O($2.ival);)
-			     push_dolabel($2.ival);
-	                     cur_indent = top_indent();
-			     push_indent(cur_indent + do_indent);
-	                  }
-         | DOSTART        {  // labeled or unlabeled do
-			     D(O("DOSTART");)
-	                     cur_indent = top_indent();
-			     push_indent(cur_indent + do_indent);
-			  }
-         | SELECTSTART    {  // SELECT CASE
-			     D(O("SELECTSTART");)
-	                     cur_indent = top_indent();
-			     push_indent(cur_indent + select_indent);
-			  }
-	 | CASE           {  // CASE
-	                     D(O("CASE");)
-			     cur_indent -= case_indent;
-	                  }
-	 | GENERIC_END    {  // GENERIC END:  simple 'end' found
-	                     D(O("GENERIC_END");)
-			     if (!indent_handled)
-				cur_indent = pop_indent();
-			     cur_rprop = top_rprops();
-			     simple_end_found = 1;
-			     D(O(whatprop(cur_rprop));O(cur_rprop.name);)
-			     pop_rprops();
-			  }
-	 | SPECIFIC_END   {  // SPECIFIC END
-	                     D(O("SPECIFIC_END");)
-			     if (!indent_handled)
-				cur_indent = pop_indent();
-			  }
-	 | ROUTINE_END    {  // SPECIFIC END
-	                     D(O("SPECIFIC_END");)
-			     if (!indent_handled)
-				cur_indent = pop_indent();
-			     D(O(whatprop(cur_rprop));O(cur_rprop.name);)
-			     pop_rprops();
-			  }
-	 | UNKNOWN_END    {
-	                     D(O("UNKNOWN_END");)
-			     if (!indent_handled)
-				cur_indent = pop_indent();
-	                  }
-
-
-	 | ENDSELECT      {  // ENDSELECT
-	                     D(O("ENDSELECT");)
-	                     cur_indent = pop_indent();
-			  }
-         | CONTAINS       {  // CONTAINS
-	                     D(O("CONTAINS");)
-			     cur_indent -= contains_indent;
-			  }
-         | IFCONSTRUCT    {  // IFCONSTRUCT
-	                     D(O("IFCONSTRUCT");)
-			     cur_indent = top_indent();
-			     push_indent(cur_indent + if_indent);
-	                  }
-         | ELSE           {  // ELSE
-	                     D(O("ELSECONSTRUCT");)
-			     cur_indent -= if_indent;
-	                  }
-         | ELSEIF         {  // ELSIF
-	                     D(O("ELSEIF");)
-			     cur_indent -= if_indent;
-	                  }
-         | ENTRY          {  // ENTRY
-	                     D(O("ENTRY");)
-			     cur_indent -= entry_indent;
-	                  }
-         | WHERECONSTRUCT {  // WHERE CONSTRUCT
-	                     D(O("WHERECONSTRUCT");)
-			     cur_indent = top_indent();
-			     push_indent(cur_indent + where_indent);
-	                  }
-         | ASSOCIATECONSTRUCT {  // ASSOCIATE CONSTRUCT
-	                     D(O("ASSOCIATECONSTRUCT");)
-			     cur_indent = top_indent();
-			     push_indent(cur_indent + associate_indent);
-	                  }
-         | TYPECONSTRUCT  {  // TYPE CONSTRUCT
-	                     D(O("TYPECONSTRUCT");)
-			     cur_indent = top_indent();
-			     push_indent(cur_indent + type_indent);
-	                  }
-         | ELSEWHERE      {  // ELSEWHERE
-	                     D(O("ELSEWHERECONSTRUCT");)
-			     cur_indent -= where_indent;
-	                  }
-         | FORALLCONSTRUCT { // FORALL CONSTRUCT
-	                     D(O("FORALLCONSTRUCT");)
-			     cur_indent = top_indent();
-			     push_indent(cur_indent + forall_indent);
-	                  }
-
-	 ;
-%%
-
 int main(int argc, char*argv[])
 {
    all_indent          = default_indent;
@@ -341,8 +123,6 @@ int main(int argc, char*argv[])
    non_blank_line_seen = 0;
    input_format        = 0;
    output_format       = 0;
-
-   lexer_init();
 
    int c,rc;
    opterr = 0;
@@ -392,7 +172,7 @@ int main(int argc, char*argv[])
 		 all_indent        = atoi(optarg);
 		 set_default_indents();
 	      }
-	      D(O("i flag:");O(optarg);O(" format:") 
+	      D(O("i flag:");O(optarg);O(" format:");
 	        if (input_format == FIXED) O("fixed")
 		if (input_format == FREE)  O("free")
 		)
@@ -420,6 +200,7 @@ int main(int argc, char*argv[])
 	         output_format = FREE;
 	      break;
 	   case 'q' :
+	      D(O("finding fix or free"););
 	      handle_reading_from_tty();
 	      rc = determine_fix_or_free(0);
 	      switch(rc)
@@ -472,19 +253,261 @@ int main(int argc, char*argv[])
 
    labelleng        = 0;
    end_of_file      = 0;
-   simple_end_found = 0;
    cur_rprop        = empty_rprop;
    get_full_statement();
-   lexer_push(full_statement+'\n',FREE);
-   cur_semi_eol  = 0;
-   cur_indent    = start_indent;
+   cur_semi_eol     = 0;
+   cur_indent       = start_indent;
    init_indent();
-   yyparse();
+   indent_and_output();
+   if(end_of_file)
+      return 0;
+
+   while(1)
+   {
+      get_full_statement();
+      indent_and_output();
+      if (end_of_file)
+	 return 0;
+   }
    return 0;
 }
 
-void yyerror(const char *s)
+void indent_and_output()
 {
+   D(O("entering indent_and_output");O(full_statement););
+   string rest=full_statement;
+   bool first_time = 1;
+   while(1)
+   {
+      D(O("indent_and_output");O(rest););
+      line_prep p(rest);
+      propstruct props = parseline(p); 
+      D(O("props.kind");O(props.kind);O(props.label););
+      labelleng = props.label.size();
+      if (labelleng > 0)
+	 // if there was a previous labeled do, handle it:
+      {
+	 int ilabel = string2number<int>(props.label);
+	 while ( top_dolabel() == ilabel )
+	 {
+	    pop_indent();
+	    pop_dolabel();
+	    cur_indent = top_indent();
+	    indent_handled = 1;
+	 }
+      }
+      // if the previous non-blank line was PROCEDURE (module procedure)
+      // then determine if this was a procedure with content
+      // if so: take delayed action with respect to indenting (same as with SUBROUTINE)
+      if (prev_props.kind == PROCEDURE)
+      {
+	 switch (props.kind)
+	 {
+	    case ASSIGNMENT:
+	    case UNCLASSIFIED:
+	    case BLOCK:
+	    case CONTAINS:
+	    case CRITICAL:
+	    case DO:
+	    case END:
+	    case ENDPROCEDURE:
+	    case ENTRY:
+	    case ENUM:
+	    case FORALL:
+	    case IF:
+	    case SELECTCASE:
+	    case SELECTTYPE:
+	    case TYPE:
+	    case WHERE:
+	       cur_indent = top_indent();
+	       D(O("cur_indent:");O(cur_indent););
+	       push_indent(cur_indent + routine_indent);
+	       empty_dolabels();
+	       push_rprops(prev_props);
+	       break;
+	    default:
+	       break;
+	 }
+      }
+      cur_indent = top_indent();
+      simple_end_found = 0;
+      switch(props.kind)
+      {
+	 case SUBROUTINE:
+	 case FUNCTION:
+	 case PROGRAM:
+	 case BLOCKDATA:
+	    D(O("SUBFUN");O(whatprop(props));O(props.name););
+	    cur_indent = top_indent();
+	    D(O("cur_indent:");O(cur_indent););
+	    push_indent(cur_indent + routine_indent);
+	    empty_dolabels();
+	    push_rprops(props);
+	    break;
+	 case MODULE:
+	 case SUBMODULE:
+	    D(O("MODULESTART");O(whatprop(props));O(props.name););
+	    cur_indent = top_indent();
+	    D(O("cur_indent:");O(cur_indent););
+	    push_indent(cur_indent + module_indent);
+	    empty_dolabels();
+	    push_rprops(props);
+	    break;
+	 case BLOCK:
+	    D(O("BLOCK"););
+	    cur_indent = top_indent();
+	    push_indent(cur_indent + block_indent);
+	    break;
+	 case CRITICAL:
+	    D(O("CRITICAL"););
+	    cur_indent = top_indent();
+	    push_indent(cur_indent + critical_indent);
+	    break;
+	 case ENUM:
+	    D(O("ENUM"););
+	    cur_indent = top_indent();
+	    push_indent(cur_indent + enum_indent);
+	    empty_dolabels();
+	    break;
+	 case ABSTRACTINTERFACE:
+	 case INTERFACE:
+	    D(O("INTERFACE"););
+	    cur_indent = top_indent();
+	    push_indent(cur_indent + interface_indent);
+	    empty_dolabels();
+	    break;
+	 case DO:
+	    D(O("DOSTART"););
+	    cur_indent = top_indent();
+	    push_indent(cur_indent + do_indent);
+	    if (props.dolabel != "")
+	    {
+	       D(O("DOSTART LABEL");O(props.dolabel);O(string2number<int>(props.dolabel)););
+	       push_dolabel(string2number<int>(props.dolabel));
+	    }
+	    break;
+	 case SELECTCASE:
+	 case SELECTTYPE:
+	    D(O("SELECTCASE"););
+	    cur_indent = top_indent();
+	    push_indent(cur_indent + select_indent);
+	    break;
+	 case CASE:
+	 case CASEDEFAULT:
+	 case CLASSDEFAULT:
+	 case CLASSIS:
+	 case TYPEIS:
+	    D(O("CASE"););
+	    cur_indent -= case_indent;
+	    break;
+	 case END:
+	    D(O("GENERIC_END"););
+	    if (!indent_handled)
+	       cur_indent = pop_indent();
+	    cur_rprop = top_rprops();
+	    simple_end_found = 1;
+	    D(O(whatprop(cur_rprop));O(cur_rprop.name););
+	    pop_rprops();
+	    break;
+	 case ENDASSOCIATE:
+	 case ENDBLOCK:
+	 case ENDCRITICAL:
+	 case ENDDO:
+	 case ENDENUM:
+	 case ENDFORALL:
+	 case ENDIF:
+	 case ENDINTERFACE:
+	 case ENDMODULE:
+	 case ENDSELECT:
+	 case ENDSUBMODULE:
+	 case ENDTYPE:
+	 case ENDWHERE:
+	    D(O("SPECIFIC_END"););
+	    if (!indent_handled)
+	       cur_indent = pop_indent();
+	    break;
+	 case ENDBLOCKDATA:
+	 case ENDFUNCTION:
+	 case ENDPROCEDURE:
+	 case ENDPROGRAM:
+	 case ENDSUBROUTINE:
+	    D(O("ROUTINE_END"););
+	    if (!indent_handled)
+	       cur_indent = pop_indent();
+	    D(O(whatprop(cur_rprop));O(cur_rprop.name););
+	       pop_rprops();
+	    break;
+	 case PROCEDURE:  // in fact: moduleprocedure
+	    D(O("PROCEDURE");O(whatprop(props));O(props.name););
+	    // depending on what follows this will be 
+	    // recognized as a module procedure with content
+	    // or only a moduleprocedure specification
+	    break;
+	 case CONTAINS:
+	    D(O("CONTAINS"););
+	    cur_indent -= contains_indent;
+	    break;
+	 case IF:
+	    D(O("IFCONSTRUCT"););
+	    cur_indent = top_indent();
+	    push_indent(cur_indent + if_indent);
+	    break;
+	 case ELSE:
+	    D(O("ELSECONSTRUCT"););
+	    cur_indent -= if_indent;
+	    break;
+	 case ELSEIF:
+	    D(O("ELSEIF"););
+	    cur_indent -= if_indent;
+	    break;
+	 case ELSEWHERE:
+	    D(O("ELSECONSTRUCT"););
+	    cur_indent -= where_indent;
+	    break;
+	 case ENTRY:
+	    D(O("ENTRY"););
+	    cur_indent -= entry_indent;
+	    break;
+	 case WHERE:
+	    D(O("WHERECONSTRUCT"););
+	    cur_indent = top_indent();
+	    push_indent(cur_indent + where_indent);
+	    break;
+	 case ASSOCIATE:
+	    D(O("ASSOCIATECONSTRUCT"););
+	    cur_indent = top_indent();
+	    push_indent(cur_indent + associate_indent);
+	    break;
+	 case TYPE:
+	    D(O("TYPECONSTRUCT"););
+	    cur_indent = top_indent();
+	    push_indent(cur_indent + type_indent);
+	    break;
+	 case FORALL:
+	    D(O("FORALLCONSTRUCT"););
+	    cur_indent = top_indent();
+	    push_indent(cur_indent + forall_indent);
+	    break;
+	 default:
+	    cur_indent = top_indent();
+      }
+      switch(props.kind)
+      {
+	 case BLANK:
+	    break;
+	 default:
+	    prev_props = props;
+      }
+      if(first_time)
+      {
+	 D(O("calling output_line"););
+	 output_line();
+	 first_time = 0;
+      }
+      rest = p.get_line_rest();
+      if (rest == "")
+	 break;
+   }
 }
 
 void handle_reading_from_tty()
@@ -506,7 +529,7 @@ void handle_reading_from_tty()
 void init_indent()
 // fills the indent-stack until indent 0
 {
-   D(O("init_indent");O(indent.size());)
+   D(O("init_indent");O(indent.size()););
    while(!indent.empty())
       indent.pop();
    int l=0;
@@ -615,7 +638,7 @@ string mygetline()
    string s;
 
    getline(cin,s);
-   D(O("getline:");O(s);O("eofbit");O(cin.eofbit);O(cin.eof());)
+   D(O("getline:");O(s);O("eofbit");O(cin.eofbit);O(cin.eof()););
 
    // sometimes, files do not end with (cr)lf, hence the test for s=="":
    end_of_file = (cin.eof() && s == "");
@@ -632,8 +655,6 @@ string mygetline()
 void get_full_statement()
 {
    string s;
-   full_statement_has_been_output = 0;
-   stlabel_found                  = 0;
    full_statement                 = "";
    indent_handled                 = 0;
 
@@ -658,7 +679,7 @@ void get_full_statement()
 
       num_lines++;
 
-      D(O(s);)
+      D(O(s););
 
       if (!non_blank_line_seen)
       {
@@ -679,7 +700,7 @@ void get_full_statement()
 	 }
       }
 
-      D(O("get_full_statement s leng:");O(s);O(s.length());O("endline:");O(endline.length());)
+      D(O("get_full_statement s leng:");O(s);O(s.length());O("endline:");O(endline.length()););
 
       if (input_format == FREE)
       {
@@ -696,7 +717,7 @@ void get_full_statement()
 	    break;
       }
    }
-   D(O("full_statement:");O(num_lines);O(full_statement);)
+   D(O("full_statement:");O(num_lines);O(full_statement););
 }
 
 bool handle_free(string s)
@@ -707,7 +728,7 @@ bool handle_free(string s)
 {
    if(end_of_file)
    {
-      D(O("end of file");)
+      D(O("end of file"););
       return 0;
    }
 
@@ -750,6 +771,7 @@ bool handle_free(string s)
    string cs = full_statement + sl;
 
    remove_trailing_comment(cs);
+   cs = rtrim(cs);
 
    expect_continuation = ( cs[cs.length()-1] == '&');
    if (expect_continuation)            // chop off '&' :
@@ -757,7 +779,7 @@ bool handle_free(string s)
 
    full_statement = cs;
    lines.push_back(trim(s));
-   D(O("full_statement");O(full_statement);O(expect_continuation);)
+   D(O("full_statement");O(full_statement);O(expect_continuation););
 
    return expect_continuation;
 }
@@ -769,7 +791,7 @@ bool handle_fixed(string s)
 
    string s0 = s;
 
-   D(O("fixed s");O(s);)
+   D(O("fixed s");O(s););
 
    if (input_line_length != 0)
    {
@@ -794,14 +816,14 @@ bool handle_fixed(string s)
 
    // replace leading tabs by spaces
    s = ltab2sp(s);
-   D(O("fixed:");O("s");O(s);)
+   D(O("fixed:");O("s");O(s););
 
    string sl;
    sl = s.substr(0,5);
    if (s.length() >6)
       sl = sl+' '+s.substr(6);
 
-   D(O("sl:");O(sl);O(lines.size());)
+   D(O("sl:");O(sl);O(lines.size()););
 
    // this is a line with code
    if (lines.empty())
@@ -809,7 +831,8 @@ bool handle_fixed(string s)
       lines.push_back(s);
       full_statement += trim(sl);
       remove_trailing_comment(full_statement);
-      D(O("sl:");O(sl);O(full_statement);O(lines.size());)
+      full_statement = rtrim(full_statement);
+      D(O("sl:");O(sl);O(full_statement);O(lines.size()););
       return 1;      // maybe there are continuation lines
    }
 
@@ -826,26 +849,39 @@ bool handle_fixed(string s)
    lines.push_back(s);
    full_statement += rtrim((rtrim(sl)+"      ").substr(6));
    remove_trailing_comment(full_statement);
+   full_statement = rtrim(full_statement);
    D(O(full_statement);O(rtrim(sl));O(sl););
    return 1;   // look for more continuation lines
 }
 
-int remove_trailing_comment(string &s)
+void remove_trailing_comment(string &s)
 {
-   // the lexer will tell if 
-   // there is an terminated string followed by !comment.  rc == CMT
-   //   the position of '!' is in lexer_position 
-   // or the line ends in a unterminated string          rc == EOL
+   // removes trailing comment
 
-   lexer_push(s + '\n', SCANSTRCMT);
-   int rc = yylex();
-   int p = lexer_position;  // have to save lexer_position because of lexer_pop
-   D(O("p:");O(p);)
-   lexer_pop();
-
-   if (rc == CMT)
-      s = rtrim(s.substr(0, max(p-1,0)));
-   return rc;
+   bool instring = 0;
+   char q        = ' ';
+   for (unsigned int i=0; i<s.size(); i++)
+   {
+      if (instring)
+      {
+	 if(s[i] == q)
+	    instring = 0;
+      }
+      else
+      {
+	 switch(s[i])
+	 {
+	    case '"': case '\'':
+	       instring = 1;
+	       q = s[i];
+	       break;
+	    case '!':
+	       s.erase(i,string::npos);
+	       return;
+	 }
+      }
+   }
+   return;
 }
 
 int guess_indent(const string s)
@@ -854,7 +890,7 @@ int guess_indent(const string s)
    bool ready     = 0;
    const int tabl = 8;
 
-   D(O("guess_indent entered");)
+   D(O("guess_indent entered"););
 
    if (input_format == FIXED)
    {
@@ -900,19 +936,16 @@ string stoupper(const string s)
 
 void output_line()
 {
-   D(O("output, nr of lines:");O(lines.size());O("cur_indent");O(cur_indent);O("already done:");O(full_statement_has_been_output);)
+   D(O("output_line, nr of lines:");O(lines.size());O("cur_indent");O(cur_indent);O("already done:"););
    if (lines.empty())
       return;
-   if (full_statement_has_been_output)
-      return;
-   full_statement_has_been_output = 1;
    int lineno                     = 0;
    string needamp                 = "";
    char prevquote                 = ' ';
    char preprevquote              = ' ';
    string outputline;
 
-   D(O("refactor");O(refactor_routines);O(simple_end_found);O(lines.size());O(cur_rprop.kind);)
+   D(O("refactor");O(refactor_routines);O(simple_end_found);O(lines.size());O(cur_rprop.kind););
    if (refactor_routines && simple_end_found)
    {
       if (cur_rprop.kind != 0)
@@ -921,7 +954,7 @@ void output_line()
 	// find the location of 'end'
 	string s = stoupper(lines[0]);
 	size_t p = s.find("END");
-	D(O("p");O(p);)
+	D(O("p");O(p););
 	if ( p != string::npos)
 	{
 	   string routinetype = whatprop(cur_rprop);
@@ -939,7 +972,7 @@ void output_line()
       string firstline = lines.front();
       handle_pre(firstline);
       lines.pop_front();
-      D(O("firstline");O(firstline);)
+      D(O("firstline");O(firstline););
       int l;
       if (firstline != "" || lines.size() > 1)
       {
@@ -960,11 +993,11 @@ void output_line()
 	 if (firstline[0] != '#')
 	 {
 	    cout << string(l,' '); 
-	    D(O("output indent before firstline");O(string(l,' '));)
+	    D(O("output indent before firstline");O(string(l,' ')););
 	 }
       }
       cout << firstline << endline;
-      D(O("output firstline");O(firstline);)
+      D(O("output firstline");O(firstline););
       while (!lines.empty())
       {
       // sometimes, there are preprocessor statements within a continuation ...
@@ -1057,7 +1090,7 @@ void output_line()
 	       outputline = needamp;
 	       if (lineno == 1)
 	       {
-		  D(O("s");O(s);O(labelleng);)
+		  D(O("s");O(s);O(labelleng););
 		  int l;
 		  if (s.length()>6)
 		  {
@@ -1098,9 +1131,9 @@ void output_line()
 		     {
 			string s6 = ltab2sp(s.substr(6))+'x';
 			old_indent = s6.find_first_not_of(' ');
-			D(O(s6);O(old_indent);)
+			D(O(s6);O(old_indent););
 		     }
-		     D(O(old_indent);O(first_indent);)
+		     D(O(old_indent);O(first_indent););
 		     int adjust_indent = old_indent - first_indent;
 		     if (adjust_indent < 0 || prevquote!=' ')
 			adjust_indent = 0;
@@ -1146,21 +1179,20 @@ void output_line()
 		     }
 
                      // the line does not contain an unterminated string,
-		     // is there a !commant outside a string?
-		     // we ask the lexer to have a look
+		     // is there a !comment outside a string?
 		     // here we need the value of preprevquote:
 
-		     lexer_push(preprevquote+outputline+'\n',SCANSTRCMT);
-		     int rc = yylex();
-		     int p = lexer_position;
-		     lexer_pop();
-		     if (rc == CMT)
+		     string work = preprevquote + outputline;
+		     int p0 = work.size();
+		     remove_trailing_comment(work);
+		     int p = work.size();
+		     if (p0 != p)
 		     {
 			// there is a comment outside strings,
 			// the number of characters before the comment
 			// has to be decreased by one, because
 			// of the prepending of preprevquote
-			p = max(p-2,0);
+			p = max(p-1,0);
 			outputline = outputline.substr(0, p) + '&' + outputline.substr(p);
 			break;
 		     }
@@ -1199,7 +1231,7 @@ void push_indent(int p)
    indent.push(p);
 }
 
-void push_rprops(struct rstruct p)
+void push_rprops(struct propstruct p)
 {
    rprops.push(p);
 }
@@ -1207,12 +1239,12 @@ void push_rprops(struct rstruct p)
 void init_rprops()
 // empties the rprops-stack
 {
-   D(O("rprops");O(rprops.size());)
+   D(O("rprops");O(rprops.size()););
    while(!rprops.empty())
       rprops.pop();
 }
 
-struct rstruct pop_rprops()
+struct propstruct pop_rprops()
 {
    if (rprops.empty())
       return empty_rprop;
@@ -1220,22 +1252,26 @@ struct rstruct pop_rprops()
    return top_rprops();
 }
 
-struct rstruct top_rprops()
+struct propstruct top_rprops()
 {
    if (rprops.empty())
       return empty_rprop;
    return rprops.top();
 }
 
-string whatprop(struct rstruct p)
+string whatprop(struct propstruct p)
 {
     switch(p.kind)
     { 
-       case(KIND_SUBROUTINE): return("subroutine");
-       case(KIND_PROGRAM):    return("program");
-       case(KIND_BLOCKDATA):  return("blockdata");
-       case(KIND_FUNCTION):   return("function");
-       case(KIND_MODULE):     return("module");
+       case SUBROUTINE:
+       case MODULESUBROUTINE: return("subroutine");
+       case PROGRAM:          return("program");
+       case BLOCKDATA:        return("blockdata");
+       case FUNCTION:
+       case MODULEFUNCTION:   return("function");
+       case MODULE:           return("module");
+       case SUBMODULE:        return("submodule");
+       case PROCEDURE:        return("procedure");
        default:               return("UNKNOWN");
     }
  }
@@ -1264,16 +1300,6 @@ void empty_dolabels()
 {
    while(!dolabels.empty())
       dolabels.pop();
-}
-
-void shorten_full_statement()
-{  // strip off scanned part of full_statement
-   // and use as new lexer buffer
-  D(O("shorten full_statement before:");O(lexer_position);O(full_statement);)
-  full_statement.erase(0,lexer_position);
-  full_statement = trim(full_statement);
-  lexer_set(full_statement+'\n',FREE);
-  D(O("shorten full_statement after:");O(lexer_position);O(full_statement);)
 }
 
 void set_default_indents()
@@ -1356,6 +1382,7 @@ void usage()
 
 int guess_fixedfree(const string s)
 {
+   D(O("entering guess_fixedfree"););
    // sometimes, program sources contain carriage control characters
    // such as ^L
    // I cannot get the lexer to respond to [:cntrl:]
@@ -1364,9 +1391,8 @@ int guess_fixedfree(const string s)
       if(s[0] < 32)
          return UNSURE;
 
-   lexer_push(ltab2sp(s)+'\n',FINDFORMAT);
+   lexer_set(ltab2sp(s));
    int rc = yylex();
-   lexer_pop();
    return rc;
 }
 
@@ -1397,19 +1423,18 @@ int determine_fix_or_free(const bool store)
       switch(rc)
       {
          case UNSURE : 
-	    D(O("UNSURE");) 
+	    D(O(s);O("UNSURE"););
 	    break;
 	 case PROBFREE : 
-	    D(O("PROBFREE");) 
+	    D(O(s);O("PROBFREE"););
 	    break;
 	 case FREE : 
-	    D(O("FREE");) 
+	    D(O(s);O("FREE"););
 	    return FREE;
 	 case FIXED : 
-	    D(O("FIXED");) 
+	    D(O(s);O("FIXED"););
 	    return FIXED;
       }
-      D(O(s);)
    }
    return FIXED;
 }
@@ -1422,7 +1447,7 @@ string handle_dos(const string s)
    sl = s;
    if (!endline_set)
    {
-      D(O("setting endline");O(sl))
+      D(O("setting endline");O(sl));
       if (sl != "" && sl[sl.length()-1] == '\r')
       {
 	 endline = "\r\n";
@@ -1451,26 +1476,28 @@ char fixedmissingquote(const string s)
    // returns ' ' if there is no unterminated string
    // returns '"' if this is an unterminated string, a '"' is missing
    // returns '\'' if this is an unterminated string, a '\'' is missing
-   D(O(lexer_position);)
-   lexer_push(s + '\n',UNTERMSTR);
-   int rc = yylex();
-   lexer_pop();
-   D(O(lexer_position);)
-   D(O("rc:");O(rc);O(EOL);O(DQUOTE);O(SQUOTE);)
-   char result = ' ';
-   switch (rc)
+   bool instring = 0;
+   char q = ' ';
+   for(unsigned int i=0; i<s.size(); i++)
    {
-      case  EOL :
-	 result = ' ';
-	 break;
-      case  DQUOTE :         // unterminated string
-	 result = '"';
-	 break;
-      case  SQUOTE :
-	 result = '\'';
-	 break;
+      if (instring)
+      {
+	 if (s[i] == q)
+	    instring = 0;
+      }
+      else
+      {
+	 switch(s[i])
+	 {
+	    case '"': case '\'':
+	       instring = 1;
+	       q = s[i];
+	 }
+      }
    }
-   return result;
+   if (instring)
+      return q;
+   return ' ';
 }
 
 // #if, #ifdef, #ifndef, #else, #elif and #endif
@@ -1492,7 +1519,7 @@ char fixedmissingquote(const string s)
 
 void handle_pre(const string s)
 {
-   D(O("pre before");O(cur_indent);O(top_indent());O(s);)
+   D(O("pre before");O(cur_indent);O(top_indent());O(s););
 
    if (s == "" || s[0] != '#')
       return;
@@ -1549,17 +1576,6 @@ void handle_pre(const string s)
 	 prep_stack.pop();
       }
    }
-   D(O("pre after");O(cur_indent);O(top_indent());)
+   D(O("pre after");O(cur_indent);O(top_indent()););
 }
 
-extern "C" int yywrap()
-{
-  D(O("yywrap");)
-  if (end_of_file)
-     return 1;
-  get_full_statement();
-  simple_end_found = 0;
-  cur_rprop      = empty_rprop;
-  lexer_set(full_statement+'\n',FREE);
-  return 0;
-}

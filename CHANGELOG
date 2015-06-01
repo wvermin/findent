@@ -1,3 +1,9 @@
+findent-2.0:
+   Complete new code
+   Better parser
+   Space insensitive
+   Fortran 2008 compliant
+
 findent-1.6.5:
    Makefile:
       removed -g flag

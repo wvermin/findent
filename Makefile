@@ -1,46 +1,83 @@
 PROG      = findent
 
 ifdef MINGW
-   CPP       = i586-mingw32msvc-g++
+   CXX = i586-mingw32msvc-g++
    EXE       = $(PROG).exe
 else
-   CPP       = g++
+   CXX = g++
    EXE       = $(PROG)
 endif
 
 all:        $(EXE)
 
-tar:
-	./maketar
-
-zip:
-	./makezip
-
-CPPFLAGS  = -Wall -O2 
-INCLUDES  = $(PROG).h $(PROG)_parser.h version.h
-LD        = $(CPP)
+LD        = $(CXX)
 YACC      = bison
 LEX       = flex
+SED       = sed
+RM        = rm
 
-$(EXE): $(PROG)_parser.o $(PROG)_lexer.o
-	$(LD) -o $@ $(PROG)_parser.o $(PROG)_lexer.o
-	
-$(PROG)_parser.cpp $(PROG)_parser.h: $(PROG).y
-	$(YACC) -o $(PROG)_parser.cpp --defines=$(PROG)_parser.h $<
+ifdef DEBUG
+   CXXFLAGS = -Wall -g -O0 -DDEBUG
+else
+   CXXFLAGS = -Wall -O3 
+endif
 
-$(PROG)_lexer.cpp: $(PROG).l
+ifdef STATIC
+   CXXFLAGS += -static
+   LDFLAGS   = -static
+endif
+
+PARNAME   = parser
+LEXNAME   = lexer
+
+PARREPORTFILE  = $(PARNAME)_report.txt
+
+CPLUSSUFFIX  = cpp
+BISONSUFFIX  = y
+FLEXSUFFIX   = l
+OBJSUFFIX    = o
+
+PARYFILE   = $(PARNAME).$(BISONSUFFIX)
+PARCFILE   = $(PARNAME).$(CPLUSSUFFIX)
+PARHFILE   = $(PARNAME).h
+PARCFILES  = $(PARCFILE) $(PARHFILE)
+PAROBJ     = $(PARNAME).$(OBJSUFFIX)
+
+LEXLFILE   = $(LEXNAME).$(FLEXSUFFIX)
+LEXCFILE   = $(LEXNAME).$(CPLUSSUFFIX)
+LEXCFILES  = $(LEXCFILE)
+LEXOBJ     = $(LEXNAME).$(OBJSUFFIX)
+
+FINDENTOBJS = $(PROG).$(OBJSUFFIX) line_prep.$(OBJSUFFIX)
+
+EXEOBJS     = $(PAROBJ) $(LEXOBJ) $(FINDENTOBJS)
+
+INCLUDES    = findent.h $(PARHFILE) debug.h version.h line_prep.h
+
+%.$(OBJSUFFIX):    %.$(CPLUSSUFFIX) $(INCLUDES) 
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
+$(EXE): $(EXEOBJS)
+	$(LD) $(LDFLAGS) -o $@ $(EXEOBJS)
+
+$(PARCFILES): $(PARYFILE)
+	$(YACC) -o $@ --report=all --report-file=$(PARREPORTFILE) --defines=$(PARHFILE) $<
+
+$(LEXCFILES): $(LEXLFILE)
 	$(LEX) -i -o $@ $<
 
-%.o:     %.cpp $(INCLUDES) 
-	$(CPP) -c $(CPPFLAGS) -o $@ $<
+distclean:
+	$(RM) -f $(LEXCFILES) *.$(OBJSUFFIX) $(PARCFILES)
+	$(RM) -f $(PARPFILE) $(LEXPFILE) $(PARREPORTFILE)
+	$(RM) -f test/*.f.try.f test/a.out test/*.mod
 
-clean:
-	rm -f $(PROG)_lexer.cpp *.o $(PROG) $(EXE) findent.exe $(PROG)_parser.h $(PROG)_parser.cpp
-	rm -f test/*.f.try.f test/a.out test/*.mod
+clean: distclean
+	$(RM) -f $(PROG) $(EXE) findent.exe
 
-test:   all
+test:	all
 	cd test; ./tester ../$(EXE)
 
 .SUFFIXES:
 
 .PHONY: test
+

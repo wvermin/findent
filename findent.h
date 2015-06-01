@@ -1,25 +1,33 @@
 #ifndef FINDENT_H
 #define FINDENT_H
+
 using namespace std;
-void lexer_init();
+
+#include "line_prep.h"
+
 int yyparse();
 void yyerror(const char *c);
 extern "C" int yylex();
-void lexer_pop();
-void lexer_push(const std::string s, int start);
-void lexer_set(const string s, int start);
+void lexer_set(class line_prep p);
+void lexer_set(string s);
 
-extern int  lexer_position;
-extern bool stlabel_found;
-extern struct rstruct 
+string lexer_getname();
+string lexer_getstlabel();
+string lexer_geti_number();
+
+struct propstruct
 {
    int kind;
    string name;
-} rprop;
+   string label;
+   string dolabel;
+} ;
 
-#define O(x) {cerr << " [" << x << "] ";}
-#define Y O(yytext)
-// macro to activate or deactivate debug output:
-//#define D(x) {cerr << "WD: "<< __FILE__ <<":"<<__LINE__<<" "; x; cerr << endl; }
-#define D(x) ;
+propstruct is_it    (class line_prep p, int what);
+propstruct parseline(class line_prep p);
+
+void lexer_enable(int k);
+
+#include "debug.h"
 #endif
+

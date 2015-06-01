@@ -8,13 +8,13 @@ findent, what?
       continuation lines
       multi-statement lines
       labelled and unlabelled do-loops
-      if
-      if ... then ... endif
+      IF
+      IF ... THEN ... ENDIF
       where
-      forall
-      where constructs
-      forall constructs
-      etc. see findent.y for more details
+      FORALL
+      WHERE constructs
+      FORALL constructs
+      etc. see findent.cpp for details
 
    findent will remove trailing spaces and tabs, and convert
    tabs at the start of a line into spaces. By default, statement 
@@ -22,22 +22,28 @@ findent, what?
    indenting, findent will not alter the input, trying to
    preserve alignment. For example, the alignment in:
 
-      x = 3.0*a + 4*b +  &
-      &   2  *c +   y
+      X = 3.0*A + 4*B +  &
+      &   2  *C +   Y
 
    will remain intact.
 
    Optionally, findent will refactor single 'end' statements:
 
-   subroutine sub
-   ...
-   end
+      SUBROUTINE SUB
+      ...
+      END
 
    will become:
 
-   subroutine sub
-   ...
-   end subroutine sub
+      SUBROUTINE SUB
+      ...
+      END SUBROUTINE SUB
+
+   findent is space-insensitive, for example a line like:
+
+      REALFUN  CTIONFUN(X)
+
+   is recognized as the start of a function definition.
 
    Usage:
 
@@ -64,47 +70,113 @@ findent, why?
     - or do too much (destroying neatly aligned pieces of code)
     - or are for me too complicated to adapt and extend.
 
-   Therefore I decided, having enough time after my retirement, 
+   Therefore I decided, having some spare time after my retirement, 
    to try to build a Fortran indenter, based on flex and bison for
    readability, which does not touch in-line alignments.
    As programming language I chose C++, because of the availability
    of string, queue, stack and deque.
 
+   The 1.6 series of findent are using flex for nearly all the work.
+   These versions are not space-insensitive and can be fooled quite
+   easily, for example:
+
+      SUBROUTINE = 10
+
+   is incorrectly classified as the start of a subroutine, while 
+   it is, of course, a simple assignment to the variable 
+   'SUBROUTINE'.
+
+   I decided to rewrite the lexer and parser to correct this and other
+   failures. The new code is present in version 2.0 and higher.
+
+
 findent, how?
 
    So, here it is, a Fortran indenter to my taste, based on flex,
-   bison and g++. In hindsight, I could probably have left out
-   bison, but maybe bison can come in handy in the future of findent,
-   so I left it in.
+   bison and g++. 
+
+   The program performs the following major tasks:
+
+    - determine the input format: free or fixed
+    - glue together continuation lines removing comments
+    - pre-process the assembled input line, to make it better processable 
+        by flex: remove whitespace, substitute strings, hollerith's, statement
+	label and operators like .EQ. by special tokens
+    - perform a two-stage parsing:
+      - try if the line is an assignment
+      - if it is not an assignment, parse the line using as tokens the
+        Fortran keywords (SUBROUTINE, DO, ...)
+    - based on the outcome of the parse, determine the indentation
+    - output the lines that were read in to compose the full line,
+      trying to preserve the lay-out after the original leading white
+      space, optionally converting from fixed-form to free-form.
+      Also optionally, lines with a single END are completed as in:
+        END subroutine mysub
+      Preprocessor statements are accounted for to prevent that code like:
+
+        #ifdef one
+	SUBROUTINE ONE
+	#else
+	SUBROUTINE TWO
+	#endif
+
+       would result in a double SUBROUTINE indentation.
+       Moreover, track is kept of do-labels, in order to correctly indent
+       constructs like:
+
+	   DO 10 I=1,20
+	     X(I) = Y(I)
+	10 CONTINUE
+
 
    The code consists of the following files:
 
-    - Makefile: an makefile for usage with GNU make
-    - findent.h include file for some common functions and variables
-    - findent.h include file for the version number
-    - findent.l: input for flex
-    - findent.y: input for bison, also containing the main program
-    - wfindent:  a bash script that calls findent to indent
-                 Fortran sources in-place
+    - Makefile:      an makefile for usage with GNU make
+    - findent.h      include file for some common functions and variables
+    - version.h      include file for the version number
+    - lexer.l:       the lexer, written for flex
+    - parser.y:      the parser, written for bison
+    - findent.cpp:   reads the input and produces the output
+    - line_prep.cpp: converts a line Fortran code to something that
+                     can easily be digested by flex
+    - line_prep.h:   header file for line_prep.cpp
+    - wfindent:      a bash script that calls findent to indent
+                     Fortran sources in-place
 
-   findent.l
+   lexer.l
       
       This file contains the rules to recognize parts of Fortran 
-      statements. Since the parser sometimes calls the lexer to 
-      scan a line, while the lexer is already scanning another 
-      line, a push-pop scheme is implemented.  
+      statements or identifiers. Also a state is defined that is
+      used during the determination if the input is fixed or free
+      form.
 
-   findent.y
+   parser.y
 
-      This file contains the bison-parts, the main program
-      and some functions. The method is: read the input until
-      a complete fortran statement is collected. This statement
-      is presented to the lexer, and the indent for this or the 
-      next output line is determined. The original lines are
-      preserved and output with indent, trailing spaces and tabs
-      removed.
+      This file contains the parser which recognizes assignments and
+      Fortran keywords important for indentation.
+
+   findent.cpp
+
+      The main program, including a number of functions needed for 
+      glueing the continuation lines and constructing the output
+      file. 
+
+   line_prep.cpp
+
+      Defines a class used to pre-parse the full input line. I did not
+      succeed in training flex to properly and timely recognize statement
+      labels, strings ("this is a string"), hollerith's (7hfortran) and 
+      (possibly user defined) operators (.eq. , .my_op.). Therefore I 
+      created a class that takes care of these things and produces a line
+      that can easily be processed by flex.
 
 findent, usage?
+
+   Findent reads from standard input and writes to standard output:
+
+      findent < prog.f90 > prog1.f90
+
+   See also 'wfindent', later in this file.
 
    The command
 
@@ -131,15 +203,15 @@ findent, usage?
         example: -L72
 	limit input line length to 72 characters.
 
-   NOTE 1: findent knows about tab input: for fixed-format input,
-           the following transformations are made, examples:
+   NOTE 1: findent knows about tabbed input: for fixed-format input,
+           the following transformations are made:
 
-	   10<tab>i=   -> 10<sp><sp><sp><sp>i=
-	   <tab>1k*j   -> <sp><sp><sp><sp><sp>1k*j
-	   <tab>x=y    -> <sp><sp><sp><sp><sp><sp>x=y
+	   10<tab>I=   -> 10<sp><sp><sp><sp>I=
+	   <tab>1K*J   -> <sp><sp><sp><sp><sp>1K*J
+	   <tab>X=Y    -> <sp><sp><sp><sp><sp><sp>X=Y
 
 	   So, a tab followed by 1-9 is transformed to a continuation line,
-	   otherwize to a normal line, starting in column 7.
+	   otherwise to a normal line, starting in column 7.
 
    NOTE 2: findent silently ignores errors in the flags
 
@@ -162,7 +234,9 @@ augroup END
 
 wfindent
 
-  wfindent will indent Fortran source in-place.
+  wfindent, a bash shell script, indents Fortran source in-place, performing a
+  sanity check.
+  It accepts all flags that findent accepts.
 
   Usage:
 
@@ -172,7 +246,39 @@ wfindent
 
      wfindent -I4 *.f90
 
+Issues
+   
+   Since findent parses line-by-line, there are situations that are ambiguous:
+
+     F(X) = X**2        An assignment or a statement function?
+
+     ELSE WHERE          Is this an ELSEWHERE as in
+                        WHERE(X .EQ. 0)
+			   Y=10
+			ELSE WHERE
+			   Y=1
+			END WHERE
+
+			 or is it part of an IF construct with name WHERE:
+                        WHERE: IF (X .EQ. 0) THEN
+			          Y=10
+			       ELSE WHERE
+			          Y=1
+			       ENDIF WHERE
+
+			 Findent chooses the first possibility.
+
+   And there must be more ...
+   Luckily, it seems that these ambiguities do not affect indentation.
+
+   I tried to make findent Fortran-2008 compatible. This raised another
+   ambiguity, because findent is space-insensitive:
+
+   MODULE PROCEDURE MYPROC  Is this an module PROCEDUREMYPROC or
+                            an moduleprocedure MYPROC?
+			    Findent assumes the last.
+
 I am happy to receive comments, error reports and suggestions for
 improvements.
 
-Feb 2015, Willem Vermin, wvermin@gmail.com
+June 2015, Willem Vermin, wvermin@gmail.com

@@ -5,7 +5,56 @@
        common /xcomm/ p
   end blockdata pblockdata
 
+  block data qblockdata
+       common /qcomm/ p
+  end block data qblockdata
+  block data rblockdata
+       common /rcomm/ p
+  end block data
+
+  ! submodule and 'module subroutine' not recognized by gfortran 4.8.2
+#if 0
+  MODULE ancestor
+       INTEGER :: i
+
+       INTERFACE
+            MODULE SUBROUTINE sub1(arg1)
+                 INTEGER :: arg1
+            END SUBROUTINE
+
+            MODULE SUBROUTINE sub2(arg2)
+                 INTEGER :: arg2
+            END SUBROUTINE
+       END INTERFACE
+  END MODULE
+
+  SUBMODULE (ancestor) descendant
+       INTEGER :: j
+
+  CONTAINS
+       MODULE SUBROUTINE sub1(arg1)
+
+            INTEGER :: arg 1
+            arg1 = 1
+            i = 2
+            j = 3
+       END SUBROUTINE
+
+       MODULE PROCEDURE sub2
+            arg2 = 1
+       END procedure sub2
+  END submodule descendant
+
+#endif
+
   module some_module
+
+       type :: onetype
+            integer i
+       end type onetype
+       type name
+            character(22) :: n
+       end type
 
        complex ccc
        interface myinterface
@@ -13,7 +62,55 @@
                  real a,b
             end subroutine tx
        end interface
+       interface anotherinterface
+            module procedure funccc
+            !
+            !  trata
+            module procedure funcccc
+       end interface
+       abstract interface
+            character*8 recursive function func(x)
+                 real :: x
+            end function func
+       end interface
   contains
+
+       character*(8)  impure function funcc(x)
+            real :: x
+            funcc = 'a'
+       end function funcc
+       integer(kind=4) pure function funccc(x)
+            real, intent(in) :: x
+            funccc = 2
+       end function
+       type(onetype) function funcccc(x)
+            type(onetype) :: x
+            funcccc = x
+       end function
+       integer elemental function funcx(x)
+            integer, intent(in) :: x
+            funcx = x
+       end function
+       subroutine handleP(p)
+            class(*), intent(in) :: p
+
+            select type(p)
+              type is (character(len=*))
+                 write(*,*) len(p), ': ', p
+              class is (name)
+                 write(*,*) len(p%n), ': ', p%n
+              class default
+                 write(*,*) 'Unknown type'
+            end select
+       end subroutine
+       double complex function compx(x)
+            double complex x
+            compx = x
+       end function
+       complex recursive function compxx(x)
+            complex x
+            compxx = x
+       end function
        real function alpha_integral_function(x)
             implicit none
             real:: x
@@ -87,6 +184,12 @@
           continue
        enddo loop1
        end = 10
+       do while(i.eq.0)
+          continue
+       enddo
+       do concurrent(i=1:10)
+          x(i) = 0
+       enddo
 
        if ( a.eq.b .and. &
        c.eq.r) then
@@ -112,6 +215,7 @@
 
        x = 3.0*a + 4*b +   &
        &   2  *c +   y
+       assign 90 to i
        do i=1,20
           block
             do 90 k=1,90
@@ -160,6 +264,9 @@
        forall(i=1:4)  ! forall
             x(i)=6
        end forall
+       hop:forall(i=1:4)  ! forall
+            x(i)=6
+       end forall hop
 
        where(x.eq.0) x=5 ! where
        continue

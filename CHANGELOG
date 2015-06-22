@@ -1,3 +1,40 @@
+$Id: CHANGELOG 66 2015-06-22 11:44:54Z willem_vermin $
+findent-2.1:
+   wfindent.bat:
+      added
+   wfindent:
+      change from bash syntax to sh syntax
+   Jfindent.java:
+      added
+      added Oracle copyright text
+      finished ...
+      added file menu
+      added about menu
+      somewhat better menubar and better
+        texts for buttons and mor intuitive behaviour with
+	'show all options'
+      removed 'show all options' button, extend help
+        with this information
+      some trivia
+      when previewing a file, the scroll position
+        remains the same when trying different options
+      Make menu textArea's non-editable
+   CHANGELOG
+      added subversion Id to all files
+   Makefile:
+      add support for jfindent
+      fix minor bug: make -j works now
+   README:
+      add text for jfindent
+      revised the text
+   README.1st:
+      add text for jfindent
+      revised the text
+   INSTALL:
+      revised the text
+   lexer.l:
+      allow $ as non-first character in identifier
+
 findent-2.0:
    Complete new code
    Better parser

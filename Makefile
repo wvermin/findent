@@ -1,3 +1,4 @@
+# $Id: Makefile 66 2015-06-22 11:44:54Z willem_vermin $
 PROG      = findent
 
 ifdef MINGW
@@ -8,13 +9,23 @@ else
    EXE       = $(PROG)
 endif
 
+CHMOD     = chmod
+CP        = cp
+JAR       = jar
+JAVAC     = javac
+LD        = $(CXX)
+LEX       = flex
+RM        = rm
+SED       = sed
+YACC      = bison
+
 all:        $(EXE)
 
-LD        = $(CXX)
-YACC      = bison
-LEX       = flex
-SED       = sed
-RM        = rm
+jfindent jfindent.jar:  Jfindent.java
+	$(JAVAC)        Jfindent.java
+	$(JAR)   cfe $@ Jfindent Jfindent*.class
+	$(CHMOD) +x  $@
+	$(CP)        $@ jfindent.jar
 
 ifdef DEBUG
    CXXFLAGS = -Wall -g -O0 -DDEBUG
@@ -60,7 +71,9 @@ INCLUDES    = findent.h $(PARHFILE) debug.h version.h line_prep.h
 $(EXE): $(EXEOBJS)
 	$(LD) $(LDFLAGS) -o $@ $(EXEOBJS)
 
-$(PARCFILES): $(PARYFILE)
+$(PARHFILE): $(PARCFILE)
+
+$(PARCFILE): $(PARYFILE)
 	$(YACC) -o $@ --report=all --report-file=$(PARREPORTFILE) --defines=$(PARHFILE) $<
 
 $(LEXCFILES): $(LEXLFILE)
@@ -70,9 +83,10 @@ distclean:
 	$(RM) -f $(LEXCFILES) *.$(OBJSUFFIX) $(PARCFILES)
 	$(RM) -f $(PARPFILE) $(LEXPFILE) $(PARREPORTFILE)
 	$(RM) -f test/*.f.try.f test/a.out test/*.mod
+	$(RM) -f *.class
 
 clean: distclean
-	$(RM) -f $(PROG) $(EXE) findent.exe
+	$(RM) -f $(PROG) $(EXE) findent.exe jfindent jfindent.jar
 
 test:	all
 	cd test; ./tester ../$(EXE)

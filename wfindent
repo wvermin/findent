@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+# $Id: wfindent 65 2015-06-22 10:01:15Z willem_vermin $
 #
 # in-place indenting of fortran sources using findent
 # example:
@@ -28,20 +29,20 @@ while [ "$1" ] ; do
    esac
 done
 tmp=`mktemp`
-(( n=0 ))
+n=0
 while [ "$1" ] ; do
    if [ -e "$1" ] ; then
       norig=`wc -l < "$1"`
       # Check if file ends with newline. If not: correct number of lines
       lastchar="$(tail -c1 "$1" | od -a -An | tr -d ' ')"
       if [ "$lastchar" != "nl" ] ; then
-	 (( norig++ ))
+	 norig=`expr $norig + 1`
       fi
       cat "$1" | "$FINDENT" $fparms > $tmp
       nnew=`wc -l < $tmp`
       if [ $norig -eq $nnew ] ; then
 	 cp $tmp "$1"
-	 (( n++ ))
+	 n=`expr $n + 1`
       else
 	 echo "***** wfindent: error while converting $1, conversion abandoned"
       fi

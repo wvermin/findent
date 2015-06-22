@@ -1,4 +1,5 @@
 %{
+// $Id: lexer.l 66 2015-06-22 11:44:54Z willem_vermin $
 #include <iostream>
 #include <string>
 #include <stack>
@@ -117,8 +118,8 @@ ckey  call|close|common|continue|case|contains|cycle|class|codimension|contiguou
 }
 
 <state_identifier>{
-[[:alpha:]][[:alnum:]_]*  { D(O("IDENTIFIER");Y;);  lexer_name = yytext; return IDENTIFIER;  }
-[[:alpha:]][[:alnum:]_%]* { D(O("TIDENTIFIER");Y;); lexer_name = yytext; return TIDENTIFIER; }
+[[:alpha:]][[:alnum:]_$]*  { D(O("IDENTIFIER");Y;);  lexer_name = yytext; return IDENTIFIER;  }
+[[:alpha:]][[:alnum:]_$%]* { D(O("TIDENTIFIER");Y;); lexer_name = yytext; return TIDENTIFIER; }
 }
 
 <state_keyword>{

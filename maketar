@@ -1,6 +1,8 @@
 #!/bin/bash
+# $Id: maketar 67 2015-06-22 11:50:43Z willem_vermin $
 make clean                                         || exit 1
 make STATIC=1                                      || exit 1
+make jfindent                                      || exit 1
 version=`./findent -v | awk '{print $3}'`          || exit 1
 echo "version = $version"
 make distclean                                     || exit 1

@@ -1,3 +1,4 @@
+// $Id: findent.cpp 65 2015-06-22 10:01:15Z willem_vermin $
 #include <cstdio>
 #include <iostream>
 #include <stack>

@@ -1,50 +1,97 @@
 findent: indents/beautifies/converts Fortran sources
-         supports Fortran-2008
 
-NEW since 2.0: better parser
-               findent is space-insensitive
+ - findent supports Fortran-2008
+ - findent can convert from fixed form to free form
+ - binaries for Unix and Windows (findent and findent.exe respectively)
+ - wrapper for processing one or more files in one call available
+      for Unix and Windows (wfindent and wfindent.bat respectively)
+ - (g)vim users: findent can act as a plug-in to format your
+      edit file with the '=' command
+ - gui frontent available: jfindent and jfindent.jar 
+      (Java 1.7 or better required)
 
 Linux users: the tar ball contains a static linked executable, 
              probably you can use that:
              
              download findent-x.y.tgz
-	     tar xf findent-x.y.tgz
-	     cd findent-x.y
-	     install findent wfindent $HOME/bin
-	 or: sudo install findent wfindent /usr/local/bin
+	     $ tar xf findent-x.y.tgz
+	     $ cd findent-x.y
+	     $ install findent wfindent $HOME/bin
+	 or: $ sudo install findent wfindent /usr/local/bin
 
-	     If the precompiled version does not work,
-	     use the next recipe.
+	     If the pre compiled version does not work,
+	     ( try: $ ./findent -h )
+	     use the recipe under Unix-Linux users.
+
+	     The tar ball contains jfindent and jfindent.jar, these
+	     files are identical.
+
+	     you can call jfindent like this:
+	       $ java -jar jfindent.jar
+	     or, after installing binfmt-support, you can install
+	     jfindent:
+	           $ install jfindent  $HOME/bin
+	     or:   $ sudo install jfindent /usr/local/bin
+	     and call it like this:
+	           $ jfindent
 
 Unix-Linux users: 
     prerequisites: flex, bison, gnumake, g++
     make:    download findent-x.y.tgz
-             tar xf findent-x.y.z.tgz
-             cd findent-x.y
-	     make clean
-             make
-    install: install findent wfindent $HOME/bin
-       or    sudo install findent wfindent /usr/local/bin
+             $ tar xf findent-x.y.z.tgz
+             $ cd findent-x.y
+	     $ make clean
+             $ make
+    install: $ install findent wfindent $HOME/bin
+       or    $ sudo install findent wfindent /usr/local/bin
+
+    if you need to recompile jfindent (requires java jdk 1.7 or better):
+             $ make clean
+	     $ make jfindent
+
+    if necessary, remake the Windows executable (requires package mingw32):
+             $ make clean
+	     $ make MINGW=1 
+
 
 Windows users: download findent-x.y.zip
-               unzip findent-x.y.zip
-               copy findent.exe to your 'Program Files' folder
+               $ unzip findent-x.y.zip
+               $ copy findent.exe C:\WINDOWS
+	       $ copy wfindent.bat C:\WINDOWS
+	       $ copy findent.jar C:\WINDOWS
 
-Usage:    findent -h
-Examples: findent < in.f90 > out.f90
-          findent -i4 -Rr < in.f90 > out.f90
-  Unix-Linux: wfindent -i4 -Rr *.f90
+
+All systems:
+
+Usage:    $ findent -h
+Examples: $ findent < in.f90 > out.f90
+          $ findent -i4 -Rr < in.f > out.f90
+          $ wfindent -i4 -Rr *.f
+   gui:	  $ jfindent
+   or:    $ jfindent.jar
+   or:    $ java jfindent.jar
+
+   There exists an issue concerning garbled text when scrolling horizontally
+   with java programs in Ubuntu, maybe also in other environments.
+   I found this reference: 
+     https://bugs.launchpad.net/ubuntu/+source/openjdk-6/+bug/1032936
+   The solution proposed is:
+     export _JAVA_OPTIONS='-Dsun.java2d.xrender=true'
+   which works fine for me.
 
 (g)vim users:
-   Install findent, and add this to your .vimrc:
+   Install findent, and add the following to your .vimrc:
 
-   augroup fortfiletype
-     autocmd!
-     autocmd Filetype fortran :execute ":setl sw=3"
-     autocmd Filetype fortran :execute ":setl equalprg=findent\\ -Ia\\ -i3"
-     autocmd Filetype fortran :execute ":setl expandtab"
-   augroup END
+      augroup fortfiletype
+	autocmd!
+	autocmd Filetype fortran :execute ":setl sw=3"
+	autocmd Filetype fortran :execute ":setl equalprg=findent\\ -Ia\\ -i3"
+	autocmd Filetype fortran :execute ":setl expandtab"
+      augroup END
 
-   And read
+   Read
      :help =
    in vim or gvim.
+
+
+# $Id: README.1st 66 2015-06-22 11:44:54Z willem_vermin $

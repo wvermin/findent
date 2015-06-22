@@ -1,3 +1,5 @@
+For installation instructions and usage, see README.1st and INSTALL
+
 findent, what?
 
    findent is an indenter for Fortran programs, fixed and free format.
@@ -27,7 +29,7 @@ findent, what?
 
    will remain intact.
 
-   Optionally, findent will refactor single 'end' statements:
+   Optionally, findent will refactor optionally single 'end' statements:
 
       SUBROUTINE SUB
       ...
@@ -51,7 +53,7 @@ findent, what?
 
 findent, why?
 
-   There are a number of public domain Fortran indenters, for example:
+   There are a number of public domain Fortran indenting tools, for example:
 
    - vim is shipped with an simple Fortran indenter
    - emacs seems to have a Fortran indenter
@@ -63,7 +65,7 @@ findent, why?
 	Fortran code and contains a macro processor.
 	http://www.ifremer.fr/ditigo/molagnon/fortran90/
 
-   For me, the problem with these indenters/beautifiers is, that 
+   For me, the problem with these tools is, that 
 
     - they are too simple (for example, do not recognize labelled 
       do-loops) 
@@ -72,22 +74,9 @@ findent, why?
 
    Therefore I decided, having some spare time after my retirement, 
    to try to build a Fortran indenter, based on flex and bison for
-   readability, which does not touch in-line alignments.
+   readability.
    As programming language I chose C++, because of the availability
    of string, queue, stack and deque.
-
-   The 1.6 series of findent are using flex for nearly all the work.
-   These versions are not space-insensitive and can be fooled quite
-   easily, for example:
-
-      SUBROUTINE = 10
-
-   is incorrectly classified as the start of a subroutine, while 
-   it is, of course, a simple assignment to the variable 
-   'SUBROUTINE'.
-
-   I decided to rewrite the lexer and parser to correct this and other
-   failures. The new code is present in version 2.0 and higher.
 
 
 findent, how?
@@ -140,7 +129,7 @@ findent, how?
     - line_prep.cpp: converts a line Fortran code to something that
                      can easily be digested by flex
     - line_prep.h:   header file for line_prep.cpp
-    - wfindent:      a bash script that calls findent to indent
+    - wfindent:      a sh script that calls findent to indent
                      Fortran sources in-place
 
    lexer.l
@@ -215,22 +204,12 @@ findent, usage?
 
    NOTE 2: findent silently ignores errors in the flags
 
-findent and vim
+   Installation:
 
-   Take care that findent can be found via the PATH environment variable.
-   In your .vimrc add the following:
-
-augroup fortfiletype
-  autocmd!
-  autocmd Filetype fortran :execute ":setl sw=3"
-  autocmd Filetype fortran :execute ":setl equalprg=findent\\ -Ia\\ -i3"
-  autocmd Filetype fortran :execute ":setl expandtab"
-augroup END
-
-  Now, the standard formatting ( see :help = ) is for Fortran programs
-  replaced by findent. For example, to format the whole file, enter:
-
-     gg=G
+   Linux:
+      sudo install findent /usr/local/bin
+   Windows:
+      copy findent.exe C:\WINDOWS
 
 wfindent
 
@@ -245,6 +224,27 @@ wfindent
    example
 
      wfindent -I4 *.f90
+
+   Installation:
+     
+      sudo install wfindent /usr/local/bin
+
+
+wfindent.bat
+
+  wfindent.bat is for usage in the cmd shell of Windows and has the same
+  functionality as wfindent, described just above.
+
+  Installation:
+
+    copy wfindent.bat C:\WINDOWS
+
+
+jfindent or jfindent.jar
+
+  jfindent is a graphical front end for findent. It requires java >= 1.7.
+  Depending on your system, there are several ways to call it, see README.1st.
+
 
 Issues
    
@@ -282,3 +282,5 @@ I am happy to receive comments, error reports and suggestions for
 improvements.
 
 June 2015, Willem Vermin, wvermin@gmail.com
+
+# $Id: README 66 2015-06-22 11:44:54Z willem_vermin $

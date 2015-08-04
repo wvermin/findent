@@ -1,20 +1,21 @@
-#!/bin/bash
-# $Id: makezip 68 2015-06-22 14:26:03Z willem_vermin $
+#!/bin/sh
+# $Id: makezip 92 2015-08-04 03:08:54Z willem_vermin $
+./bootstrap                                                       || exit 1
+./configure --with-windows --with-jfindent --prefix=$PWD          || exit 1 
 make clean                                                        || exit 1
-make MINGW=1                                                      || exit 1
-make jfindent                                                     || exit 1
-version=`./findent.exe -v | awk '{print $3}'|tr -d '\r'`          || exit 1
+rm -rf bin
+make install-strip                                                || exit 1
+version=`bin/findent.exe -v | awk '{print $3}'|tr -d '\r'`        || exit 1
 echo "version = $version"
 cd ..                                                             || exit 1
 mkdir -p versions                                                 || exit 1
-cp findent/README.1st versions/README.txt                         || exit 1
-cp findent/README.1st versions/README                             || exit 1
-cp findent/findent.exe versions                                   || exit 1
-cp findent/jfindent.jar versions                                  || exit 1
-cp findent/wfindent.bat versions                                  || exit 1
+cp findent/README.windows versions/README.txt                     || exit 1
+cp findent/bin/findent.exe versions                               || exit 1
+cp findent/bin/jfindent.jar versions                              || exit 1
+cp findent/scripts/wfindent.bat versions                          || exit 1
 cd versions                                                       || exit 1
-unix2dos README.txt README                                        || exit 1
+unix2dos README.txt                                               || exit 1
 rm -f "findent-$version.zip"
 zip   "findent-$version.zip" findent.exe README.txt \
    jfindent.jar wfindent.bat                                      || exit 1
-rm -f findent.exe README.txt findent.jar
+rm -f findent.exe README.txt jfindent.jar wfindent.bat

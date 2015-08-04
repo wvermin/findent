@@ -16,8 +16,9 @@ Linux users: the tar ball contains a static linked executable,
              download findent-x.y.tgz
 	     $ tar xf findent-x.y.tgz
 	     $ cd findent-x.y
-	     $ install findent wfindent $HOME/bin
-	 or: $ sudo install findent wfindent /usr/local/bin
+	     $ cd bin
+	     $ install findent wfindent jfindent jfindent.jar $HOME/bin
+	 or: $ sudo install findent wfindent jfindent jfindent.jar /usr/local/bin
 
 	     If the pre compiled version does not work,
 	     ( try: $ ./findent -h )
@@ -37,21 +38,28 @@ Linux users: the tar ball contains a static linked executable,
 
 Unix-Linux users: 
     prerequisites: flex, bison, gnumake, g++
-    make:    download findent-x.y.tgz
+    make findent and wfindent:    
+             download findent-x.y.tgz
              $ tar xf findent-x.y.z.tgz
              $ cd findent-x.y
+	     $ ./configure --prefix=<Your installation directory, default /usr/local>
 	     $ make clean
              $ make
-    install: $ install findent wfindent $HOME/bin
-       or    $ sudo install findent wfindent /usr/local/bin
+	     $ make install
 
-    if you need to recompile jfindent (requires java jdk 1.7 or better):
+    if you need to recompile jfindent (requires java jdk 1.6 or better):
+	     $ ./configure --with-jfindent
              $ make clean
-	     $ make jfindent
+	     $ make
+	     $ make install
 
     if necessary, remake the Windows executable (requires package mingw32):
+	     $ ./configure --with-windows
              $ make clean
-	     $ make MINGW=1 
+	     $ make
+
+	findent.exe is available in src/
+	wfindent.bat is available in scripts/
 
 
 Windows users: download findent-x.y.zip
@@ -94,4 +102,4 @@ Examples: $ findent < in.f90 > out.f90
    in vim or gvim.
 
 
-# $Id: README.1st 66 2015-06-22 11:44:54Z willem_vermin $
+# $Id: README.1st 81 2015-07-30 12:34:19Z willem_vermin $

@@ -1,0 +1,53 @@
+#!/bin/sh
+# $Id: wfindent 92 2015-08-04 03:08:54Z willem_vermin $
+#
+# in-place indenting of fortran sources using findent
+# example:
+#   wfindent -i4 *.f90
+# 
+# A check is made if the output file has the same number of lines
+# as the input file.
+# Only if this check succeeds, the file is overwritten, 
+# otherwize an error message is printed.
+#
+
+FINDENT=findent
+parms=$( getopt -o a:b:c:C:d:e:E:f:F:hHi:I:j:l:L:m:o:qr:R:s:t:vw:x: -- "$@" )
+if [ $? -ne 0 ] ; then
+   exit 1
+fi
+eval set -- "$parms"
+fparms=""
+while [ "$1" ] ; do
+   case "$1" in
+      --) shift
+	  break
+	  ;;
+      *) fparms="$fparms $1" 
+	  shift
+	  ;;
+   esac
+done
+tmp=`mktemp`
+n=0
+while [ "$1" ] ; do
+   if [ -e "$1" ] ; then
+      norig=`wc -l < "$1"`
+      # Check if file ends with newline. If not: correct number of lines
+      lastchar="$(tail -c1 "$1" | od -a -An | tr -d ' ')"
+      if [ "$lastchar" != "nl" ] ; then
+	 norig=`expr $norig + 1`
+      fi
+      cat "$1" | "$FINDENT" $fparms > $tmp
+      nnew=`wc -l < $tmp`
+      if [ $norig -eq $nnew ] ; then
+	 cp $tmp "$1"
+	 n=`expr $n + 1`
+      else
+	 echo "***** wfindent: error while converting $1, conversion abandoned"
+      fi
+   fi
+   shift
+done
+echo "wfindent: indented files: $n"
+rm $tmp

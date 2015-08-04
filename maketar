@@ -1,9 +1,20 @@
 #!/bin/bash
-# $Id: maketar 67 2015-06-22 11:50:43Z willem_vermin $
+# $Id: maketar 91 2015-08-03 15:30:25Z willem_vermin $
+set -x
+./bootstrap                                        || exit 1
+./configure                                        || exit 1
+make maintainer-clean                              || exit 1
+rm -rf bin
+./bootstrap                                        || exit 1
+export CXX='g++ -m32 -static'                      || exit 1
+./configure --prefix=$PWD     --with-jfindent      || exit 1
 make clean                                         || exit 1
-make STATIC=1                                      || exit 1
-make jfindent                                      || exit 1
-version=`./findent -v | awk '{print $3}'`          || exit 1
+make install-strip                                 || exit 1
+unset CXX                                          || exit 1
+./configure --with-windows --prefix=$PWD           || exit 1
+make clean                                         || exit 1
+make install-strip                                 || exit 1
+version=`bin/findent -v | awk '{print $3}'`        || exit 1
 echo "version = $version"
 make distclean                                     || exit 1
 cd ..                                              || exit 1

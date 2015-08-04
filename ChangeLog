@@ -1,0 +1,244 @@
+$Id: ChangeLog 91 2015-08-03 15:30:25Z willem_vermin $
+jfindent 1.1:
+	jfindent now writes config file after reading (succesfull
+	or not) and after clicking 'Quit'
+	added 'recent folders' menu item under 'File'
+	some trivial changes
+	added menuitem 'File->Save configuration'
+version 2.2:
+	convert to autoconf
+findent-2.2:
+	Makefile: add support for creating 32 bit executable
+	findent.cpp: -H options produces man page
+	findent.cpp: better support for preprocessor lines with
+	             continuation line
+	src/Makefile.am configure.ac:
+		take care that no manpage is made when compiling for
+		windows
+
+findent-2.1:
+   wfindent.bat:
+      added
+   wfindent:
+      change from bash syntax to sh syntax
+   Jfindent.java:
+      added
+      added Oracle copyright text
+      finished ...
+      added file menu
+      added about menu
+      somewhat better menubar and better
+        texts for buttons and mor intuitive behaviour with
+	'show all options'
+      removed 'show all options' button, extend help
+        with this information
+      some trivia
+      when previewing a file, the scroll position
+        remains the same when trying different options
+      Make menu textArea's non-editable
+   CHANGELOG
+      added subversion Id to all files
+   Makefile:
+      add support for jfindent
+      fix minor bug: make -j works now
+   README:
+      add text for jfindent
+      revised the text
+   README.1st:
+      add text for jfindent
+      revised the text
+   INSTALL:
+      revised the text
+   lexer.l:
+      allow $ as non-first character in identifier
+
+findent-2.0:
+   Complete new code
+   Better parser
+   Space insensitive
+   Fortran 2008 compliant
+
+findent-1.6.5:
+   Makefile:
+      removed -g flag
+      created 'zip' and 'tar' targets
+   findent.y:
+      added code and help text for the -L flag
+   wfindent:
+      added -L flag
+   README:
+      replaced NOTE 1, it covers now tab input.
+   Added scripts 'makezip' and 'maketar'
+   Added README.1st
+
+findent-1.6.4:
+   findent.y:
+      determine if input comes from terminal, warn user
+      and accept a single dot ('.') as end-of file
+      Extended usage() with examples
+
+findent-1.6.3:
+   findent.l, findent.y, findent.h:
+      implement refactor routines
+   findent.y:
+      bug fixes for fixed form continuation lines
+         
+findent-1.6.2:
+      regcognise tabbed source: 
+          <tab>[1-9] 
+          is recognised as a continuation line
+      fixed bug when tab follows label: ltab2sp now takes in acccount 
+          a statement label
+
+findent-1.6.1:
+   findent.l: 
+      get rid of flex message: "warning, dangerous trailing context"
+                by slight redefinition of statement-label
+              simplified else, elseif, elsewhere recognition
+   findent.y: 
+      recognize debug lines in fixed format ('d' or 'D' in colimn 1),
+         treating them as comment lines.
+	 Special treatment with -ofree: debug line as:
+	    'd        print *,"debug",i'
+	 will be output after conversion to free format as:
+	    '!d        print *,"debug",i'
+
+findent-1.6.0:
+   Makefile:
+      slight change in rule to make .o from .cpp
+   wfindent:
+      added
+   findent.l:
+      fixed recognition of elseif by better definition of {nc}
+   README:
+      describe wfindent
+   INSTALL:
+      install wfindent
+
+findent-1.5.9:
+   findent.l:
+      recognize 'label :' ('label:' was already recognized)
+      recognize false type as in 'typecode = 10'
+      better discrimination between fixed and free
+   findent.y:
+      recognize '123 enddo', do not double-de-indent
+
+findent-1.5.8:
+   findent.y:
+      fill indent-stack from 0 to start_indent with the default indent
+   findent.l: 
+      support for construct name in 'do' 'if' 'select' 'block' 
+      recognize some forms of false end
+      recognize 'abstract type' and 'abstract interface'
+
+findent-1.5.7
+   findent.l:
+      recognize strings in 'rest' state
+      more precise definition of function
+      recognize 'endprogram'
+      do not confuse 'do (i) =' witha do statement
+   findent.y:
+      fixed form: put an ' ' as possible separator between label and code
+
+
+findent-1.5.6
+   Makefile:
+      added support for cross compiling to windows:
+         make clean
+	 make MINGW=1
+      creates a windows 32 bit findent.exe
+   findent.l:
+      ticket 1: 
+         more precise recognition of function statement
+
+findent-1.5.5
+   findent.y:
+      added support for conditional preprocessor statements. Example:
+      #ifdef USEMPI
+      subroutine mysub(a,b)
+      real a,b
+      #else
+      subroutine mysub(a)
+      real a
+      #endif
+      end subroutine mysub
+
+      indents correctly now.
+
+findent-1.5.4
+   findent.y: 
+      recognize ' x = 3 & ! comment' as a line needing a continuation
+      preprocessor statements are handled on ad-hoc basis
+   findent.l:
+      preprocessor statements are not recognized any more
+
+findent-1.5.3
+   findent.y:
+      add fixed-to-free: add check if this is a preprocessor line
+      fixed-to-free: fixed fortran can have a trailing comment,
+         starting with !, and have a continuation line.
+         This is fixed.
+      fixed-to-free: fixed bad handling of otherwise empty continuation lines
+   findent.l: 
+      better recognition of fixed and free
+      recognize 'integer(kind=8) function func1(a,b)' as a function
+              Thanks to Dusan Jovic
+      removed 'select' from definition of explicitly not-handled keywords
+
+
+findent-1.5.2
+   findent.l:
+      let lexer recognise 'type, public :: mytype' Thanks to Dusan Jovic
+findent-1.5.1
+   findent.l:
+      added some patterns to distinguish between fixed and fixed format
+   findent.y:
+      fix for files that do not end with \n
+      fix for correct indenting continuation line while converting 
+findent-1.5
+   README:
+      add recipe to use equalprg in vim
+   findent.y:
+      add ';' in to rules to quiet bison-2.5
+      fix placement of preprocessor lines if they are in a 
+         continuation suite
+      enlarge number of lines to be considered when determining
+         fixed or free from 10 to 1000
+   findent.l:
+      fix definition of {neol}
+
+findent-1.4
+   findent.y:
+      make sure that string(n,' ') is always called with n >= 0
+findent-1.3
+   version.h:
+      set version to 1.3
+   findent.h:
+      add definition for lexer_set()
+   findent.l:
+      add lexer_set()
+      in lexer_init(): change lexer_push() to lexer_set()
+   findent.y:
+      replace lexer_pop()...lexer_push() sequences by lexer_set()
+   minor code cleaning.
+   Makefile: 
+     'test' dependent of 'all'
+     'clean' also cleans test directory
+   test/progfixed_dos.f:
+      add -ifixed in first line
+   test/progfree_dos.f:
+      add -ifree in first line
+   README:
+      minor adaptations
+   CHANGELOG added
+
+findent-1.2
+   findent.l:
+      fix error in lexer_push
+
+findent-1.1
+   findent.l:
+      fix error in lexer_pop
+
+findent-1.0
+   initial release

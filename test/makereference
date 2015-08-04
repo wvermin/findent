@@ -1,5 +1,0 @@
-#!/bin/bash
-echo "creating reference"
-   for i in *.try.f ; do
-   cp $i $i.ref
-done

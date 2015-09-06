@@ -82,11 +82,7 @@ DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
 	$(srcdir)/config.h.in COPYING compile depcomp install-sh \
 	missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_bison.m4 \
-	$(top_srcdir)/m4/ax_prog_flex.m4 \
-	$(top_srcdir)/m4/ax_prog_javac.m4 \
-	$(top_srcdir)/m4/ax_prog_javac_works.m4 \
-	$(top_srcdir)/m4/ax_try_compile_java.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_flex.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -224,7 +220,6 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-JAVAC = @JAVAC@
 LDFLAGS = @LDFLAGS@
 LEX = @LEX@
 LEXLIB = @LEXLIB@
@@ -296,7 +291,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
-SUBDIRS = src java scripts
+SUBDIRS = src scripts
 MAINTAINERCLEANFILES = bin/*
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive

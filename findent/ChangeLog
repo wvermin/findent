@@ -1,4 +1,18 @@
-$Id: ChangeLog 91 2015-08-03 15:30:25Z willem_vermin $
+$Id: ChangeLog 116 2015-08-23 14:10:28Z willem_vermin $
+findent-2.3:
+	jfindent: is now in a separate folder: ../jfindent
+	   with it's on autoconf setup
+	Makefile.am: added $(DESTDIR) for the man page
+	   adapted to new jfindent location
+	findent.cpp: fix bug in coverting fixed to free when dealing
+	   with a preprocessor continuation
+	configure.ac: explicitly include macros in m4, do not
+	   use AC_CONFIG_MACRO_DIR, this seems not to work
+	   in Debian wheezy
+	repaired make check. Send log file to stdout.
+	maketar, makezip: removed making jfindent.jar
+	configure.ac: use standard AC_PROG_YACC
+
 jfindent 1.1:
 	jfindent now writes config file after reading (succesfull
 	or not) and after clicking 'Quit'

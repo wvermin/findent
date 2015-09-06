@@ -242,9 +242,8 @@ wfindent.bat
 
 jfindent or jfindent.jar
 
-  jfindent is a graphical front end for findent. It requires java >= 1.7.
-  Depending on your system, there are several ways to call it, see README.1st.
-
+  jfindent is a graphical front end for findent, and is available as
+  a separate package
 
 Issues
    
@@ -283,4 +282,4 @@ improvements.
 
 June 2015, Willem Vermin, wvermin@gmail.com
 
-# $Id: README 66 2015-06-22 11:44:54Z willem_vermin $
+# $Id: README 116 2015-08-23 14:10:28Z willem_vermin $

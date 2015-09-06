@@ -354,3 +354,18 @@ END ASSOCIATE
 #endif
               &+ 6
                                                    end
+
+subroutine multiline_preproc
+#ifdef one\   
+two\
+three
+do i=1,10
+#elif \
+defined(q)
+do i=1,5
+#else
+do i=1,7
+#endif
+x=x+4
+enddo
+   end

@@ -1,4 +1,4 @@
-// $Id: findent.cpp 92 2015-08-04 03:08:54Z willem_vermin $
+// $Id: findent.cpp 94 2015-08-06 06:38:04Z willem_vermin $
 #include <cstdio>
 #include <iostream>
 #include <stack>
@@ -1252,10 +1252,25 @@ void output_line()
 
 	       needamp="";
 	       deque<string>::iterator it= lines.begin();
+               char prevlchar = 0;
+               bool inpreproc = 0;
 	       while(it != lines.end())
 	       {
+                  // if previous lastchar was '\\', do not consider this 
+                  // line, if we are in a preprocessor statement
+                  D(O(*it);O(firstchar(*it));O(lastchar(*it));O(prevlchar);O(inpreproc););
+                  if (inpreproc && prevlchar == '\\')
+                  {
+                     D(O("skipit"););
+                     prevlchar = lastchar(*it);
+                     *it++;
+                     continue;
+                  }
+                  prevlchar = lastchar(*it);
+                  inpreproc = (firstchar(*it) == '#');
 		  if (!isfixedcmt(*it++))
 		  {
+                     D(O("!isfixedcmt"););
 		     needamp =  '&';
 		     // we have to put an '&' at the end of the line,
 		     // but what if the line ends in a ! comment, as in

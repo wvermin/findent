@@ -1201,8 +1201,3 @@ AC_SUBST([am__tar])
 AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
-m4_include([m4/ax_prog_bison.m4])
-m4_include([m4/ax_prog_flex.m4])
-m4_include([m4/ax_prog_javac.m4])
-m4_include([m4/ax_prog_javac_works.m4])
-m4_include([m4/ax_try_compile_java.m4])

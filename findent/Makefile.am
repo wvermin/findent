@@ -1,3 +1,3 @@
 AUTOMAKE_OPTIONS = gnu
-SUBDIRS = src java scripts
+SUBDIRS = src scripts
 MAINTAINERCLEANFILES = bin/*

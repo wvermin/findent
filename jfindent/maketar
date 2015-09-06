@@ -1,0 +1,22 @@
+#!/bin/bash
+# $Id: maketar 101 2015-08-10 12:17:08Z willem_vermin $
+./bootstrap                                         || exit 1
+./configure                                         || exit 1
+make maintainer-clean                               || exit 1
+rm -rf bin share
+./bootstrap                                         || exit 1
+./configure --prefix=$PWD                           || exit 1
+make clean                                          || exit 1
+make install                                        || exit 1
+echo '#/bin/bash' > bin/jfindent                    || exit 1
+echo 'java -jar share/jfindent/lib/jfindent.jar' >> bin/jfindent    || exit 1
+version=`./getversion`                              || exit 1
+echo "version = $version"
+make distclean                                      || exit 1
+cd ..                                               || exit 1
+mkdir -p versions                                   || exit 1
+cd versions                                         || exit 1
+rm -rf "jfindent-$version"
+cp -r ../jfindent "jfindent-$version"               || exit 1
+tar zcf "jfindent-$version.tgz" "jfindent-$version" || exit 1
+rm -rf "jfindent-$version"

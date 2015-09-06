@@ -7,8 +7,7 @@ findent: indents/beautifies/converts Fortran sources
       for Unix and Windows (wfindent and wfindent.bat respectively)
  - (g)vim users: findent can act as a plug-in to format your
       edit file with the '=' command
- - gui frontent available: jfindent and jfindent.jar 
-      (Java 1.7 or better required)
+ - gui frontent available in a separate package: jfindent
 
 Linux users: the tar ball contains a static linked executable, 
              probably you can use that:
@@ -17,24 +16,12 @@ Linux users: the tar ball contains a static linked executable,
 	     $ tar xf findent-x.y.tgz
 	     $ cd findent-x.y
 	     $ cd bin
-	     $ install findent wfindent jfindent jfindent.jar $HOME/bin
-	 or: $ sudo install findent wfindent jfindent jfindent.jar /usr/local/bin
+	     $ install findent wfindent $HOME/bin
+	 or: $ sudo install findent wfindent /usr/local/bin
 
 	     If the pre compiled version does not work,
 	     ( try: $ ./findent -h )
 	     use the recipe under Unix-Linux users.
-
-	     The tar ball contains jfindent and jfindent.jar, these
-	     files are identical.
-
-	     you can call jfindent like this:
-	       $ java -jar jfindent.jar
-	     or, after installing binfmt-support, you can install
-	     jfindent:
-	           $ install jfindent  $HOME/bin
-	     or:   $ sudo install jfindent /usr/local/bin
-	     and call it like this:
-	           $ jfindent
 
 Unix-Linux users: 
     prerequisites: flex, bison, gnumake, g++
@@ -45,12 +32,6 @@ Unix-Linux users:
 	     $ ./configure --prefix=<Your installation directory, default /usr/local>
 	     $ make clean
              $ make
-	     $ make install
-
-    if you need to recompile jfindent (requires java jdk 1.6 or better):
-	     $ ./configure --with-jfindent
-             $ make clean
-	     $ make
 	     $ make install
 
     if necessary, remake the Windows executable (requires package mingw32):
@@ -75,17 +56,6 @@ Usage:    $ findent -h
 Examples: $ findent < in.f90 > out.f90
           $ findent -i4 -Rr < in.f > out.f90
           $ wfindent -i4 -Rr *.f
-   gui:	  $ jfindent
-   or:    $ jfindent.jar
-   or:    $ java jfindent.jar
-
-   There exists an issue concerning garbled text when scrolling horizontally
-   with java programs in Ubuntu, maybe also in other environments.
-   I found this reference: 
-     https://bugs.launchpad.net/ubuntu/+source/openjdk-6/+bug/1032936
-   The solution proposed is:
-     export _JAVA_OPTIONS='-Dsun.java2d.xrender=true'
-   which works fine for me.
 
 (g)vim users:
    Install findent, and add the following to your .vimrc:
@@ -102,4 +72,4 @@ Examples: $ findent < in.f90 > out.f90
    in vim or gvim.
 
 
-# $Id: README.1st 81 2015-07-30 12:34:19Z willem_vermin $
+# $Id: README.1st 120 2015-08-24 14:27:19Z willem_vermin $

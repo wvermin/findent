@@ -1,0 +1,15 @@
+Source: findent
+Section: misc
+Priority: optional
+Maintainer: Willem Vermin <wvermin@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Standards-Version: 3.9.4
+Homepage: http://findent.sourceforge.net
+#Vcs-Git: git://git.debian.org/collab-maint/findent.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/findent.git;a=summary
+
+Package: jfindent
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, findent (>= 1.0)
+Description:  Graphical frontend for findent
+ Written in java-1.6

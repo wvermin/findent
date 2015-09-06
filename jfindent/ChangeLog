@@ -1,0 +1,22 @@
+$Id: ChangeLog 97 2015-08-09 11:22:11Z willem_vermin $
+jfindent-1.2:
+	jfindent is now an executable script that
+	  calls java -jar <location of jfinent.jar>
+	  jfindent.jar is installed in $datadir/jfindent/
+	jfindent.java: adapted to java-1.6
+	  Alas, no compilation possible with gcj: 
+	    FileNameExtensionFilter not available
+	Added debian/ , makedeb and getversion to create 
+	   Debian package
+	Added config->choose font ...
+	configure.ac:
+	  added AC_ARG_VAR for JAVAC and JAVA
+	m4/ax_java_works.m4 : some code cleanup, see source
+	added m4/ax_prog_jar.m4
+	added m4/ax_jar_works.m4
+	created maketar and makezip
+	Makefile.am: create jfindent.1, not jfindent.1.gz
+
+jfindent-1.1: 
+	initial release
+

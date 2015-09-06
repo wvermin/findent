@@ -1,0 +1,14 @@
+jfindent.jar is a graphical frontend for findent.exe
+findent.exe (in a separate package) indents Fortran sources
+
+Jfindent requires Java version >= 1.6 and needs findent.exe to
+be installed.
+
+Copy jfindent.jar to your Desktop, or copy jfindent.jar to
+a suitable folder and create a shortcut on your Desktop.
+
+Jfindent should start after double-clicking the icon.
+
+If findent.exe is installed in a folder that is not present
+in PATH, you can tell jfindent where to find findent.exe:
+menu Config -> Choose location of findent ...

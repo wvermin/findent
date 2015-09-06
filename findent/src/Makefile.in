@@ -81,11 +81,7 @@ subdir = src
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp $(top_srcdir)/test-driver
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_bison.m4 \
-	$(top_srcdir)/m4/ax_prog_flex.m4 \
-	$(top_srcdir)/m4/ax_prog_javac.m4 \
-	$(top_srcdir)/m4/ax_prog_javac_works.m4 \
-	$(top_srcdir)/m4/ax_try_compile_java.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_flex.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -391,7 +387,6 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-JAVAC = @JAVAC@
 LDFLAGS = @LDFLAGS@
 LEX = @LEX@
 LEXLIB = @LEXLIB@
@@ -915,7 +910,6 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
-@MAKEMAN_FALSE@install-data-hook:
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
@@ -939,8 +933,7 @@ info: info-am
 info-am:
 
 install-data-am: install-man
-	@$(NORMAL_INSTALL)
-	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
+
 install-dvi: install-dvi-am
 
 install-dvi-am:
@@ -988,22 +981,21 @@ uninstall-am: uninstall-binPROGRAMS uninstall-man
 
 uninstall-man: uninstall-man1
 
-.MAKE: check-am install-am install-data-am install-strip
+.MAKE: check-am install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
 	clean-binPROGRAMS clean-generic cscopelist-am ctags ctags-am \
 	distclean distclean-compile distclean-generic distclean-tags \
 	distdir dvi dvi-am html html-am info info-am install \
 	install-am install-binPROGRAMS install-data install-data-am \
-	install-data-hook install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-man1 install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am recheck tags tags-am \
-	uninstall uninstall-am uninstall-binPROGRAMS uninstall-man \
-	uninstall-man1
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-man1 install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am recheck tags tags-am uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-man uninstall-man1
 
 
 $(PARHFILE): $(PARCFILE)
@@ -1016,9 +1008,6 @@ $(LEXCFILES): $(LEXLFILE)
 
 @MAKEMAN_TRUE@findent.1: findent
 @MAKEMAN_TRUE@	./findent -H > $@
-
-@MAKEMAN_TRUE@install-data-hook:
-@MAKEMAN_TRUE@	gzip -f $(mandir)/man1/$(man1_MANS)
 
 findent.o: parser.h
 

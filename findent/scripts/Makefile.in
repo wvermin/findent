@@ -79,11 +79,7 @@ POST_UNINSTALL = :
 subdir = scripts
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_bison.m4 \
-	$(top_srcdir)/m4/ax_prog_flex.m4 \
-	$(top_srcdir)/m4/ax_prog_javac.m4 \
-	$(top_srcdir)/m4/ax_prog_javac_works.m4 \
-	$(top_srcdir)/m4/ax_try_compile_java.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_flex.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -173,7 +169,6 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-JAVAC = @JAVAC@
 LDFLAGS = @LDFLAGS@
 LEX = @LEX@
 LEXLIB = @LEXLIB@
@@ -450,8 +445,7 @@ info: info-am
 info-am:
 
 install-data-am: install-man
-	@$(NORMAL_INSTALL)
-	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
+
 install-dvi: install-dvi-am
 
 install-dvi-am:
@@ -498,24 +492,20 @@ uninstall-am: uninstall-binSCRIPTS uninstall-man
 
 uninstall-man: uninstall-man1
 
-.MAKE: install-am install-data-am install-strip
+.MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic cscopelist-am \
 	ctags-am distclean distclean-generic distdir dvi dvi-am html \
 	html-am info info-am install install-am install-binSCRIPTS \
-	install-data install-data-am install-data-hook install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-man1 install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags-am \
-	uninstall uninstall-am uninstall-binSCRIPTS uninstall-man \
-	uninstall-man1
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-man1 \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic pdf pdf-am ps ps-am tags-am uninstall \
+	uninstall-am uninstall-binSCRIPTS uninstall-man uninstall-man1
 
-
-install-data-hook:
-	gzip -f $(mandir)/man1/$(man1_MANS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

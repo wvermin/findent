@@ -1,0 +1,18 @@
+#!/bin/sh
+# $Id: makezip 92 2015-08-04 03:08:54Z willem_vermin $
+./bootstrap                                                       || exit 1
+./configure --prefix=$PWD                                         || exit 1 
+make clean                                                        || exit 1
+rm -rf bin share
+make install                                                      || exit 1
+version=`./getversion`                                            || exit 1
+echo "version = $version"
+cd ..                                                             || exit 1
+mkdir -p versions                                                 || exit 1
+cp jfindent/README.windows versions/README.txt                    || exit 1
+cp jfindent/share/jfindent/lib/jfindent.jar versions              || exit 1
+cd versions                                                       || exit 1
+unix2dos README.txt                                               || exit 1
+rm -f "jfindent-$version.zip"
+zip   "jfindent-$version.zip" README.txt jfindent.jar             || exit 1
+rm -f README.txt jfindent.jar

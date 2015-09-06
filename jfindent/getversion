@@ -1,0 +1,2 @@
+#!/bin/bash
+grep -w 'VERSION =' src/Jfindent.java | awk '{print $6}' | tr -d '";'

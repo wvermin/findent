@@ -1,21 +1,19 @@
 #!/bin/sh
-# $Id: makezip 92 2015-08-04 03:08:54Z willem_vermin $
+# $Id: makezip 116 2015-08-23 14:10:28Z willem_vermin $
 ./bootstrap                                                       || exit 1
-./configure --with-windows --with-jfindent --prefix=$PWD          || exit 1 
+./configure --with-windows --prefix=$PWD                          || exit 1 
 make clean                                                        || exit 1
 rm -rf bin
 make install-strip                                                || exit 1
-version=`bin/findent.exe -v | awk '{print $3}'|tr -d '\r'`        || exit 1
+version=`./getversion`                                            || exit 1
 echo "version = $version"
 cd ..                                                             || exit 1
 mkdir -p versions                                                 || exit 1
 cp findent/README.windows versions/README.txt                     || exit 1
 cp findent/bin/findent.exe versions                               || exit 1
-cp findent/bin/jfindent.jar versions                              || exit 1
 cp findent/scripts/wfindent.bat versions                          || exit 1
 cd versions                                                       || exit 1
 unix2dos README.txt                                               || exit 1
 rm -f "findent-$version.zip"
-zip   "findent-$version.zip" findent.exe README.txt \
-   jfindent.jar wfindent.bat                                      || exit 1
-rm -f findent.exe README.txt jfindent.jar wfindent.bat
+zip   "findent-$version.zip" findent.exe README.txt wfindent.bat  || exit 1
+rm -f findent.exe README.txt wfindent.bat

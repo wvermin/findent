@@ -46,6 +46,10 @@
 #   Macro released by the Autoconf Archive. When you make and distribute a
 #   modified version of the Autoconf Macro, you may extend this special
 #   exception to the GPL to apply to your modified version as well.
+#
+#   Willem Vermin: changed this a bit, so that Test.uue is created outside
+#     dnl AC_CACHE_CHECK([if uudecode can decode base 64 file] ...
+#     dnl and got rid of changequote using @<:@@:>@ for []
 
 #serial 9
 
@@ -53,7 +57,6 @@ AU_ALIAS([AC_PROG_JAVA_WORKS], [AX_PROG_JAVA_WORKS])
 AC_DEFUN([AX_PROG_JAVA_WORKS], [
 AC_PATH_PROG(UUDECODE, uudecode, [no])
 if test x$UUDECODE != xno; then
-AC_CACHE_CHECK([if uudecode can decode base 64 file], ac_cv_prog_uudecode_base64, [
 dnl /**
 dnl  * Test.java: used to test if java compiler works.
 dnl  */
@@ -78,6 +81,7 @@ AAAABQO4AAyxAAAAAQAIAAAACgACAAAACgAEAAsAAQAPABAAAQAHAAAAIQAB
 AAEAAAAFKrcAErEAAAABAAgAAAAKAAIAAAAEAAQABAABABMAAAACABQ=
 ====
 EOF
+AC_CACHE_CHECK([if uudecode can decode base 64 file], ac_cv_prog_uudecode_base64, [
 if $UUDECODE Test.uue; then
         ac_cv_prog_uudecode_base64=yes
 else
@@ -86,8 +90,13 @@ else
         cat Test.uue >&AS_MESSAGE_LOG_FD
         ac_cv_prog_uudecode_base64=no
 fi
-rm -f Test.uue])
 fi
+
+if test x$ac_cv_prog_uudecode_base64 = xyes; then
+   rm -f Test.class
+   $UUDECODE Test.uue
+fi
+rm -f Test.uue])
 if test x$ac_cv_prog_uudecode_base64 != xyes; then
         rm -f Test.class
         AC_MSG_WARN([I have to compile Test.class from scratch])
@@ -102,15 +111,13 @@ AC_CACHE_CHECK(if $JAVA works, ac_cv_prog_java_works, [
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 TEST=Test
-changequote(, )dnl
 cat << \EOF > $JAVA_TEST
 /* [#]line __oline__ "configure" */
 public class Test {
-public static void main (String args[]) {
+public static void main (String args@<:@@:>@) {
         System.exit (0);
 } }
 EOF
-changequote([, ])dnl
 if test x$ac_cv_prog_uudecode_base64 != xyes; then
         if AC_TRY_COMMAND($JAVAC $JAVACFLAGS $JAVA_TEST) && test -s $CLASS_TEST; then
                 :

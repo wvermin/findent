@@ -1,4 +1,4 @@
-// $Id: findent.cpp 94 2015-08-06 06:38:04Z willem_vermin $
+// $Id: findent.cpp 121 2015-09-09 12:56:01Z willem_vermin $
 #include <cstdio>
 #include <iostream>
 #include <stack>
@@ -1466,6 +1466,7 @@ void usage(const bool doman)
    manout("-v","prints findent version",                                  doman);
    manout("-q","guess free or fixed, prints 'fixed' or 'free' and exits", doman);
    manout("-l","(0/1) 1: statement labels to start of line (default:1)",  doman);
+   manout("  ","      (only for free format)",                            doman);
    manout("-iauto","determine automatically input format (free or fixed)",doman);
    manout("-ifixed","force input format fixed",                           doman);
    manout("-ifree","force input format free",                             doman);

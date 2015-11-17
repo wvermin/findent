@@ -458,7 +458,6 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_LDFLAGS = 
-PARREPORTFILE = parser_report.txt
 PARYFILE = parser.y
 PARCFILE = parser.cpp
 PARHFILE = parser.h
@@ -467,7 +466,7 @@ LEXLFILE = lexer.l
 LEXCFILE = lexer.cpp
 LEXCFILES = $(LEXCFILE)
 MOSTLYCLEANFILES = 
-CLEANFILES = $(LEXCFILES) $(PARCFILES) $(PARREPORTFILE) findent findent.exe test/*.try.f test/a.out test/*.mod findent.1
+CLEANFILES = $(LEXCFILES) $(PARCFILES) findent findent.exe test/*.try.f test/a.out test/*.mod findent.1 $(PARCFILE).h $(PARHFILE)pp
 DISTCLEANFILES = 
 MAINTAINERCLEANFILES = $(CLEANFILES)
 @MAKEMAN_TRUE@man1_MANS = findent.1
@@ -1001,7 +1000,9 @@ uninstall-man: uninstall-man1
 $(PARHFILE): $(PARCFILE)
 
 $(PARCFILE): $(PARYFILE)
-	$(YACC) -o $@ --report=all --report-file=$(PARREPORTFILE) --defines=$(PARHFILE) $<
+	$(YACC) -o $@ -d $<
+	if test -f $(PARCFILE).h ; then mv $(PARCFILE).h $(PARHFILE) ; fi
+	if test -f $(PARHFILE)pp ; then mv $(PARHFILE)pp $(PARHFILE) ; fi
 
 $(LEXCFILES): $(LEXLFILE)
 	$(LEX) -i -o $@ $<

@@ -1,4 +1,12 @@
-$Id: ChangeLog 116 2015-08-23 14:10:28Z willem_vermin $
+$Id: ChangeLog 123 2015-09-29 14:26:04Z willem_vermin $
+findent-2.4:
+	release 2.4
+findent-2.3.1:
+	findent.cpp: correct explanation of -l flag in usage()
+	maketar: fix a few nearly-bugs
+	src/parser.y, src/Makefile.am: take care that older versions
+	   of bison work
+
 findent-2.3:
 	jfindent: is now in a separate folder: ../jfindent
 	   with it's on autoconf setup

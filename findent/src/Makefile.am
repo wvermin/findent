@@ -1,7 +1,5 @@
 AM_LDFLAGS =
 
-PARREPORTFILE  = parser_report.txt
-
 PARYFILE   = parser.y
 PARCFILE   = parser.cpp
 PARHFILE   = parser.h
@@ -14,14 +12,16 @@ LEXCFILES  = $(LEXCFILE)
 $(PARHFILE): $(PARCFILE)
 
 $(PARCFILE): $(PARYFILE)
-	$(YACC) -o $@ --report=all --report-file=$(PARREPORTFILE) --defines=$(PARHFILE) $<
+	$(YACC) -o $@ -d $<
+	if test -f $(PARCFILE).h ; then mv $(PARCFILE).h $(PARHFILE) ; fi
+	if test -f $(PARHFILE)pp ; then mv $(PARHFILE)pp $(PARHFILE) ; fi
 
 $(LEXCFILES): $(LEXLFILE)
 	$(LEX) -i -o $@ $<
 
 MOSTLYCLEANFILES =
 
-CLEANFILES = $(LEXCFILES) $(PARCFILES) $(PARREPORTFILE) findent findent.exe test/*.try.f test/a.out test/*.mod findent.1
+CLEANFILES = $(LEXCFILES) $(PARCFILES) findent findent.exe test/*.try.f test/a.out test/*.mod findent.1 $(PARCFILE).h $(PARHFILE)pp
 
 DISTCLEANFILES = 
 

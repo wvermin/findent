@@ -1,14 +1,11 @@
 %{
-// $Id: parser.y 71 2015-07-30 11:49:09Z willem_vermin $
+// $Id: parser.y 122 2015-09-29 14:20:18Z willem_vermin $
 #include <iostream>
 using namespace std;
 #include "findent.h"
 #include "line_prep.h"
 struct propstruct properties;
 %}
-
-%code requires {
-}
 
 %token MODULE SUBFUN ENTRY SUBMODULE
 %token MODULESUBROUTINE MODULEFUNCTION

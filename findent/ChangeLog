@@ -1,4 +1,6 @@
-$Id: ChangeLog 123 2015-09-29 14:26:04Z willem_vermin $
+$Id: ChangeLog 124 2015-11-26 14:07:58Z willem_vermin $
+findent-2.4.1:
+	fixed typo in help text.
 findent-2.4:
 	release 2.4
 findent-2.3.1:

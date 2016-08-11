@@ -1,5 +1,5 @@
-  ! -I2 -i5 -a1 -b2 -d3 -f4 -m5 -Rr
-  ! ticket 1
+! -I2 -i5 -a1 -b2 -d3 -f4 -m5 -Rr
+! ticket 1
 
   block data pblockdata
        common /xcomm/ p
@@ -64,8 +64,8 @@
        end interface
        interface anotherinterface
             module procedure funccc
-            !
-            !  trata
+!
+!  trata
             module procedure funcccc
        end interface
        abstract interface
@@ -122,7 +122,7 @@
        end function alpha_integral_function
 
   end module some_module ! end of this module
-  ! /ticket 1
+! /ticket 1
 
   module m1
        integer k
@@ -142,7 +142,7 @@
   contains
        function f(x)
             print *,'abc &
-            def'
+                 def'
             print *,"abcd&
             & efgh"
             return
@@ -196,7 +196,7 @@
        enddo
 
        if ( a.eq.b .and. &
-       c.eq.r) then
+            c.eq.r) then
            n=n+1
        endif
 
@@ -308,15 +308,15 @@
   subroutine two(a)
        continue
        a = 3 + &! comment1
-       4 + & ! comment 2
-       5
+            4 + & ! comment 2
+            5
 
        a = 3 + & ! test preprocessor within continuation
-       4 + &
+            4 + &
 #ifdef abc
-       this would cause a compilation error &
+            this would cause a compilation error &
 #endif
-       5
+            5
        return
   endsubroutine
   subroutine three(a)

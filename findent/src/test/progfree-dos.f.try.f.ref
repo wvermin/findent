@@ -1,4 +1,4 @@
-  ! -I2 -i5 -a1 -b2 -d3 -f4 -m5 -ifree
+! -I2 -i5 -a1 -b2 -d3 -f4 -m5 -ifree
   module m1
        integer k
        enum, bind(c)
@@ -16,7 +16,7 @@
   contains
        function f(x)
             print *,'abc &
-            def'
+                 def'
             print *,"abcd&
             & efgh"
             return

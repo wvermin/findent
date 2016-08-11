@@ -1,4 +1,25 @@
-$Id: ChangeLog 124 2015-11-26 14:07:58Z willem_vermin $
+$Id: ChangeLog 130 2016-08-11 14:05:03Z willem_vermin $
+findent-2.5.0:
+	findent.cpp:
+	   - lines starting originally with '!' are not indented
+	   - pure comment lines, not starting with '!' get an indent
+	     of at least 1
+	   - added -C- flag: resets indent with 'contains'
+	   - continuation lines not starting with '&' are extra intented
+	     flag: -kn
+	   - flag -k-: continuation lines are untouched
+	   - findent.cpp: somewhat better layout of man page
+	README:
+	   - add remark about not wanting irreversible changes to sources
+	wfindent:
+	   - use installation path of findent in stead of 'findent'
+	   - recognize -v, -h and -H flags: run findent using only this flag
+	   - ignore -q flag
+	wfindent.bat:
+	   - recognize -v, -h and -H flags: run findent using only this flag
+	   - ignore -q flag
+	test:
+	   - adapted progfree.f.try.f.ref and progfree-dos.f.try.f.ref
 findent-2.4.1:
 	fixed typo in help text.
 findent-2.4:

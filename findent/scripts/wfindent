@@ -1,5 +1,6 @@
 #!/bin/sh
-# $Id: wfindent 92 2015-08-04 03:08:54Z willem_vermin $
+# $Id: wfindent.tmpl 129 2016-08-11 13:47:39Z willem_vermin $
+# vim: filetype=sh
 #
 # in-place indenting of fortran sources using findent
 # example:
@@ -11,8 +12,8 @@
 # otherwize an error message is printed.
 #
 
-FINDENT=findent
-parms=$( getopt -o a:b:c:C:d:e:E:f:F:hHi:I:j:l:L:m:o:qr:R:s:t:vw:x: -- "$@" )
+FINDENT="/tmp/github/bin/findent"
+parms=$( getopt -o a:b:c:C:d:e:E:f:F:hHi:I:j:k:l:L:m:o:qr:R:s:t:vw:x: -- "$@" )
 if [ $? -ne 0 ] ; then
    exit 1
 fi
@@ -23,9 +24,25 @@ while [ "$1" ] ; do
       --) shift
 	  break
 	  ;;
-      *) fparms="$fparms $1" 
-	  shift
-	  ;;
+      *) if [ "$1" = "-v" ] ; then
+	    echo "wfindent using $FINDENT"
+	    "$FINDENT" -v
+	    echo "wfindent: indented files: 0"
+	    exit $?
+	 fi
+	 case "$1" in
+	    "-h"|"-H") "$FINDENT" "$1"
+	               exit $?
+		       ;;
+	 esac
+	 if [ "$1" != "-q" ] ; then
+	    fparms="$fparms $1" 
+	 else
+	    echo "wfindent: ignored flag -q"
+	    echo "          use $FINDENT -q < filename"
+	 fi
+	 shift
+	 ;;
    esac
 done
 tmp=`mktemp`

@@ -29,6 +29,7 @@ AM_CONDITIONAL([MAKEMAN],[test "x$with_windows" != "xyes"])
 AC_PROG_CXX
 AC_PROG_AWK
 AC_PROG_YACC
+AC_PROG_SED
 AC_MSG_NOTICE([yacc: ${YACC}])
 AC_ARG_VAR([LEX],[The 'Fast lexical analyser generator' to use])
 AX_PROG_FLEX([],AC_MSG_ERROR([No valid flex found]))

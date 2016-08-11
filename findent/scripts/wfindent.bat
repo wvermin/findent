@@ -1,5 +1,5 @@
 @echo off
-REM $Id: wfindent.bat 75 2015-07-30 11:51:13Z willem_vermin $
+REM $Id: wfindent.bat 129 2016-08-11 13:47:39Z willem_vermin $
 setlocal EnableDelayedExpansion EnableExtensions
 if -%1-==-- (
   echo wfindent is a wrapper for findent
@@ -7,13 +7,25 @@ if -%1-==-- (
   echo example:
   echo wfindent -ifree -i4 *.f90
   echo for a complete list of findent-args, type
-  echo   findent -h
+  echo   wfindent -h
   goto :EOF
 )
 set fargs=
 :astart
 if -%1-==-- goto :EOF
 set aa=%1
+
+if "%aa%" == "-v" goto :SPECIALRUN
+if "%aa%" == "-h" goto :SPECIALRUN
+if "%aa%" == "-H" goto :SPECIALRUN
+if "%aa%" == "-q" (
+   echo wfindent: flag -q ignored
+   echo           use "findent -q < filename"
+
+   shift
+   goto :astart
+)
+
 if %aa:~0,1%==- (
    set fargs=%fargs% %aa%
    shift
@@ -50,5 +62,9 @@ goto bstart
 for /f "delims=:. tokens=1-4" %%t in ("%TIME: =0%") do (
         set FILENAME=wf-%%t%%u%%v%%w
     )
+exit /b
+
+:SPECIALRUN
+findent %aa%
 exit /b
 

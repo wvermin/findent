@@ -72,6 +72,11 @@ findent, why?
     - or do too much (destroying neatly aligned pieces of code)
     - or are for me too complicated to adapt and extend.
 
+   Furthermore, I want that indenting does not make irreversible changes 
+   to the source: I want alwys be able to get back to the version after
+   the first indenting. (Exceptions: converting from fixed to free format;
+   adding 'subroutine foo' after 'end').
+
    Therefore I decided, having some spare time after my retirement, 
    to try to build a Fortran indenter, based on flex and bison for
    readability.
@@ -204,6 +209,50 @@ findent, usage?
 
    NOTE 2: findent silently ignores errors in the flags
 
+   NOTE 3: handling of continuation lines
+           Example:
+
+	      a = &
+		 (/ 3, 10, 12, 4, &
+		    5,  9,  1, 0, &
+		   13,  2, 25, 6 /)
+
+           After running findent, with standard parameters, you get this:
+
+	      a = &
+		 (/ 3, 10, 12, 4, &
+		 5,  9,  1, 0, &
+		 13,  2, 25, 6 /)
+
+          That is probably not what you really want.
+
+	  The recommended solution is: add '&' at the start of the 
+	  continuation lines:
+
+	   a = &
+	      &   (/ 3, 10, 12, 4, &
+	      &      5,  9,  1, 0, &
+	      &     13,  2, 25, 6 /) 
+
+	  Findent will indent this as:
+
+	   a = &
+	   &   (/ 3, 10, 12, 4, &
+	   &      5,  9,  1, 0, &
+	   &     13,  2, 25, 6 /)
+
+	 Not recommended solution: You can use the '-k-' flag, like:
+	   findent -k- < prog.f90 > prog1.f90
+	  
+	 Findent will in this case not touch continuation lines without 
+	 a starting '&', but leave them as they are.
+
+   NOTE 4: handling of comment lines
+
+   	Findent indents comment lines, but does not touch comment lines
+	with the '!' in column one.
+	 
+
    Installation:
 
    Linux:
@@ -282,4 +331,4 @@ improvements.
 
 June 2015, Willem Vermin, wvermin@gmail.com
 
-# $Id: README 116 2015-08-23 14:10:28Z willem_vermin $
+# $Id: README 126 2016-08-10 10:19:40Z willem_vermin $

@@ -1,11 +1,25 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT(findent, 2.2.5, wvermin@gmail.com)
+AC_INIT(findent, 2.6.0 ,wvermin@gmail.com)
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/findent.cpp])
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([src/test.sh],[chmod +x src/test.sh])
+AC_CONFIG_FILES([src/test/tester],[chmod +x src/test/tester])
+AC_CONFIG_FILES([src/test/progfixed-dos.f])
+AC_CONFIG_FILES([src/test/progfixed-dos.f.try.f.ref])
+AC_CONFIG_FILES([src/test/progfixed.f])
+AC_CONFIG_FILES([src/test/progfixedfree-dos.f])
+AC_CONFIG_FILES([src/test/progfixedfree-dos.f.try.f.ref])
+AC_CONFIG_FILES([src/test/progfixedfree.f])
+AC_CONFIG_FILES([src/test/progfixedfree.f.try.f.ref])
+AC_CONFIG_FILES([src/test/progfixed.f.try.f.ref])
+AC_CONFIG_FILES([src/test/progfree-dos.f])
+AC_CONFIG_FILES([src/test/progfree-dos.f.try.f.ref])
+AC_CONFIG_FILES([src/test/progfree.f])
+AC_CONFIG_FILES([src/test/progfree.f.try.f.ref])
 
 m4_include([m4/ax_prog_flex.m4])
 

@@ -1,0 +1,124 @@
+#!/bin/bash
+set -x
+version=2.2
+package=findent
+dir=$package-$version
+tar=$PWD/../versions/findent-$version.tgz
+debiandir=${package}-${version}-debian
+mkdir -p ../debian
+cd ../debian                        || exit 1
+rm -rf $debiandir
+mkdir -p $debiandir  || exit 1
+cd $debiandir        || exit 1
+
+tar xf $tar             || exit 1
+cd $dir                             || exit 1
+./bootstrap                         || exit 1
+./configure                         || exit 1
+make distclean
+
+dh_make --copyright bsd -f $tar  || exit 1
+dquilt new install.patch            || exit 1
+dquilt add Makefile.am           || exit 1
+dquilt add src/Makefile.am           || exit 1
+dquilt add scripts/Makefile.am           || exit 1
+dquilt add Makefile.in src/Makefile.in scripts/Makefile.in || exit 1
+sed -i 's/java//' Makefile.am           || exit 1
+sed -i '/install-data-hook:/d' src/Makefile.am scripts/Makefile.am           || exit 1
+sed -i '/gzip/d' src/Makefile.am scripts/Makefile.am           || exit 1
+./bootstrap   || exit 1
+dquilt refresh           || exit 1
+
+# control
+echo debian/control
+sed -i '/^Description:/s/.*/Description:  Indent Fortran sources/' debian/control || exit 1
+sed -i '/^Section:/s/.*/Section: misc/' debian/control  || exit 1
+sed -i '/^Homepage:/s/.*/Homepage: http:\/\/findent.sourceforge.net/' debian/control  || exit 1
+sed -i '/insert long description,/d' debian/control
+cat <<eof >> debian/control  || exit 1
+ Findent indents Fortran source, fixed and free format, 
+ and converts Fortran fixed format to Fortran free format.
+ Fortran 2008 compliant
+ Interfaces with vim
+ Linux and Windows
+eof
+
+# copyright
+echo debian/copyright
+sed -i '/^Source:/s/.*/Source: http:\/\/findent.sourceforge.net/' debian/copyright  || exit 1
+sed -i '/^Copyright:/s/.*/Copyright: 2015 Willem Vermin wvermin@gmail.com/' debian/copyright  || exit 1
+sed -i '/likewise for another author/d' debian/copyright  || exit 1
+sed -i '/Please also look if there/d' debian/copyright || exit 1
+sed -i /'different copyright\/license attached/d' debian/copyright || exit 1
+
+# changelog
+echo debian/changelog
+#sed -i '/^findent/s/unstable/UNRELEASED/' debian/changelog  || exit 1
+sed -i '/Initial release/s/.*/  * Initial release. Closes #2./' debian/changelog  || exit 1
+sed -i '/Initial release/a\
+  *  adjusted Makefile.am and src/Makefile.am.
+' debian/changelog  || exit 1
+
+# rules
+echo debian/rules
+sed -i '/DH_VERBOSE/s/#//' debian/rules   || exit 1
+sed -i '/DH_VERBOSE/a\
+export DH_OPTIONS=-v' debian/rules   || exit 1
+
+# README.Debian
+rm -f debian/README.Debian
+
+# $package.doc-base
+rm -f debian/$package.doc-base*
+
+# docs
+rm -f debian/docs
+
+# cron
+rm -f debian/$package.cron.d*
+
+# default
+rm -f debian/$package.default*
+
+#init
+rm -f debian/init.d.*
+
+# manpage
+rm -f debian/manpage.*
+
+# manpages
+cat << eof > debian/$package.manpages
+src/$package.1
+eof
+
+# menu
+rm -f debian/menu.*
+
+# postinst
+rm -f debian/postinst.*
+
+
+# postrm
+rm -f debian/postrm.*
+
+# preinst
+rm -f debian/preinst.*
+
+# prerm
+rm -f debian/prerm.*
+
+# watch
+rm -f debian/watch.*
+
+# format
+mkdir -p debian/source
+echo '3.0 (quilt)' > debian/source/format
+
+# fuzz free
+dquilt pop -a; while dquilt push; do dquilt refresh; done
+
+#dpkg-buildpackage -us -uc
+#debuild -i -us -uc -b --lintian-opts --profile debian
+debuild -i -us -uc --lintian-opts --profile debian
+cd ..
+rm -rf $dir

@@ -1,4 +1,17 @@
-$Id: ChangeLog 130 2016-08-11 14:05:03Z willem_vermin $
+$Id: ChangeLog 132 2016-10-02 15:11:46Z willem_vermin $
+findent-2.6.0:
+	findent.cpp:
+	   - -Ia now also works correct if source starts with 'end',
+	     'endif' etc.
+	   - bootstrap now fills in findent version in configure.ac
+	     on the 'AC_INIT(' line
+	   - configure.ac add AC_CONFIG_FILES statements to copy
+	     test cases to build directory
+findent-2.5.1:
+	findent.cpp:
+	   - corrected help output for the -rR flag by replacing leading '\'
+	     by space
+	   - some improvements in help output
 findent-2.5.0:
 	findent.cpp:
 	   - lines starting originally with '!' are not indented

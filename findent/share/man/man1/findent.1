@@ -1,0 +1,153 @@
+.\" DO NOT MODIFY THIS FILE! It was created by findent -H
+.TH FINDENT "1" "2015" "findent-2.5.0" "User Commands"
+.SH NAME
+findent \- Indents and optionally converts Fortran program source
+.SH SYNOPSIS
+.B findent
+[\fIOPTION\fR]...
+.PP
+findent reads from stdin and writes to stdout.
+.SH DESCRIPTION
+Findent indents a Fortran source. Findent uses various kinds of
+indentations, see OPTIONS. Findent can convert from fixed form to
+free form, and can supplement single END statements, see 'Refactor' below.
+Errors in OPTIONS are silently ignored.
+.PP
+.SS "General options:
+.TP
+\fB\-h\fR
+print this text
+.TP
+\fB\-H\fR
+print man page
+.TP
+\fB\-v\fR
+prints findent version
+.TP
+\fB\-q\fR
+guess free or fixed, prints 'fixed' or 'free' and exits
+.TP
+\fB\-l\fR
+(0/1) 1: statement labels to start of line (default:1)
+      (only for free format)
+.TP
+\fB\-iauto\fR
+determine automatically input format (free or fixed)
+.TP
+\fB\-ifixed\fR
+force input format fixed
+.TP
+\fB\-ifree\fR
+force input format free
+(default: auto)
+.TP
+\fB\-Lnnn\fR
+use only first nnn characters of each line
+default=0: take whole lines
+.TP
+\fB\-Lnnng\fR
+same as above, but use gfortran convention
+for counting the characters with tabbed lines
+.TP
+\fB\-ofree\fR
+force free format output
+.TP
+\fB\-Rr\fR
+refactor routines: a single 'end'
+\is if possible replaced by
+\'end subroutine name'
+\'end function name'
+\'end program name'
+\'end blockdata name'
+\'end module name'
+.TP
+\fB\-RR\fR
+same as -Rr, but 'SUBROUTINE'
+in stead of 'subroutine' etc
+.PP
+.SS "Indenting options:
+.TP
+\fB\-In\fR
+starting  indent (default:0)
+.TP
+\fB\-Ia\fR
+determine starting indent from first line
+.TP
+\fB\-in\fR
+all       indents except I,c,C,e (default: 3)
+.TP
+\fB\-an\fR
+associate indent
+.TP
+\fB\-bn\fR
+block     indent
+.TP
+\fB\-dn\fR
+do        indent
+.TP
+\fB\-fn\fR
+if        indent
+.TP
+\fB\-En\fR
+enum      indent
+.TP
+\fB\-Fn\fR
+forall    indent
+.TP
+\fB\-jn\fR
+interface indent
+.TP
+\fB\-mn\fR
+module    indent
+.TP
+\fB\-rn\fR
+routine   indent
+.TP
+\fB\-sn\fR
+select    indent
+.TP
+\fB\-tn\fR
+type      indent
+.TP
+\fB\-wn\fR
+where     indent
+.TP
+\fB\-xn\fR
+critical  indent
+.TP
+\fB\-C-\fR
+restart indent after contains
+.TP
+\fB\-kn\fR
+continuation indent except   
+  for lines starting with '&'
+     free to free only
+.TP
+\fB\-k-\fR
+continuation lines not preceded
+  by '&' are untouched
+     free to free only
+.TP
+\fB\  \fR
+next defaults are: all - all/2
+.TP
+\fB\-cn\fR
+case      negative indent
+.TP
+\fB\-Cn\fR
+contains  negative indent
+.TP
+\fB\-en\fR
+entry     negative indent
+ 
+.PP
+.SS
+Examples:
+indent: findent < in.f > out.f
+        findent -i2 -r0 < in.f > out.f
+convert: findent -ofree < prog.f > prog.f90
+refactor 'end': findent -Rr < in.f90 > out.f90
+.SH COPYRIGHT
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

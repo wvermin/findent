@@ -2,4 +2,5 @@
 echo "creating reference"
    for i in *.try.f ; do
    cp $i $i.ref
+   cp $i $i.ref.in
 done

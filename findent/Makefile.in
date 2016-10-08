@@ -79,8 +79,20 @@ subdir = .
 DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in COPYING compile depcomp install-sh \
-	missing
+	$(srcdir)/config.h.in $(top_srcdir)/src/test/tester.in \
+	$(top_srcdir)/src/test/progfixed-dos.f.in \
+	$(top_srcdir)/src/test/progfixed-dos.f.try.f.ref.in \
+	$(top_srcdir)/src/test/progfixed.f.in \
+	$(top_srcdir)/src/test/progfixedfree-dos.f.in \
+	$(top_srcdir)/src/test/progfixedfree-dos.f.try.f.ref.in \
+	$(top_srcdir)/src/test/progfixedfree.f.in \
+	$(top_srcdir)/src/test/progfixedfree.f.try.f.ref.in \
+	$(top_srcdir)/src/test/progfixed.f.try.f.ref.in \
+	$(top_srcdir)/src/test/progfree-dos.f.in \
+	$(top_srcdir)/src/test/progfree-dos.f.try.f.ref.in \
+	$(top_srcdir)/src/test/progfree.f.in \
+	$(top_srcdir)/src/test/progfree.f.try.f.ref.in COPYING compile \
+	install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_flex.m4 \
 	$(top_srcdir)/configure.ac
@@ -90,7 +102,14 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = src/test/tester src/test/progfixed-dos.f \
+	src/test/progfixed-dos.f.try.f.ref src/test/progfixed.f \
+	src/test/progfixedfree-dos.f \
+	src/test/progfixedfree-dos.f.try.f.ref \
+	src/test/progfixedfree.f src/test/progfixedfree.f.try.f.ref \
+	src/test/progfixed.f.try.f.ref src/test/progfree-dos.f \
+	src/test/progfree-dos.f.try.f.ref src/test/progfree.f \
+	src/test/progfree.f.try.f.ref
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -347,6 +366,32 @@ $(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
+src/test/tester: $(top_builddir)/config.status $(top_srcdir)/src/test/tester.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/test/progfixed-dos.f: $(top_builddir)/config.status $(top_srcdir)/src/test/progfixed-dos.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/test/progfixed-dos.f.try.f.ref: $(top_builddir)/config.status $(top_srcdir)/src/test/progfixed-dos.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/test/progfixed.f: $(top_builddir)/config.status $(top_srcdir)/src/test/progfixed.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/test/progfixedfree-dos.f: $(top_builddir)/config.status $(top_srcdir)/src/test/progfixedfree-dos.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/test/progfixedfree-dos.f.try.f.ref: $(top_builddir)/config.status $(top_srcdir)/src/test/progfixedfree-dos.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/test/progfixedfree.f: $(top_builddir)/config.status $(top_srcdir)/src/test/progfixedfree.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/test/progfixedfree.f.try.f.ref: $(top_builddir)/config.status $(top_srcdir)/src/test/progfixedfree.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/test/progfixed.f.try.f.ref: $(top_builddir)/config.status $(top_srcdir)/src/test/progfixed.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/test/progfree-dos.f: $(top_builddir)/config.status $(top_srcdir)/src/test/progfree-dos.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/test/progfree-dos.f.try.f.ref: $(top_builddir)/config.status $(top_srcdir)/src/test/progfree-dos.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/test/progfree.f: $(top_builddir)/config.status $(top_srcdir)/src/test/progfree.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/test/progfree.f.try.f.ref: $(top_builddir)/config.status $(top_srcdir)/src/test/progfree.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.

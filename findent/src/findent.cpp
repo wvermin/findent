@@ -1,4 +1,4 @@
-// $Id: findent.cpp 130 2016-08-11 14:05:03Z willem_vermin $
+// $Id: findent.cpp 132 2016-10-02 15:11:46Z willem_vermin $
 #include <cstdio>
 #include <iostream>
 #include <stack>
@@ -771,6 +771,7 @@ void get_full_statement()
 	    start_indent = guess_indent(s);
 	    cur_indent   = start_indent;
 	    init_indent();
+	    indent_handled = 1;
 	 }
       }
 
@@ -1557,6 +1558,7 @@ void usage(const bool doman)
    manout(" ","      (only for free format)",                            doman);
    manout("-iauto","determine automatically input format (free or fixed)",doman);
    manout("-ifixed","force input format fixed",                           doman);
+   manout(" ","(default: auto)",                                          doman);
    manout("-ifree","force input format free",                             doman);
    manout(" ","(default: auto)",                                          doman);
    manout("-Lnnn","use only first nnn characters of each line",           doman);
@@ -1564,13 +1566,14 @@ void usage(const bool doman)
    manout("-Lnnng","same as above, but use gfortran convention",          doman);
    manout(" ","for counting the characters with tabbed lines",            doman);
    manout("-ofree","force free format output",                            doman);
-   manout("-Rr","refactor routines: a single 'end'",                      doman);
-   manout(" ","\\is if possible replaced by",                             doman);
-   manout(" ","\\'end subroutine name'",                                  doman);
-   manout(" ","\\'end function name'",                                    doman);
-   manout(" ","\\'end program name'",                                     doman);
-   manout(" ","\\'end blockdata name'",                                   doman);
-   manout(" ","\\'end module name'",                                      doman);
+   manout("-Rr","refactor blocks: a single 'end'",                      doman);
+   manout(" "," is, if possible, replaced by",                              doman);
+   manout(" "," 'end subroutine <name>' or",                              doman);
+   manout(" "," 'end function <name>' or",                                doman);
+   manout(" "," 'end program <name>' or",                                 doman);
+   manout(" "," 'end blockdata <name>' or",                               doman);
+   manout(" "," 'end module <name>'",                                     doman);
+   manout(" "," where <name> is the name of the appropriate block",       doman);
    manout("-RR","same as -Rr, but 'SUBROUTINE'",                          doman);
    manout(" ","in stead of 'subroutine' etc",                             doman);
    if(doman)
@@ -1584,30 +1587,31 @@ void usage(const bool doman)
    manout("-In","starting  indent (default:0)",                                                 doman);
    manout("-Ia","determine starting indent from first line",                                    doman);
    manout("-in","all       indents except I,c,C,e (default: "+number2string(default_indent)+")",doman);
-   manout("-an","associate indent",                  doman);
-   manout("-bn","block     indent",                  doman);
-   manout("-dn","do        indent",                  doman);
-   manout("-fn","if        indent",                  doman);
-   manout("-En","enum      indent",                  doman);
-   manout("-Fn","forall    indent",                  doman);
-   manout("-jn","interface indent",                  doman);
-   manout("-mn","module    indent",                  doman);
-   manout("-rn","routine   indent",                  doman);
-   manout("-sn","select    indent",                  doman);
-   manout("-tn","type      indent",                  doman);
-   manout("-wn","where     indent",                  doman);
-   manout("-xn","critical  indent",                  doman);
-   manout("-C-","restart indent after contains",     doman);
+   manout("-an","ASSOCIATE  indent",                 doman);
+   manout("-bn","BLOCK      indent",                 doman);
+   manout("-dn","DO         indent",                 doman);
+   manout("-fn","IF         indent",                 doman);
+   manout("-En","ENUM       indent",                 doman);
+   manout("-Fn","FORALL     indent",                 doman);
+   manout("-jn","INTERFACE  indent",                 doman);
+   manout("-mn","MODULE     indent",                 doman);
+   manout("-rn","SUBROUTINE indent",                 doman);
+   manout("-rn","FUNCTION   indent",                 doman);
+   manout("-sn","SELECT     indent",                 doman);
+   manout("-tn","TYPE       indent",                 doman);
+   manout("-wn","WHERE      indent",                 doman);
+   manout("-xn","CRITICAL   indent",                 doman);
+   manout("-C-","restart indent after CONTAINS",     doman);
    manout("-kn","continuation indent except   ",     doman);
    manout(" ","  for lines starting with '&'",       doman);
    manout(" ","     free to free only",              doman);
    manout("-k-","continuation lines not preceded",   doman);
    manout(" ","  by '&' are untouched",              doman);
    manout(" ","     free to free only",              doman);
-   manout("  ","next defaults are: all - all/2",      doman);
-   manout("-cn","case      negative indent",         doman);
-   manout("-Cn","contains  negative indent",         doman);
-   manout("-en","entry     negative indent",         doman);
+   manout("  ","next defaults are: all - all/2",     doman);
+   manout("-cn","CASE      negative indent",         doman);
+   manout("-Cn","CONTAINS  negative indent",         doman);
+   manout("-en","ENTRY     negative indent",         doman);
    manout(" "," ",                                   doman);
    if(doman)
    {

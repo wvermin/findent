@@ -1,0 +1,13 @@
+#!/bin/sh
+a=`cat << eof | ../src/findent -lastusable -ifree -Ia
+  program prog
+  continue
+  !comment
+
+eof`
+if [ "$a" = "2" ]; then
+   rc=0
+else
+   rc=1
+fi
+exit $rc

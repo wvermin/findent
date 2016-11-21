@@ -1,7 +1,6 @@
 %{
-// $Id: parser.y 122 2015-09-29 14:20:18Z willem_vermin $
+// $Id: parser.y 136 2016-11-06 11:12:38Z willem_vermin $
 #include <iostream>
-using namespace std;
 #include "findent.h"
 #include "line_prep.h"
 struct propstruct properties;

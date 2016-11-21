@@ -1,11 +1,10 @@
-// $Id: line_prep.h 71 2015-07-30 11:49:09Z willem_vermin $
+// $Id: line_prep.h 136 2016-11-06 11:12:38Z willem_vermin $
 #ifndef LINE_PREP_H
 #define LINE_PREP_H
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
-using namespace std;
 
 template <typename T>
   std::string number2string ( T number )
@@ -26,7 +25,7 @@ template <typename T>
 class line_prep
 {
    private:
-   string line,sl,sv,sc,rest;
+      std::string line,sl,sv,sc,rest;
    char place_holder;
 
    enum what { is_invalid, is_none, is_string, is_stlabel, is_dotop };
@@ -34,15 +33,15 @@ class line_prep
    struct whats
    {
       what   type;
-      string value;
+      std::string value;
       char   stringtype;
    };
 
-   vector <whats> wv;
+   std::vector <whats> wv;
 
    public:
 
-   line_prep(const string s);
+   line_prep(const std::string s);
 
    line_prep(){};
 
@@ -62,27 +61,27 @@ class line_prep
       return place_holder;;
    }
 
-   string get_line()
+   std::string get_line()
    {
       return line;
    }
 
-   string get_line_spaces_removed()
+   std::string get_line_spaces_removed()
    {
       return sl;
    }
 
-   string get_line_compressed()
+   std::string get_line_compressed()
    {
       return sv;
    }
 
-   string get_line_encoded()
+   std::string get_line_encoded()
    {
       return sc;
    }
 
-   string get_line_rest()
+   std::string get_line_rest()
    {
       return rest;
    }
@@ -95,12 +94,12 @@ class line_prep
 	 return is_invalid;
    }
 
-   int get_type(const string &s)
+   int get_type(const std::string &s)
    {
       return get_type(string2number<unsigned int>(s));
    }
 
-   string get_type_as_string(const unsigned int i)
+   std::string get_type_as_string(const unsigned int i)
    {
       int k = get_type(i);
 
@@ -121,12 +120,12 @@ class line_prep
       }
    }
 
-   string get_type_as_string(const string &s)
+   std::string get_type_as_string(const std::string &s)
    {
       return get_type_as_string(string2number<unsigned int>(s));
    }
 
-   string get_value(const unsigned i)
+   std::string get_value(const unsigned i)
    {
       if (i < wv.size())
 	 return wv[i].value;
@@ -134,7 +133,7 @@ class line_prep
 	 return "";
    }
 
-   string get_value(const string &s)
+   std::string get_value(const std::string &s)
    {
       return get_value(string2number<unsigned int>(s));
    }
@@ -147,7 +146,7 @@ class line_prep
 	 return ' ';
    }
 
-   char get_stringtype(const string &s)
+   char get_stringtype(const std::string &s)
    {
       return get_stringtype(string2number<unsigned int>(s));
    }

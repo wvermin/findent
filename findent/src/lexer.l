@@ -1,17 +1,16 @@
 %{
-// $Id: lexer.l 71 2015-07-30 11:49:09Z willem_vermin $
+// $Id: lexer.l 136 2016-11-06 11:12:38Z willem_vermin $
 #include <iostream>
 #include <string>
 #include <stack>
 #include <vector>
-using namespace std;
 #include "parser.h"
 #include "findent.h"
 #include "debug.h"
 #define YY_DECL extern "C" int yylex()
-stack<int>      start_stack;
-string          lexer_name, lexer_stlabel, lexeri_number;
-string          input_string;
+std::stack<int>      start_stack;
+std::string          lexer_name, lexer_stlabel, lexeri_number;
+std::string          input_string;
 int             lrlevel;
 bool            lrreturn;
 class line_prep pline;
@@ -209,8 +208,8 @@ where             { D(O("WHERE");Y;);             return WHERE;             }
 }
 
 " "[0-9]*" "    {
-		   int type = pline.get_type(string(yytext));
-                   D(O("found_special");O(type);O(pline.get_type_as_string(string(yytext)));Y;);
+		   int type = pline.get_type(std::string(yytext));
+                   D(O("found_special");O(type);O(pline.get_type_as_string(std::string(yytext)));Y;);
 		   D(O("encoded line");O(pline.get_line_encoded()););
 		    if (type == pline.type_string)
 		    {
@@ -219,7 +218,7 @@ where             { D(O("WHERE");Y;);             return WHERE;             }
 		    }
 		    if (type == pline.type_stlabel)
 		    {
-		       lexer_stlabel = pline.get_value(string(yytext));
+		       lexer_stlabel = pline.get_value(std::string(yytext));
 		       D(O("STLABEL");O(lexer_stlabel);Y;);
 		       return STLABEL;
 		    }
@@ -275,7 +274,7 @@ void lexer_set(class line_prep p)
    D(O("lexer_set");O(input_string);O(p.get_type_as_string(0)););
 }
 
-void lexer_set(string s)
+void lexer_set(std::string s)
 {
    input_string  = s+'\n';
    D(O("lexer_set");O(input_string););
@@ -302,16 +301,16 @@ void lexer_enable(int k)
    D(O("enabled");O(k);O(YY_START););
 }
 
-string lexer_getname()
+std::string lexer_getname()
 {
    return lexer_name;
 }
 
-string lexer_getstlabel()
+std::string lexer_getstlabel()
 {
    return lexer_stlabel;
 }
-string lexer_geti_number()
+std::string lexer_geti_number()
 {
    return lexeri_number;
 }

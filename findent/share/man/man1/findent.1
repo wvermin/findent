@@ -1,5 +1,5 @@
 .\" DO NOT MODIFY THIS FILE! It was created by findent -H
-.TH FINDENT "1" "2015" "findent-2.5.0" "User Commands"
+.TH FINDENT "1" "2015" "findent-2.7.0" "User Commands"
 .SH NAME
 findent \- Indents and optionally converts Fortran program source
 .SH SYNOPSIS
@@ -31,11 +31,20 @@ guess free or fixed, prints 'fixed' or 'free' and exits
 (0/1) 1: statement labels to start of line (default:1)
       (only for free format)
 .TP
+\fB\-lastindent\fR
+prints computed indentation of last line
+      (for usage with vim)
+.TP
+\fB\-lastusable\fR
+prints line number of last line usable
+      as start for indenting(for usage with vim)
+.TP
 \fB\-iauto\fR
 determine automatically input format (free or fixed)
 .TP
 \fB\-ifixed\fR
 force input format fixed
+(default: auto)
 .TP
 \fB\-ifree\fR
 force input format free
@@ -53,13 +62,14 @@ for counting the characters with tabbed lines
 force free format output
 .TP
 \fB\-Rr\fR
-refactor routines: a single 'end'
-\is if possible replaced by
-\'end subroutine name'
-\'end function name'
-\'end program name'
-\'end blockdata name'
-\'end module name'
+refactor blocks: a single 'end'
+ is, if possible, replaced by
+ 'end subroutine <name>' or
+ 'end function <name>' or
+ 'end program <name>' or
+ 'end blockdata <name>' or
+ 'end module <name>'
+ where <name> is the name of the appropriate block
 .TP
 \fB\-RR\fR
 same as -Rr, but 'SUBROUTINE'
@@ -77,46 +87,47 @@ determine starting indent from first line
 all       indents except I,c,C,e (default: 3)
 .TP
 \fB\-an\fR
-associate indent
+ASSOCIATE    indent
 .TP
 \fB\-bn\fR
-block     indent
+BLOCK        indent
 .TP
 \fB\-dn\fR
-do        indent
+DO           indent
 .TP
 \fB\-fn\fR
-if        indent
+IF           indent
 .TP
 \fB\-En\fR
-enum      indent
+ENUM         indent
 .TP
 \fB\-Fn\fR
-forall    indent
+FORALL       indent
 .TP
 \fB\-jn\fR
-interface indent
+INTERFACE    indent
 .TP
 \fB\-mn\fR
-module    indent
+MODULE       indent
 .TP
 \fB\-rn\fR
-routine   indent
+FUNCTION and
+ SUBROUTINE  indent
 .TP
 \fB\-sn\fR
-select    indent
+SELECT       indent
 .TP
 \fB\-tn\fR
-type      indent
+TYPE         indent
 .TP
 \fB\-wn\fR
-where     indent
+WHERE        indent
 .TP
 \fB\-xn\fR
-critical  indent
+CRITICAL     indent
 .TP
 \fB\-C-\fR
-restart indent after contains
+restart indent after CONTAINS
 .TP
 \fB\-kn\fR
 continuation indent except   
@@ -132,13 +143,13 @@ continuation lines not preceded
 next defaults are: all - all/2
 .TP
 \fB\-cn\fR
-case      negative indent
+CASE      negative indent
 .TP
 \fB\-Cn\fR
-contains  negative indent
+CONTAINS  negative indent
 .TP
 \fB\-en\fR
-entry     negative indent
+ENTRY     negative indent
  
 .PP
 .SS

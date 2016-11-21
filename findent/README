@@ -73,7 +73,7 @@ findent, why?
     - or are for me too complicated to adapt and extend.
 
    Furthermore, I want that indenting does not make irreversible changes 
-   to the source: I want alwys be able to get back to the version after
+   to the source: I want always be able to get back to the version after
    the first indenting. (Exceptions: converting from fixed to free format;
    adding 'subroutine foo' after 'end').
 
@@ -125,17 +125,19 @@ findent, how?
 
    The code consists of the following files:
 
-    - Makefile:      an makefile for usage with GNU make
-    - findent.h      include file for some common functions and variables
-    - version.h      include file for the version number
-    - lexer.l:       the lexer, written for flex
-    - parser.y:      the parser, written for bison
-    - findent.cpp:   reads the input and produces the output
-    - line_prep.cpp: converts a line Fortran code to something that
-                     can easily be digested by flex
-    - line_prep.h:   header file for line_prep.cpp
-    - wfindent:      a sh script that calls findent to indent
-                     Fortran sources in-place
+    - findent.h         include file for some common functions and variables
+    - version.h         include file for the version number
+    - lexer.l:          the lexer, written for flex
+    - parser.y:         the parser, written for bison
+    - findent.cpp:      reads the input and produces the output
+    - line_prep.cpp:    converts a line Fortran code to something that
+                        can easily be digested by flex
+    - pre_analyzer.cpp: code to handle pre-processor statements
+    - line_prep.h:      header file for line_prep.cpp
+    - simpleostream.h   wrapper for std::cout
+    - pre_analyzer.h    header file for pre_analyzer.cpp
+    - wfindent:         a sh script that calls findent to indent
+                        Fortran sources in-place
 
    lexer.l
       
@@ -163,6 +165,27 @@ findent, how?
       (possibly user defined) operators (.eq. , .my_op.). Therefore I 
       created a class that takes care of these things and produces a line
       that can easily be processed by flex.
+
+   simpleostream.h
+
+      Defines a wrapper for std::cout, with the possibility to
+      not perform output at all, but only store the things that
+      would have been output.
+
+   pre_analyzer.cpp pre_analyzer.h
+
+      Findent does not evaluate preprocessor statements (#if etc.),
+      but does keep track of them, so that a construction like:
+
+      #ifdef foo
+	 do i=1,10
+      #elif defined bar
+	 do i=1,20
+      #else
+	 do i=1,30
+      #endif
+
+      is indented correctly.
 
 findent, usage?
 
@@ -256,7 +279,12 @@ findent, usage?
    Installation:
 
    Linux:
-      sudo install findent /usr/local/bin
+	 $ ./configure --prefix=/usr/local
+	 $ make
+	 $ sudo make install
+     or, if the executable in the tarball works:
+         $ sudo install bin/findent /usr/local/bin
+
    Windows:
       copy findent.exe C:\WINDOWS
 
@@ -276,7 +304,10 @@ wfindent
 
    Installation:
      
-      sudo install wfindent /usr/local/bin
+      If you installed findent with the ./configure, make, make install 
+      method, wfindent is installed as well.
+      Otherwize:
+      $ sudo install scripts/wfindent /usr/local/bin
 
 
 wfindent.bat
@@ -293,6 +324,14 @@ jfindent or jfindent.jar
 
   jfindent is a graphical front end for findent, and is available as
   a separate package
+
+findent and vim
+
+   Findent is since version 2.7 very vim-aware. When using the vim scripts
+   mentioned in README.1st, findent is used as equalprg ( :help equalprg )
+   end indentexpr ( :help indentexpr )
+   This is possible because of the speed of findent: it indents about 
+   50000 - 100000 lines per second.
 
 Issues
    
@@ -329,6 +368,6 @@ Issues
 I am happy to receive comments, error reports and suggestions for
 improvements.
 
-June 2015, Willem Vermin, wvermin@gmail.com
+November 2016, Willem Vermin, wvermin@gmail.com
 
-# $Id: README 126 2016-08-10 10:19:40Z willem_vermin $
+# $Id: README 151 2016-11-21 19:59:31Z willem_vermin $

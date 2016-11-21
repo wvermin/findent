@@ -1,0 +1,4 @@
+#!/bin/sh
+./test-compile.sh progfree-dos.f
+rc=$?
+exit $rc

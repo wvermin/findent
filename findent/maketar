@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: maketar 122 2015-09-29 14:20:18Z willem_vermin $
+# $Id: maketar 145 2016-11-13 16:16:33Z willem_vermin $
 curdir=`pwd`                                       || exit 1
 ./bootstrap                                        || exit 1
 ./configure                                        || exit 1
@@ -26,3 +26,4 @@ rm -rf "findent-$version"
 cp -r $curdir "findent-$version"                   || exit 1
 tar zcf "findent-$version.tgz" "findent-$version"  || exit 1
 rm -rf "findent-$version"
+echo "$0 done"

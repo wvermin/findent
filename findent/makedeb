@@ -24,3 +24,4 @@ make maintainer-clean               || exit 1
 debuild -i -us -uc --lintian-opts --profile debian || exit 1
 cd ..                               || exit 1
 rm -rf $dir
+echo "$0 done"

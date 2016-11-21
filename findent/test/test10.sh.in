@@ -1,0 +1,11 @@
+#!/bin/sh
+a=`cat << eof | ../src/findent -lastindent -ifree -Ia
+  program prog
+  continue
+eof`
+if [ "$a" = "5" ]; then
+   rc=0
+else
+   rc=1
+fi
+exit $rc

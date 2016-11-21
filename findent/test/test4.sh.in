@@ -1,0 +1,4 @@
+#!/bin/sh
+./test-compile.sh progfixedfree.f
+rc=$?
+exit $rc

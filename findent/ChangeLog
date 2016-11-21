@@ -1,4 +1,37 @@
-$Id: ChangeLog 132 2016-10-02 15:11:46Z willem_vermin $
+$Id: ChangeLog 149 2016-11-17 04:43:58Z willem_vermin $
+findent-2.7.0:
+	findent.cpp:
+	   - add option -lastindent to output only the indentation level
+	     of the last line
+	   - recognise '#  if' etc
+	   - fixed minor bug: code starting with preprocessor directive
+	     in combination with -Ia did not function properly
+	   - add flag -Q. returncode =2 for free, 4 for fixed
+	     for usage in vim
+	   - removed documentation for -Q, it is not needed now
+	   - add stack for dolabels to obtain correct indenting in cases
+		like this:
+		   do 1 i=1,2
+		   #if x
+		   1 continue
+		   #else
+		   1 continue
+		   #endif
+	   - make fixed ! comment output as in free
+	   - better initialization of indents if startindent>0
+	   - -Innn now sets auto_firstindent = 0
+	   - better #if ... handling
+	wfindent:
+	   - add code to look for findent in default PATH if
+	     the given location (FINDENT=) does not work
+	   - exit if no findent is found
+	all:
+	   - omit 'using namespace std'
+	   - update documentation README, README.1st
+	   - move test folder out of src folder
+	   - separate tests, new tests for -lastindent and -lastonly
+	vim:
+	   - add a folder vim and two files: findent.vim and fortran.vim
 findent-2.6.0:
 	findent.cpp:
 	   - -Ia now also works correct if source starts with 'end',

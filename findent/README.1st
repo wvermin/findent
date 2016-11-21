@@ -3,6 +3,9 @@ findent: indents/beautifies/converts Fortran sources
  - findent supports Fortran-2008
  - findent can convert from fixed form to free form
  - binaries for Unix and Windows (findent and findent.exe respectively)
+ - high speed: 50K - 100K lines per second
+ - since version 2.7.0, findent is very vim-aware an can be used
+   in equalprg and indentexpr
  - wrapper for processing one or more files in one call available
       for Unix and Windows (wfindent and wfindent.bat respectively)
  - (g)vim users: findent can act as a plug-in to format your
@@ -18,6 +21,10 @@ Linux users: the tar ball contains a static linked executable,
 	     $ cd bin
 	     $ install findent wfindent $HOME/bin
 	 or: $ sudo install findent wfindent /usr/local/bin
+	     $ edit wfindent, such that the line with
+	     $   FINDENT=/some/path
+	     $   points to the location of findent, for example
+	     $   FINDENT=$HOME/bin/findent
 
 	     If the pre compiled version does not work,
 	     ( try: $ ./findent -h )
@@ -32,7 +39,7 @@ Unix-Linux users:
 	     $ ./configure --prefix=<Your installation directory, default /usr/local>
 	     $ make clean
              $ make
-	     $ make install
+	     $ sudo make install
 
     if necessary, remake the Windows executable (requires package mingw32):
 	     $ ./configure --with-windows
@@ -58,18 +65,17 @@ Examples: $ findent < in.f90 > out.f90
           $ wfindent -i4 -Rr *.f
 
 (g)vim users:
-   Install findent, and add the following to your .vimrc:
+   Install findent, and put the following files in place:
 
-      augroup fortfiletype
-	autocmd!
-	autocmd Filetype fortran :execute ":setl sw=3"
-	autocmd Filetype fortran :execute ":setl equalprg=findent\\ -Ia\\ -i3"
-	autocmd Filetype fortran :execute ":setl expandtab"
-      augroup END
+   vim/findent.vim -> ~/.vim/plugin/findent.vim
+   vim/fortran.vim -> ~/.vim/after/indent/fortran.vim
 
-   Read
-     :help =
-   in vim or gvim.
+   Documentation:
+     in (g)vim:
+	:help equalprg
+	:help indentexpr
+     vim/README
+     and the comments in the files vim/findent.vim and vim/fortran.vim
 
 
-# $Id: README.1st 120 2015-08-24 14:27:19Z willem_vermin $
+# $Id: README.1st 151 2016-11-21 19:59:31Z willem_vermin $

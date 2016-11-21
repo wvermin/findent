@@ -1,6 +1,5 @@
-// $Id: line_prep.cpp 71 2015-07-30 11:49:09Z willem_vermin $
+// $Id: line_prep.cpp 136 2016-11-06 11:12:38Z willem_vermin $
 #include "line_prep.h"
-using namespace std;
 #include "debug.h"
 
 #define DECIMAL_DIGITS                          \
@@ -15,7 +14,7 @@ case '5': case '6': case '7': case '8': case '9'
    wv.push_back(vstruct);        \
 }
 
-line_prep::line_prep(const string s)
+line_prep::line_prep(const std::string s)
 {
    enum states { maybe_stlabel, in_stlabel, in_code, in_qstring, 
       pre_hollerith, in_hollerith, in_dotop};
@@ -74,7 +73,7 @@ line_prep::line_prep(const string s)
 
    states state = maybe_stlabel;
 
-   string v;
+   std::string v;
 
    char c, prevc, prevstringtype = ' ', quotechar = ' ';
    int prevtype;
@@ -380,8 +379,8 @@ line_prep::line_prep(const string s)
       case in_hollerith:
 	 if (nhol > 0)
 	 {
-	    sl                += string(nhol,' ');
-	    v                 += string(nhol,' ');
+	    sl                += std::string(nhol,' ');
+	    v                 += std::string(nhol,' ');
 	    sv                += place_holder;
 	    vstruct.type       = is_string;
 	    vstruct.value      = v;

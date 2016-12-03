@@ -1,5 +1,5 @@
-// $Id: version.h 151 2016-11-21 19:59:31Z willem_vermin $
+// $Id: version.h 154 2016-12-01 15:55:25Z willem_vermin $
 #ifndef VERSION_H
 #define VERSION_H
-#define VERSION "2.7.0"
+#define VERSION "2.7.1"
 #endif

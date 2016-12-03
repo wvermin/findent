@@ -52,9 +52,11 @@ int pre_analyzer::analyze(const std::string s)
    {
       int r = pre_analyzer::ENDIF_pre; 
       if (!ifelse_stack.empty())
+      {
 	 if (ifelse_stack.top())
 	    r = pre_analyzer::ENDIFE_pre;
 	 ifelse_stack.pop();
+      }
       return r;
    }
    else

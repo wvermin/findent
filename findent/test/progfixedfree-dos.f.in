@@ -36,6 +36,7 @@ c a comment
 c a comment         
      x   1
 c a comment         
+ ! a floating comment
      x   0
          continue
          enddo

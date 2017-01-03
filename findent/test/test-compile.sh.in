@@ -18,7 +18,7 @@ for i in progfixed.f ; do
 	 ;;
    esac
 
-   $gfortran -fcoarray=single -cpp $format $prog >/dev/null 2>&1
+   $gfortran -fcoarray=single -cpp $format -o prog $prog >/dev/null 2>&1
    if [ $? -ne 0 ] ; then
       echo -n " original program does not compile "
       rc=1
@@ -57,7 +57,7 @@ for i in progfixed.f ; do
 	 format="-ffixed-form -ffixed-line-length-none -fd-lines-as-comments"
 	 ;;
    esac
-   $gfortran -fcoarray=single -cpp $format $prog.try.f >/dev/null 2>&1
+   $gfortran -fcoarray=single -cpp $format -o prog $prog.try.f >/dev/null 2>&1
    if [ $? -ne 0 ] ; then
       echo "        converted program does not compile "
       rc=1
@@ -70,4 +70,5 @@ if [ $rc -ne 0 ] ; then
    echo "cp $prog.try.f  $prog.try.f.ref"
    echo "cp $prog.try.f.ref $prog.try.f.ref.in"
 fi
+rm -f prog
 exit $rc

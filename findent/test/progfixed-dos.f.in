@@ -10,6 +10,9 @@
          enumerator :: pink, lavender
       
       endenum
+#ifdef foo
+ garbage
+#endif
       contains
          function f(x)
             print *,'abc 

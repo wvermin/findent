@@ -28,6 +28,9 @@ In findent.vim, the following mappings are defined
    \c  comment current line
    \=  indent whole buffer
 
+ Furthermore, command '==' is redefined, such that is does what
+ one would expect.
+
 In findent.vim the statusline is redefined. It shows the fortran format
 (free or fixed) and wb (see \w above)
 

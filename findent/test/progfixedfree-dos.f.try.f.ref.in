@@ -1,4 +1,4 @@
-!-Ia -i5 -a1 -b2 -d3 -f4 -m5 -ofree
+! -Ia -i5 -a1 -b2 -d3 -f4 -m5 -ofree
    module m1
         integer k
         enum, bind(c)
@@ -32,10 +32,11 @@
         type(mytype)  xyz
         character*1000 astring
         do i=1,&
-        !a comment
-        !a comment
+! a comment
+! a comment
         &1&
-        !a comment
+! a comment
+        ! a floating comment
         &0
            continue
         enddo

@@ -96,6 +96,9 @@ augroup fortfiletype
    " define toggle: use whole buffer for indenting or not
    autocmd Filetype fortran nnoremap <buffer> <LocalLeader>w :call Findent_use_wb_toggle()<Return>
 
+   " define == such that findent is called as if the line has been edited
+   autocmd Filetype fortran nnoremap <buffer> == i<Esc>l
+
    " make syntax aware of above
    autocmd Filetype fortran syntax on
 

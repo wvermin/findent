@@ -102,9 +102,14 @@ endfunction
 " Returns the indentation of the current line
 function! Findent_getindent()
    if b:findent_use_whole_buffer
+      " use whole buffer up to current line to determine indent
       let startline = 1
    else
-      let startline = system(g:findent." -lastusable -i".b:fortran_format,join(getline(1,v:lnum-1),"\n"))
+      let maxlines = 2*&lines
+      " use at most 'maxlines' previous lines to determine indent
+      let s = max([v:lnum-maxlines,1])
+      "let startline = system(g:findent." -lastusable -i".b:fortran_format,join(getline(1,v:lnum-1),"\n"))
+      let startline = s - 1 + system(g:findent." -lastusable -i".b:fortran_format,join(getline(s,v:lnum-1),"\n"))
    endif
    let startline = max([1,startline])
    let getindent = Findent_get_getindent()
@@ -235,10 +240,12 @@ if b:fortran_format == "free"
    let g:fortran_free_source = 1
    let b:fortran_free_source = 1
    let b:fortran_fixed_source = 0
+   setlocal colorcolumn=133
 else
    let g:fortran_fixed_source = 1
    let b:fortran_fixed_source = 1
    let b:fortran_free_source = 0
+   setlocal colorcolumn=6,73
 endif
 
 call Findent_set_indentprog()

@@ -90,7 +90,7 @@ bin_PROGRAMS = findent$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_flex.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/ax_prog_bison.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -301,7 +301,7 @@ LEXLFILE = lexer.l
 LEXCFILE = lexer.cpp
 LEXCFILES = $(LEXCFILE)
 MOSTLYCLEANFILES = 
-CLEANFILES = $(LEXCFILES) $(PARCFILES) findent findent.exe test/*.try.f test/a.out test/*.mod findent.1 $(PARCFILE).h $(PARHFILE)pp
+CLEANFILES = $(LEXCFILES) $(PARCFILES) findent findent.exe test/*.try.f test/a.out test/*.mod findent.1 $(PARCFILE).h $(PARHFILE)pp parser_report.txt
 DISTCLEANFILES = 
 MAINTAINERCLEANFILES = $(CLEANFILES)
 @MAKEMAN_TRUE@man1_MANS = findent.1

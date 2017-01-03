@@ -1,4 +1,26 @@
-$Id: ChangeLog 149 2016-11-17 04:43:58Z willem_vermin $
+$Id: ChangeLog 174 2016-12-14 12:25:07Z willem_vermin $
+findent-2.7.3:
+findent-2.7.2:
+	copyright: BSD-3
+	debial/rules: add 
+	  export DEB_BUILD_MAINT_OPTIONS=hardening=+all
+	debian/, makedeb, maketar:
+	   some slight modifications for debian packaging
+	findent.cpp:
+	   changed output of pure comment lines while converting
+	     from fixed to free:
+	     - comment starts with [cC*!] in column one:
+		  the first character is replaced by '!' and the comment
+		  is ouput un-indented
+	     - comment starting with '!', not in column 1, is indented
+	     - comment with [dD] in column one:
+		  is output as-is, prepended with '!', starting in column one
+	   fixed format: if garbage is detected in label field,
+	      output that line as-is
+findent-2.7.1:
+	maketar: adapt version in debian/changelog
+	vim somewhat better findent.vim and fortran.vim
+	pre_analyzer.cpp: bugfix
 findent-2.7.0:
 	findent.cpp:
 	   - add option -lastindent to output only the indentation level

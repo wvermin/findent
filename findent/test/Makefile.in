@@ -88,7 +88,7 @@ POST_UNINSTALL = :
 subdir = test
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_flex.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/ax_prog_bison.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -446,6 +446,8 @@ top_srcdir = @top_srcdir@
 TESTS = test1.sh test2.sh test3.sh test4.sh test5.sh test6.sh \
 	test10.sh test11.sh
 
+CLEANFILES = prog *.mod
+DISTCLEANFILES = *.f
 all: all-am
 
 .SUFFIXES:
@@ -800,10 +802,12 @@ mostlyclean-generic:
 	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"

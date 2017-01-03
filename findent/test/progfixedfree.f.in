@@ -1,4 +1,4 @@
-! -Ia -i5 -a1 -b2 -d3 -f4 -m5 -ofree
+! -Ia -i5 -a1 -b2 -d3 -f4 -m5 -ofree -ifixed
          module m1
          integer k
          enum, bind(c)
@@ -15,6 +15,9 @@
             print *,'abc 
      9      def'
        print *,"abcd
+#ifdef foo
+   garbage
+#endif
      8        efgh"
        return
        end function
@@ -35,6 +38,8 @@
       program progfixed
          type mytype  ! mytype
             integer i
+c a comment
+ ! a floating comment
             real x
          end type mytype
 #ifdef abcde

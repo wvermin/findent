@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT(findent, 2.7.0 ,wvermin@gmail.com)
+AC_INIT(findent, 2.7.3 ,wvermin@gmail.com)
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/findent.cpp])
@@ -31,6 +31,7 @@ AC_CONFIG_FILES([test/test10.sh],[chmod +x test/test10.sh])
 AC_CONFIG_FILES([test/test11.sh],[chmod +x test/test11.sh])
 
 m4_include([m4/ax_prog_flex.m4])
+m4_include([m4/ax_prog_bison.m4])
 
 AC_SUBST([make_include], ["include"])
 
@@ -57,6 +58,8 @@ AC_MSG_NOTICE([yacc: ${YACC}])
 AC_ARG_VAR([LEX],[The 'Fast lexical analyser generator' to use])
 AX_PROG_FLEX([],AC_MSG_ERROR([No valid flex found]))
 AC_MSG_NOTICE([flex: ${LEX}])
+AX_PROG_BISON([],AC_MSG_ERROR([No valid bison found]))
+AC_MSG_NOTICE([bison: ${BISON}])
 
 AC_LANG([C++])
 AC_HEADER_STDC

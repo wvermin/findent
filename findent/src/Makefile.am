@@ -21,7 +21,7 @@ $(LEXCFILES): $(LEXLFILE)
 
 MOSTLYCLEANFILES =
 
-CLEANFILES = $(LEXCFILES) $(PARCFILES) findent findent.exe test/*.try.f test/a.out test/*.mod findent.1 $(PARCFILE).h $(PARHFILE)pp
+CLEANFILES = $(LEXCFILES) $(PARCFILES) findent findent.exe test/*.try.f test/a.out test/*.mod findent.1 $(PARCFILE).h $(PARHFILE)pp parser_report.txt
 
 DISTCLEANFILES = 
 

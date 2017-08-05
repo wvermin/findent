@@ -87,8 +87,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 subdir = test
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_flex.m4 \
-	$(top_srcdir)/m4/ax_prog_bison.m4 $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_bison.m4 \
+	$(top_srcdir)/m4/ax_prog_flex.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -98,9 +98,10 @@ CONFIG_CLEAN_FILES = progfixed-dos.f progfixed-dos.f.try.f.ref \
 	progfixed.f progfixedfree-dos.f progfixedfree-dos.f.try.f.ref \
 	progfixedfree.f progfixedfree.f.try.f.ref \
 	progfixed.f.try.f.ref progfree-dos.f progfree-dos.f.try.f.ref \
-	progfree.f progfree.f.try.f.ref test-compile.sh test1.sh \
-	test2.sh test3.sh test4.sh test5.sh test6.sh test10.sh \
-	test11.sh
+	progfree.f progfree.f.try.f.ref progfree1.f \
+	progfree1.f.try.f.ref progfixed1.f progfixed1.f.try.f.ref \
+	test-compile.sh test1.sh test2.sh test3.sh test4.sh test5.sh \
+	test6.sh test7.sh test8.sh test10.sh test11.sh
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -329,18 +330,21 @@ TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/progfixed-dos.f.in \
 	$(srcdir)/progfixed-dos.f.try.f.ref.in \
 	$(srcdir)/progfixed.f.in $(srcdir)/progfixed.f.try.f.ref.in \
+	$(srcdir)/progfixed1.f.in $(srcdir)/progfixed1.f.try.f.ref.in \
 	$(srcdir)/progfixedfree-dos.f.in \
 	$(srcdir)/progfixedfree-dos.f.try.f.ref.in \
 	$(srcdir)/progfixedfree.f.in \
 	$(srcdir)/progfixedfree.f.try.f.ref.in \
 	$(srcdir)/progfree-dos.f.in \
 	$(srcdir)/progfree-dos.f.try.f.ref.in $(srcdir)/progfree.f.in \
-	$(srcdir)/progfree.f.try.f.ref.in $(srcdir)/test-compile.sh.in \
-	$(srcdir)/test1.sh.in $(srcdir)/test10.sh.in \
-	$(srcdir)/test11.sh.in $(srcdir)/test2.sh.in \
-	$(srcdir)/test3.sh.in $(srcdir)/test4.sh.in \
-	$(srcdir)/test5.sh.in $(srcdir)/test6.sh.in \
-	$(top_srcdir)/test-driver
+	$(srcdir)/progfree.f.try.f.ref.in $(srcdir)/progfree1.f.in \
+	$(srcdir)/progfree1.f.try.f.ref.in \
+	$(srcdir)/test-compile.sh.in $(srcdir)/test1.sh.in \
+	$(srcdir)/test10.sh.in $(srcdir)/test11.sh.in \
+	$(srcdir)/test2.sh.in $(srcdir)/test3.sh.in \
+	$(srcdir)/test4.sh.in $(srcdir)/test5.sh.in \
+	$(srcdir)/test6.sh.in $(srcdir)/test7.sh.in \
+	$(srcdir)/test8.sh.in $(top_srcdir)/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -443,10 +447,10 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-TESTS = test1.sh test2.sh test3.sh test4.sh test5.sh test6.sh \
+TESTS = test1.sh test2.sh test3.sh test4.sh test5.sh test6.sh test7.sh test8.sh \
 	test10.sh test11.sh
 
-CLEANFILES = prog *.mod
+CLEANFILES = prog *.mod 
 DISTCLEANFILES = *.f
 all: all-am
 
@@ -505,6 +509,14 @@ progfree.f: $(top_builddir)/config.status $(srcdir)/progfree.f.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 progfree.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfree.f.try.f.ref.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfree1.f: $(top_builddir)/config.status $(srcdir)/progfree1.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfree1.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfree1.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixed1.f: $(top_builddir)/config.status $(srcdir)/progfixed1.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixed1.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixed1.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 test-compile.sh: $(top_builddir)/config.status $(srcdir)/test-compile.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 test1.sh: $(top_builddir)/config.status $(srcdir)/test1.sh.in
@@ -518,6 +530,10 @@ test4.sh: $(top_builddir)/config.status $(srcdir)/test4.sh.in
 test5.sh: $(top_builddir)/config.status $(srcdir)/test5.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 test6.sh: $(top_builddir)/config.status $(srcdir)/test6.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+test7.sh: $(top_builddir)/config.status $(srcdir)/test7.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+test8.sh: $(top_builddir)/config.status $(srcdir)/test8.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 test10.sh: $(top_builddir)/config.status $(srcdir)/test10.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
@@ -709,6 +725,20 @@ test5.sh.log: test5.sh
 test6.sh.log: test6.sh
 	@p='test6.sh'; \
 	b='test6.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test7.sh.log: test7.sh
+	@p='test7.sh'; \
+	b='test7.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test8.sh.log: test8.sh
+	@p='test8.sh'; \
+	b='test8.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

@@ -1,4 +1,27 @@
-$Id: ChangeLog 174 2016-12-14 12:25:07Z willem_vermin $
+$Id: ChangeLog 207 2017-07-19 07:35:25Z willem_vermin $
+findent-2.7.4:
+	src/Makefile.am, configure.ac: if flex/bison is not
+	  to beused, but lexer.l or parser.y has been changed,
+	  produce a warning message.
+	maketar: remove creating executable 
+	Readme.1st: adapted to previous line
+	Change build process: no bison or flex needed when
+	building from tarball.
+	Update debian directory.
+	bootstrap: fix bug wich prevented 'make dist' to run
+	src/Makefile.am, Makefile.am, scripts/Makefile.am:
+	fixes to facilitate 'make distcheck'
+	src/findent.cpp, add option -i- to disable indenting
+	test: add test7.sh and test8.sh to test flag -i-
+	README: add method to get indented comments when converting
+	        from fixed to free
+	parser.y, lexer.y:
+	   recognize PROCEDURE(not only MODULEPROCEDURE) as PROCEDURE
+	makedeb: add i386-wheezy
+	Makefile.am, configure.ac: introduce variable MAKEWIN to 
+	  mv findent to findent.exe when compiling for windows.
+	  Somehow, now the mingw compiler does not generate foo.exe
+	  when requested to produce foo.
 findent-2.7.3:
 findent-2.7.2:
 	copyright: BSD-3

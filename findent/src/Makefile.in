@@ -89,14 +89,14 @@ POST_UNINSTALL = :
 bin_PROGRAMS = findent$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_flex.m4 \
-	$(top_srcdir)/m4/ax_prog_bison.m4 $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_bison.m4 \
+	$(top_srcdir)/m4/ax_prog_flex.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = buildparser.cpp buildparser.h buildlexer.cpp
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
@@ -133,6 +133,18 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
 SOURCES = $(findent_SOURCES)
 DIST_SOURCES = $(findent_SOURCES)
 am__can_run_installinfo = \
@@ -189,7 +201,9 @@ am__define_uniq_tagged_files = \
   done | $(am__uniquify_input)`
 ETAGS = etags
 CTAGS = ctags
-am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/buildlexer.cpp.in \
+	$(srcdir)/buildparser.cpp.in $(srcdir)/buildparser.h.in \
+	$(top_srcdir)/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -293,19 +307,21 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_LDFLAGS = 
-PARYFILE = parser.y
-PARCFILE = parser.cpp
-PARHFILE = parser.h
-PARCFILES = $(PARCFILE) $(PARHFILE)
-LEXLFILE = lexer.l
-LEXCFILE = lexer.cpp
-LEXCFILES = $(LEXCFILE)
+PARFILES = parser.cpp      parser.h
+BUILDPARFILES = buildparser.cpp buildparser.h
+LEXFILES = lexer.cpp
+BUILDLEXFILES = buildlexer.cpp
 MOSTLYCLEANFILES = 
-CLEANFILES = $(LEXCFILES) $(PARCFILES) findent findent.exe test/*.try.f test/a.out test/*.mod findent.1 $(PARCFILE).h $(PARHFILE)pp parser_report.txt
-DISTCLEANFILES = 
-MAINTAINERCLEANFILES = $(CLEANFILES)
+CLEANFILES = $(LEXFILES) $(PARFILES) findent findent.exe test/*.try.f test/a.out test/*.mod findent.1 parser.cpp.h parser.hpp parser_report.txt
+DISTCLEANFILES = dummylexer dummyparser
+MAINTAINERCLEANFILES = $(BUILDPARFILES) $(BUILDLEXFILES)
 @MAKEMAN_TRUE@man1_MANS = findent.1
-findent_SOURCES = findent.cpp lexer.cpp parser.cpp line_prep.cpp pre_analyzer.cpp
+findent_SOURCES = findent.cpp lexer.cpp parser.cpp \
+		  line_prep.cpp pre_analyzer.cpp debug.h \
+		  line_prep.h pre_analyzer.h version.h \
+		  findent.h simpleostream.h
+
+EXTRA_DIST = lexer.l parser.y
 all: all-am
 
 .SUFFIXES:
@@ -339,6 +355,12 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+buildparser.cpp: $(top_builddir)/config.status $(srcdir)/buildparser.cpp.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+buildparser.h: $(top_builddir)/config.status $(srcdir)/buildparser.h.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+buildlexer.cpp: $(top_builddir)/config.status $(srcdir)/buildlexer.cpp.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
@@ -666,15 +688,44 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
-$(PARHFILE): $(PARCFILE)
+@USEBISON_TRUE@parser.cpp parser.h: parser.y
+@USEBISON_TRUE@	$(YACC) -o parser.cpp -d $<
+@USEBISON_TRUE@	if test -f parser.cpp.h ; then mv parser.cpp.h parser.h ; fi
+@USEBISON_TRUE@	if test -f parser.hpp ; then mv parser.hpp parser.h ; fi
+@USEBISON_TRUE@	if test -f buildparser.cpp.in ; \
+@USEBISON_TRUE@	   then  cp parser.cpp buildparser.cpp.in ; fi
+@USEBISON_TRUE@	if test -f buildparser.h.in ; \
+@USEBISON_TRUE@	   then cp parser.h buildparser.h.in ; fi
+@USEBISON_FALSE@dummyparser: parser.y
+@USEBISON_FALSE@	@echo ""
+@USEBISON_FALSE@	@echo "********************************************************"
+@USEBISON_FALSE@	@echo "*** At configuration time, bison (or yacc) was not   ***"
+@USEBISON_FALSE@	@echo "*** available, or it was specified not to use bison. ***"
+@USEBISON_FALSE@	@echo "*** I will use the pre-build parser.                 ***"
+@USEBISON_FALSE@	@echo "********************************************************"
+@USEBISON_FALSE@	touch $@
 
-$(PARCFILE): $(PARYFILE)
-	$(YACC) -o $@ -d $<
-	if test -f $(PARCFILE).h ; then mv $(PARCFILE).h $(PARHFILE) ; fi
-	if test -f $(PARHFILE)pp ; then mv $(PARHFILE)pp $(PARHFILE) ; fi
+@USEBISON_FALSE@parser.cpp: buildparser.cpp dummyparser 
+@USEBISON_FALSE@	cp $< $@
 
-$(LEXCFILES): $(LEXLFILE)
-	$(LEX) -i -o $@ $<
+@USEBISON_FALSE@parser.h: buildparser.h dummyparser
+@USEBISON_FALSE@	cp $< $@
+
+@USEFLEX_TRUE@lexer.cpp: lexer.l
+@USEFLEX_TRUE@	$(LEX) -i -o $@ $<
+@USEFLEX_TRUE@	if test -f buildlexer.cpp.in ; \
+@USEFLEX_TRUE@	   then cp lexer.cpp buildlexer.cpp.in ; fi
+@USEFLEX_FALSE@dummylexer: lexer.l
+@USEFLEX_FALSE@	@echo ""
+@USEFLEX_FALSE@	@echo "*******************************************************"
+@USEFLEX_FALSE@	@echo "*** At configuration time, flex (or lex) was not    ***"
+@USEFLEX_FALSE@	@echo "*** available, or it was specified not to use flex. ***"
+@USEFLEX_FALSE@	@echo "*** I will use the pre-build lexer.                 ***"
+@USEFLEX_FALSE@	@echo "*******************************************************"
+@USEFLEX_FALSE@	touch $@
+
+@USEFLEX_FALSE@lexer.cpp: buildlexer.cpp dummylexer
+@USEFLEX_FALSE@	cp $< $@
 
 @MAKEMAN_TRUE@findent.1: findent
 @MAKEMAN_TRUE@	./findent -H > $@

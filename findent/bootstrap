@@ -1,3 +1,0 @@
-#!/bin/bash
-sed -i "/^AC_INIT(findent/s/^.*/AC_INIT(findent, `./getversion` ,wvermin@gmail.com)/" configure.ac
-autoreconf -fvi

@@ -1,5 +1,5 @@
 %{
-// $Id: lexer.l 136 2016-11-06 11:12:38Z willem_vermin $
+// $Id: lexer.l 205 2017-06-19 11:16:18Z willem_vermin $
 #include <iostream>
 #include <string>
 #include <stack>
@@ -175,6 +175,7 @@ module            { D(O("MODULE");Y);             return MODULE;            }
 moduleprocedure   { D(O("MODULEPROCEDURE");Y);    return MODULEPROCEDURE;   }
 modulesubroutine  { D(O("MODULESUBROUTINE");Y);   return MODULESUBROUTINE;  }
 modulefunction    { D(O("MODULEFUNCTION");Y);     return MODULEFUNCTION;    }
+procedure         { D(O("PROCEDURE");Y);          return PROCEDURE;         }
 program           { D(O("PROGRAM");Y;);           return PROGRAM;           }
 pure              { D(O("PURE");Y;);              return PURE;              }
 real              { D(O("REAL");Y;);              return BASICTYPE;         }

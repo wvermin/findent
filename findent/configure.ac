@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT(findent, 2.7.3 ,wvermin@gmail.com)
+AC_INIT(findent, 2.7.4~pre3, wvermin@gmail.com)
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/findent.cpp])
@@ -19,6 +19,10 @@ AC_CONFIG_FILES([test/progfree-dos.f])
 AC_CONFIG_FILES([test/progfree-dos.f.try.f.ref])
 AC_CONFIG_FILES([test/progfree.f])
 AC_CONFIG_FILES([test/progfree.f.try.f.ref])
+AC_CONFIG_FILES([test/progfree1.f])
+AC_CONFIG_FILES([test/progfree1.f.try.f.ref])
+AC_CONFIG_FILES([test/progfixed1.f])
+AC_CONFIG_FILES([test/progfixed1.f.try.f.ref])
 
 AC_CONFIG_FILES([test/test-compile.sh],[chmod +x test/test-compile.sh])
 AC_CONFIG_FILES([test/test1.sh],[chmod +x test/test1.sh])
@@ -27,11 +31,10 @@ AC_CONFIG_FILES([test/test3.sh],[chmod +x test/test3.sh])
 AC_CONFIG_FILES([test/test4.sh],[chmod +x test/test4.sh])
 AC_CONFIG_FILES([test/test5.sh],[chmod +x test/test5.sh])
 AC_CONFIG_FILES([test/test6.sh],[chmod +x test/test6.sh])
+AC_CONFIG_FILES([test/test7.sh],[chmod +x test/test7.sh])
+AC_CONFIG_FILES([test/test8.sh],[chmod +x test/test8.sh])
 AC_CONFIG_FILES([test/test10.sh],[chmod +x test/test10.sh])
 AC_CONFIG_FILES([test/test11.sh],[chmod +x test/test11.sh])
-
-m4_include([m4/ax_prog_flex.m4])
-m4_include([m4/ax_prog_bison.m4])
 
 AC_SUBST([make_include], ["include"])
 
@@ -49,17 +52,60 @@ AS_IF( [test "x$with_windows" = xyes],
         AC_MSG_NOTICE([Will create WINDOWS executable findent.exe])])
 
 AM_CONDITIONAL([MAKEMAN],[test "x$with_windows" != "xyes"])
+AM_CONDITIONAL([MAKEWIN],[test "x$with_windows" = "xyes"])
+
+# test if bison available etc...
+
+AC_ARG_WITH(bison, [AS_HELP_STRING([--with-bison],[Use bison to create parser @<:@default=use-bison-if-available@:>@])],[],[with_bison=use-bison-if-available])
+
+usebison="$with_bison"
+
+AS_IF( [test "x$with_bison" != "xno"],
+      [ m4_include([m4/ax_prog_bison.m4]) ] )
+
+AS_IF( [test "x$with_bison" = "xyes"],
+       [AX_PROG_BISON([],[AC_MSG_ERROR([No valid bison found. Try --without-bison])])])
+
+AS_IF( [test "x$with_bison" = "xuse-bison-if-available"],
+       [AX_PROG_BISON(AC_MSG_NOTICE([Will use bison if necessary to create parser.]) 
+	[usebison="yes"],
+        AC_MSG_NOTICE([No bison found. Will use pre-build parser.])
+	[usebison="no"])])
+
+AS_IF( [test "x$usebison" = "xno"],
+       [ AC_CONFIG_FILES([src/buildparser.cpp])
+         AC_CONFIG_FILES([src/buildparser.h])])
+
+AM_CONDITIONAL([USEBISON],[test "x$usebison" = "xyes"])
+
+# test if flex available etc...
+
+AC_ARG_VAR([LEX],[The 'Fast lexical analyser generator' to use])
+
+AC_ARG_WITH(flex, [AS_HELP_STRING([--with-flex],[Use flex to create lexer @<:@default=use-flex-if-available@:>@])],[],[with_flex=use-flex-if-available])
+
+useflex="$with_flex"
+
+AS_IF( [test "x$with_flex" != "xno"],
+    [ m4_include([m4/ax_prog_flex.m4]) ] )
+
+AS_IF( [test "x$with_flex" = "xyes"],
+       [AX_PROG_FLEX([],[AC_MSG_ERROR([No valid flex found. Try --without-flex])])])
+
+AS_IF( [test "x$with_flex" = "xuse-flex-if-available"],
+       [AX_PROG_FLEX(AC_MSG_NOTICE([Will use flex if necessary to create lexer.]) 
+	[useflex="yes"],
+        AC_MSG_NOTICE([No flex found. Will use pre-build lexer.])
+	[useflex="no"])])
+
+AS_IF( [test "x$useflex" = "xno"],
+       [ AC_CONFIG_FILES([src/buildlexer.cpp])])
+
+AM_CONDITIONAL([USEFLEX],[test "x$useflex" = "xyes"])
 
 AC_PROG_CXX
 AC_PROG_AWK
-AC_PROG_YACC
 AC_PROG_SED
-AC_MSG_NOTICE([yacc: ${YACC}])
-AC_ARG_VAR([LEX],[The 'Fast lexical analyser generator' to use])
-AX_PROG_FLEX([],AC_MSG_ERROR([No valid flex found]))
-AC_MSG_NOTICE([flex: ${LEX}])
-AX_PROG_BISON([],AC_MSG_ERROR([No valid bison found]))
-AC_MSG_NOTICE([bison: ${BISON}])
 
 AC_LANG([C++])
 AC_HEADER_STDC

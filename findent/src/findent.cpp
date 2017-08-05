@@ -1,4 +1,4 @@
-// $Id: findent.cpp 168 2016-12-10 05:11:57Z willem_vermin $
+// $Id: findent.cpp 199 2017-04-21 16:16:57Z willem_vermin $
 #include <cstdio>
 #include <iostream>
 #include <stack>
@@ -134,6 +134,7 @@ bool upcase_routine_type = 0; // 1: use 'SUBROUTINE' etc in stead of 'subroutine
 bool simple_end_found  = 0;
 bool return_format = 0;       // 1: return 2 if format==free, 4 if format==fixed
 bool only_fix_free = 0;       // 1: determine only if fixed or free (-q)
+bool apply_indent = 1;        // 1: output indented line, else output original lines
 
 simpleostream mycout;
 
@@ -150,6 +151,7 @@ int main(int argc, char*argv[])
    output_format       = 0;
    last_indent_only    = 0;
    last_usable_only    = 0;
+   apply_indent        = 1;
 
    int c;
    opterr = 0;
@@ -201,6 +203,8 @@ int main(int argc, char*argv[])
 	       input_format = FREE;
 	    else if (std::string(optarg) == "auto")
 	       input_format = determine_fix_or_free(1);
+	    else if (optarg[0] == '-')
+	       apply_indent = 0;
 	    else
 	    {
 	       all_indent        = atoi(optarg);
@@ -1262,9 +1266,22 @@ void output_line()
 	       routinetype = stoupper(routinetype);
 	    lines[0] = lines[0].substr(0,p+3)+
 	       " "+routinetype+" "+cur_rprop.name + lines[0].substr(p+3);
+	    if (! apply_indent)
+	       olines[0] = lines[0];
 	    D(O(s);O(lines[0]););
 	 }
       }
+   }
+
+   if (! apply_indent)
+   {
+      while (! olines.empty())
+      {
+	 mycout << olines.front() << endline;
+	 lines.pop_front();
+	 olines.pop_front();
+      }
+      return;
    }
 
    if (input_format == FREE)
@@ -1767,6 +1784,7 @@ void usage(const bool doman)
    manout(" ","(default: auto)",                                          doman);
    manout("-ifree","force input format free",                             doman);
    manout(" ","(default: auto)",                                          doman);
+   manout("-i-","do not change indent (useful in combination with -R)",   doman);
    manout("-Lnnn","use only first nnn characters of each line",           doman);
    manout(" ","default=0: take whole lines",                              doman);
    manout("-Lnnng","same as above, but use gfortran convention",          doman);

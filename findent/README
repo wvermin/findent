@@ -274,16 +274,71 @@ findent, usage?
 
    	Findent indents comment lines, but does not touch comment lines
 	with the '!' in column one.
-	 
 
-   Installation:
+   NOTE 4.1: handling of comment lines converting fixed to free format
+
+        As said above, findent does not touch comments starting
+	in column 1. Since all vintage comments start in column 1,
+	this has the effect that these comments will not be indented
+	when converting from fixed to free format (using -ofree).
+	If you want the comments indented, convert to free format,
+	add a space before every line and use findent again.
+
+	Example if the stream editor 'sed' is available:
+
+	  findent -ofree < prog.f | sed 's/^/ /' | findent > prog.f90
+
+	If 'sed' is not available (on Windows for example), you
+	can create the program 'addspace' or, on Windows, 'addspace.exe'
+	by compiling this program:
+
+>>>> snip --------------------------------------------------------------
+program addspace
+   implicit none
+   character(1000) :: line
+   integer         :: io
+   do
+      read(*,'(a)',iostat=io) line
+      if (io .ne. 0) exit
+      write(*,'(1x,a)') trim(line)
+   enddo
+end program addspace
+<<<< snip --------------------------------------------------------------
+
+        Or, if you have a vintage Fortran-4 compiler, by compiling
+	this program:
+
+>>>> snip --------------------------------------------------------------
+      DIMENSION L(1000)
+      DATA LB/1H /
+   10 DO 15 I=1,1000
+   15 L(I)=LB
+      READ(5,100,END=30) L
+      DO 20 I=1000,1,-1
+         IF (L(I)-LB) 25,20,25
+   20 CONTINUE
+      WRITE(6,110)
+      GOTO 10
+   25 WRITE(6,110) (L(J),J=1,I)
+      GOTO 10
+   30 CONTINUE
+  100 FORMAT(1000A1)
+  110 FORMAT(1H ,1000A1)
+      END
+<<<< snip --------------------------------------------------------------
+
+        Use the generated program 'addspace' in stead of 'sed':
+
+        findent -ofree < prog.f | addspace | findent > prog.f90
+
+findent, installation:
+
+   (For a more comprehensive text, see README.1st and INSTALL)
 
    Linux:
 	 $ ./configure --prefix=/usr/local
 	 $ make
 	 $ sudo make install
-     or, if the executable in the tarball works:
-         $ sudo install bin/findent /usr/local/bin
 
    Windows:
       copy findent.exe C:\WINDOWS
@@ -306,7 +361,7 @@ wfindent
      
       If you installed findent with the ./configure, make, make install 
       method, wfindent is installed as well.
-      Otherwize:
+      Otherwise:
       $ sudo install scripts/wfindent /usr/local/bin
 
 
@@ -370,4 +425,4 @@ improvements.
 
 November 2016, Willem Vermin, wvermin@gmail.com
 
-# $Id: README 151 2016-11-21 19:59:31Z willem_vermin $
+# $Id: README 206 2017-07-19 07:06:28Z willem_vermin $

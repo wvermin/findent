@@ -1,0 +1,6 @@
+findent (2.5) unstable; urgency=low
+
+  * Initial release. Closes #2.
+  *  adjusted Makefile.am and src/Makefile.am.
+
+ -- Willem Vermin <wvermin@gmail.com>  Mon, 10 Aug 2015 12:58:45 +0200

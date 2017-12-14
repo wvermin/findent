@@ -1,0 +1,69 @@
+Usage of findent in gedit
+
+1) as an external tool:
+
+   Enter the following comamnds:
+
+#################################################
+mkdir -p $HOME/bin
+findent --gedit_external > $HOME/bin/findent-gedit
+chmod +x $HOME/bin/findent-gedit
+#################################################
+
+   Make sure the $HOME/bin is in the PATH environment variable.
+
+    Open gedit:
+    ----------------------- 
+       (Edit ->) Preferences -> plugins : enable "External Tools"
+       Close gedit and start it again.
+       Tools -> Manage External Tools -> Add
+          - rename "New Tool" into findent
+          - put 
+               findent-gedit
+            in the tool
+          Shortcut Key:  <Alt>F11   (or something more to your liking)
+          Save:          Nothing
+          Input:         Current document
+          Output:        Replace current document
+          Applicability: All documents   Fortran 95
+          
+    ----------------------- 
+
+      Alternatively, if all is well, it would be sufficient to place
+      the command
+	 findent -Ia -i3
+      in the tool, but the script findent-gedit does some sanity checks
+      to prevent "oops" experiences.
+
+2) as plugin:
+
+  Find the location of the directory where gedit expects the configuration
+  files, we assume here $HOME/.local/share/gedit/plugins
+  Enter the following commands:
+
+##################################################
+geditroot=$HOME/.local/share/gedit/plugins
+mkdir -p $geditroot
+findent --gedit_plugin > $geditroot/findent.plugin
+findent --gedit_plugin_py > $geditroot/findent.py
+##################################################
+
+ in gedit:
+   (Edit ->) Preferences -> plugins -> check: findent
+  findent is available in popup menu (right-click) and
+  shortcut <Ctrl><Alt>f . You can change that in 
+  findent.py, look for the definition of 'shortcut'.
+
+  Advantage of plugin over external tool: gedit scrolls
+  back to point where you called findent.
+
+Flags for findent:
+
+  both the external command as the plugin pass the environment
+  variable GEDIT_FINDENT_FLAGS to findent. Example: if you
+  want general indentation set to 2 but indentation of do-loops
+  set to 4, specify:
+    export GEDIT_FINDENT_FLAGS="-i2 -d4"
+  Use
+    findent -h
+  for a list of flags.

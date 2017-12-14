@@ -101,7 +101,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_findent_OBJECTS = findent.$(OBJEXT) lexer.$(OBJEXT) \
-	parser.$(OBJEXT) line_prep.$(OBJEXT) pre_analyzer.$(OBJEXT)
+	parser.$(OBJEXT) line_prep.$(OBJEXT) pre_analyzer.$(OBJEXT) \
+	vim_plugin.$(OBJEXT) gedit_plugin.$(OBJEXT)
 findent_OBJECTS = $(am_findent_OBJECTS)
 findent_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -311,17 +312,23 @@ PARFILES = parser.cpp      parser.h
 BUILDPARFILES = buildparser.cpp buildparser.h
 LEXFILES = lexer.cpp
 BUILDLEXFILES = buildlexer.cpp
+AM_CXXFLAGS = -fPIC
 MOSTLYCLEANFILES = 
-CLEANFILES = $(LEXFILES) $(PARFILES) findent findent.exe test/*.try.f test/a.out test/*.mod findent.1 parser.cpp.h parser.hpp parser_report.txt
+CLEANFILES = $(LEXFILES) $(PARFILES) findent findent.exe findent.1 parser.cpp.h parser.hpp parser_report.txt *.inc
 DISTCLEANFILES = dummylexer dummyparser
 MAINTAINERCLEANFILES = $(BUILDPARFILES) $(BUILDLEXFILES)
 @MAKEMAN_TRUE@man1_MANS = findent.1
+TOCPP = $(top_srcdir)/src/tocpp.sh
+VIMDIR = $(top_srcdir)/vim
+GEDITDIR = $(top_srcdir)/gedit
 findent_SOURCES = findent.cpp lexer.cpp parser.cpp \
 		  line_prep.cpp pre_analyzer.cpp debug.h \
 		  line_prep.h pre_analyzer.h version.h \
-		  findent.h simpleostream.h
+		  findent.h simpleostream.h \
+		  vim_plugin.cpp vim_plugin.h \
+		  gedit_plugin.cpp gedit_plugin.h 
 
-EXTRA_DIST = lexer.l parser.y
+EXTRA_DIST = lexer.l parser.y tocpp.sh
 all: all-am
 
 .SUFFIXES:
@@ -415,10 +422,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/findent.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gedit_plugin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lexer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/line_prep.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pre_analyzer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vim_plugin.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -731,6 +740,32 @@ uninstall-man: uninstall-man1
 @MAKEMAN_TRUE@	./findent -H > $@
 
 findent.o: parser.h
+
+vim_plugin.o: vim_fortran.inc vim_findent.inc vim_help.inc
+
+gedit_plugin.o: gedit_external.inc gedit_plugin.inc gedit_plugin_py.inc \
+   gedit_help.inc
+
+vim_fortran.inc: $(VIMDIR)/fortran.vim $(TOCPP)
+	$(TOCPP) < $(VIMDIR)/fortran.vim > $@
+
+vim_findent.inc: $(VIMDIR)/findent.vim $(TOCPP)
+	$(TOCPP) < $(VIMDIR)/findent.vim > $@
+
+vim_help.inc: $(VIMDIR)/README $(TOCPP)
+	$(TOCPP) < $(VIMDIR)/README > $@
+
+gedit_external.inc: $(GEDITDIR)/findent-gedit $(TOCPP)
+	$(TOCPP) < $(GEDITDIR)/findent-gedit > $@
+
+gedit_plugin.inc: $(GEDITDIR)/findent.plugin $(TOCPP)
+	$(TOCPP) < $(GEDITDIR)/findent.plugin > $@
+
+gedit_plugin_py.inc: $(GEDITDIR)/findent.py $(TOCPP)
+	$(TOCPP) < $(GEDITDIR)/findent.py > $@
+
+gedit_help.inc: $(GEDITDIR)/README $(TOCPP)
+	$(TOCPP) < $(GEDITDIR)/README > $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

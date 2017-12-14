@@ -1,4 +1,0 @@
-#!/bin/sh
-./test-compile.sh progfixed.f
-rc=$?
-exit $rc

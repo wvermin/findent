@@ -1,0 +1,10 @@
+[Plugin]
+Loader=python3
+Module=findent
+IAge=3
+Name=findent
+Description=Indent Fortran source
+Authors=Willem Vermin
+Copyright=Copyright @ 2017 Willem Vermin
+Website=http://www.gedit.org
+Version=0.1

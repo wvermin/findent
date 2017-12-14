@@ -1,7 +1,7 @@
-$Id: ChangeLog 207 2017-07-19 07:35:25Z willem_vermin $
+$Id: ChangeLog 220 2017-12-01 08:44:21Z willem_vermin $
 findent-2.7.4:
 	src/Makefile.am, configure.ac: if flex/bison is not
-	  to beused, but lexer.l or parser.y has been changed,
+	  to be used, but lexer.l or parser.y has been changed,
 	  produce a warning message.
 	maketar: remove creating executable 
 	Readme.1st: adapted to previous line
@@ -22,6 +22,24 @@ findent-2.7.4:
 	  mv findent to findent.exe when compiling for windows.
 	  Somehow, now the mingw compiler does not generate foo.exe
 	  when requested to produce foo.
+	findent.cpp:
+	   add comment for names of long flags
+	   add -osame option
+	findent.cpp tocpp.sh vim_plugin.cpp vim_plugin.h gedit_plugin.cpp
+	            gedit_plugin.h
+	   let findent output configuration files for usage with vim
+	   and gedit. Flags:
+	    --vim_help
+	    --gedit_help
+	    --vim_findent
+	    --vim_fortran
+	    --gedit_external
+	    --gedit_plugin
+	    --gedit_plugin_py
+	test:
+	   use only one or two lines for testing flags -h, -H
+	   add tests (test16.sh) for vim and gedit related flags
+
 findent-2.7.3:
 findent-2.7.2:
 	copyright: BSD-3

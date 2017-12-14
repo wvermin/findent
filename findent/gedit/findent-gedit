@@ -1,0 +1,86 @@
+#!/bin/bash
+# to be used in gedit to indent fortran source
+# in gedit:
+#    Edit -> preferences -> enable "External Tools"
+#    Tools -> Manage External Tools -> Add
+#       - rename "New Tool" into findent
+#       - put this file in the tool, or place a command
+#          in the tool that starts this script
+#       Shortcut Key:  <Alt>F1    (or something more to your liking)
+#       Save:          Nothing
+#       Input:         Current document
+#       Output:        Replace current document
+#       Applicability: All documents   Fortran 95
+#       
+flags="-Ia -i3"              # flags for findent
+fin=`mktemp`
+fout=`mktemp`
+trap "rm $fin $fout" 0        # remove temps on exit
+restore()
+{
+   cat $fin
+   if [ "$lineadded" = "yes" ] ; then
+      echo "empty line added" >&2
+   else
+      echo "nothing changed" >&2
+   fi
+   exit
+}
+cat > $fin                    # copy input to $fin
+# gedit veresion 2 has some troubles keeping stdout and 
+#  stderr separate when stdout does not end with newline.
+# add newline if input file does not end with newline:
+lastchar="$(tail -c1 $fin | od -a -An | tr -d ' ')"
+if [ "$lastchar" != "nl" ] ; then
+   echo >> $fin
+   lineadded=yes
+else
+   lineadded=no
+fi
+if [ "$GEDIT_CURRENT_DOCUMENT_TYPE" != "text/x-fortran" ]; then
+   echo "not a fortran file" >&2
+   restore
+fi
+FINDENT=`which /bin/ls 2>/dev/null`
+FINDENT=`which findent 2>/dev/null`
+if [ -z "$FINDENT" ] ; then
+   echo "cannot find findent" 1>&2
+   restore
+fi
+fname="$GEDIT_CURRENT_DOCUMENT_NAME" # get the file name
+# get suffix in lowercase:
+suffix=`echo "${fname##*.}" | tr '[:upper:]' '[:lower:]'` 
+# determine input type (fflag) from suffix:
+case "$suffix" in
+   f|for|fpp|ftn|fortran|f77)
+      fflag="-ifixed"
+      ;;
+   f90|f95|f03|f08)
+      fflag="-ifree"
+      ;;
+   *)
+      # let findent find out:
+      fflag=""
+      ;;
+esac
+findentflags="$flags $fflag"
+# run findent:
+$FINDENT $findentflags $GEDIT_FINDENT_FLAGS < $fin > $fout 2>/dev/null
+if [ $? -ne 0 ] ; then
+   echo "findent reports error" >&2
+   echo "using \"$FINDENT $findentflags $GEDIT_FINDENT_FLAGS\"" >&2
+   restore
+fi
+# check if output has same number of lines as input:
+win=`wc -l < $fin`
+wout=`wc -l < $fout`
+if [ "$win" != "$wout" ] ; then
+   echo "findent does not function properly" >&2
+   restore
+fi
+# produce the result
+echo $wout lines indented 1>&2
+if [ "$lineadded" = "yes" ] ; then
+   echo "empty line added" >&2
+fi
+cat $fout

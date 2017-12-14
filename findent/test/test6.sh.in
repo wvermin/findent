@@ -1,4 +1,0 @@
-#!/bin/sh
-./test-compile.sh progfree.f
-rc=$?
-exit $rc

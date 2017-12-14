@@ -1,40 +1,11 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT(findent, 2.7.4~pre3, wvermin@gmail.com)
+AC_INIT(findent, 2.7.4~pre6, wvermin@gmail.com)
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/findent.cpp])
 AC_CONFIG_HEADERS([config.h])
-
-AC_CONFIG_FILES([test/progfixed-dos.f])
-AC_CONFIG_FILES([test/progfixed-dos.f.try.f.ref])
-AC_CONFIG_FILES([test/progfixed.f])
-AC_CONFIG_FILES([test/progfixedfree-dos.f])
-AC_CONFIG_FILES([test/progfixedfree-dos.f.try.f.ref])
-AC_CONFIG_FILES([test/progfixedfree.f])
-AC_CONFIG_FILES([test/progfixedfree.f.try.f.ref])
-AC_CONFIG_FILES([test/progfixed.f.try.f.ref])
-AC_CONFIG_FILES([test/progfree-dos.f])
-AC_CONFIG_FILES([test/progfree-dos.f.try.f.ref])
-AC_CONFIG_FILES([test/progfree.f])
-AC_CONFIG_FILES([test/progfree.f.try.f.ref])
-AC_CONFIG_FILES([test/progfree1.f])
-AC_CONFIG_FILES([test/progfree1.f.try.f.ref])
-AC_CONFIG_FILES([test/progfixed1.f])
-AC_CONFIG_FILES([test/progfixed1.f.try.f.ref])
-
-AC_CONFIG_FILES([test/test-compile.sh],[chmod +x test/test-compile.sh])
-AC_CONFIG_FILES([test/test1.sh],[chmod +x test/test1.sh])
-AC_CONFIG_FILES([test/test2.sh],[chmod +x test/test2.sh])
-AC_CONFIG_FILES([test/test3.sh],[chmod +x test/test3.sh])
-AC_CONFIG_FILES([test/test4.sh],[chmod +x test/test4.sh])
-AC_CONFIG_FILES([test/test5.sh],[chmod +x test/test5.sh])
-AC_CONFIG_FILES([test/test6.sh],[chmod +x test/test6.sh])
-AC_CONFIG_FILES([test/test7.sh],[chmod +x test/test7.sh])
-AC_CONFIG_FILES([test/test8.sh],[chmod +x test/test8.sh])
-AC_CONFIG_FILES([test/test10.sh],[chmod +x test/test10.sh])
-AC_CONFIG_FILES([test/test11.sh],[chmod +x test/test11.sh])
 
 AC_SUBST([make_include], ["include"])
 
@@ -111,4 +82,4 @@ AC_LANG([C++])
 AC_HEADER_STDC
 AC_CHECK_HEADERS([iostream string stack vector cstdio queue algorithm sstream],[],AC_MSG_ERROR([Exiting])) 
 
-AC_OUTPUT(Makefile src/Makefile scripts/Makefile test/Makefile)
+AC_OUTPUT(Makefile src/Makefile scripts/Makefile test/Makefile vim/Makefile gedit/Makefile)

@@ -94,14 +94,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = progfixed-dos.f progfixed-dos.f.try.f.ref \
-	progfixed.f progfixedfree-dos.f progfixedfree-dos.f.try.f.ref \
-	progfixedfree.f progfixedfree.f.try.f.ref \
-	progfixed.f.try.f.ref progfree-dos.f progfree-dos.f.try.f.ref \
-	progfree.f progfree.f.try.f.ref progfree1.f \
-	progfree1.f.try.f.ref progfixed1.f progfixed1.f.try.f.ref \
-	test-compile.sh test1.sh test2.sh test3.sh test4.sh test5.sh \
-	test6.sh test7.sh test8.sh test10.sh test11.sh
+CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -327,24 +320,7 @@ TEST_LOGS = $(am__test_logs2:.test.log=.log)
 TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/progfixed-dos.f.in \
-	$(srcdir)/progfixed-dos.f.try.f.ref.in \
-	$(srcdir)/progfixed.f.in $(srcdir)/progfixed.f.try.f.ref.in \
-	$(srcdir)/progfixed1.f.in $(srcdir)/progfixed1.f.try.f.ref.in \
-	$(srcdir)/progfixedfree-dos.f.in \
-	$(srcdir)/progfixedfree-dos.f.try.f.ref.in \
-	$(srcdir)/progfixedfree.f.in \
-	$(srcdir)/progfixedfree.f.try.f.ref.in \
-	$(srcdir)/progfree-dos.f.in \
-	$(srcdir)/progfree-dos.f.try.f.ref.in $(srcdir)/progfree.f.in \
-	$(srcdir)/progfree.f.try.f.ref.in $(srcdir)/progfree1.f.in \
-	$(srcdir)/progfree1.f.try.f.ref.in \
-	$(srcdir)/test-compile.sh.in $(srcdir)/test1.sh.in \
-	$(srcdir)/test10.sh.in $(srcdir)/test11.sh.in \
-	$(srcdir)/test2.sh.in $(srcdir)/test3.sh.in \
-	$(srcdir)/test4.sh.in $(srcdir)/test5.sh.in \
-	$(srcdir)/test6.sh.in $(srcdir)/test7.sh.in \
-	$(srcdir)/test8.sh.in $(top_srcdir)/test-driver
+am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -447,11 +423,30 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-TESTS = test1.sh test2.sh test3.sh test4.sh test5.sh test6.sh test7.sh test8.sh \
-	test10.sh test11.sh
+TESTS = test1.sh test2.sh test3.sh test4.sh test5.sh test6.sh \
+	test7.sh test8.sh \
+	test9.sh test10.sh test11.sh test12.sh \
+	test13.sh test14.sh test15.sh test16.sh
 
-CLEANFILES = prog *.mod 
-DISTCLEANFILES = *.f
+EXTRA_DIST = test1.sh test2.sh test3.sh test4.sh test5.sh test6.sh \
+	test7.sh test8.sh \
+	test9.sh test10.sh test11.sh test12.sh \
+	test13.sh test14.sh test15.sh test16.sh \
+	test-compile.sh \
+	progfixed-dos.f progfixed.f progfixed1.f progfixed.f \
+	progfixedfree.f progfree-dos.f progfixed-dos.f \
+	progfixedfree-dos.f progfree1.f progfree.f \
+	progfixed-dos.f.try.f.ref progfixed.f.try.f.ref \
+	progfixedfree-dos.f.try.f.ref progfixedfree.f.try.f.ref \
+	progfree-dos.f.try.f.ref progfree.f.try.f.ref \
+	progfree1.f.try.f.ref progfixed1.f.try.f.ref \
+	help.ref manpage.ref \
+        vim_help.ref gedit_help.ref vim_fortran.ref vim_findent.ref \
+	gedit_external.ref gedit_plugin.ref gedit_plugin_py.ref \
+	doit
+
+CLEANFILES = prog expect result  *.mod *.try
+DISTCLEANFILES = *.f.try.f
 all: all-am
 
 .SUFFIXES:
@@ -485,60 +480,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-progfixed-dos.f: $(top_builddir)/config.status $(srcdir)/progfixed-dos.f.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfixed-dos.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixed-dos.f.try.f.ref.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfixed.f: $(top_builddir)/config.status $(srcdir)/progfixed.f.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfixedfree-dos.f: $(top_builddir)/config.status $(srcdir)/progfixedfree-dos.f.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfixedfree-dos.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixedfree-dos.f.try.f.ref.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfixedfree.f: $(top_builddir)/config.status $(srcdir)/progfixedfree.f.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfixedfree.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixedfree.f.try.f.ref.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfixed.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixed.f.try.f.ref.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfree-dos.f: $(top_builddir)/config.status $(srcdir)/progfree-dos.f.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfree-dos.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfree-dos.f.try.f.ref.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfree.f: $(top_builddir)/config.status $(srcdir)/progfree.f.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfree.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfree.f.try.f.ref.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfree1.f: $(top_builddir)/config.status $(srcdir)/progfree1.f.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfree1.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfree1.f.try.f.ref.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfixed1.f: $(top_builddir)/config.status $(srcdir)/progfixed1.f.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-progfixed1.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixed1.f.try.f.ref.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test-compile.sh: $(top_builddir)/config.status $(srcdir)/test-compile.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test1.sh: $(top_builddir)/config.status $(srcdir)/test1.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test2.sh: $(top_builddir)/config.status $(srcdir)/test2.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test3.sh: $(top_builddir)/config.status $(srcdir)/test3.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test4.sh: $(top_builddir)/config.status $(srcdir)/test4.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test5.sh: $(top_builddir)/config.status $(srcdir)/test5.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test6.sh: $(top_builddir)/config.status $(srcdir)/test6.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test7.sh: $(top_builddir)/config.status $(srcdir)/test7.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test8.sh: $(top_builddir)/config.status $(srcdir)/test8.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test10.sh: $(top_builddir)/config.status $(srcdir)/test10.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-test11.sh: $(top_builddir)/config.status $(srcdir)/test11.sh.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 tags TAGS:
 
 ctags CTAGS:
@@ -743,6 +684,13 @@ test8.sh.log: test8.sh
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test9.sh.log: test9.sh
+	@p='test9.sh'; \
+	b='test9.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 test10.sh.log: test10.sh
 	@p='test10.sh'; \
 	b='test10.sh'; \
@@ -753,6 +701,41 @@ test10.sh.log: test10.sh
 test11.sh.log: test11.sh
 	@p='test11.sh'; \
 	b='test11.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test12.sh.log: test12.sh
+	@p='test12.sh'; \
+	b='test12.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test13.sh.log: test13.sh
+	@p='test13.sh'; \
+	b='test13.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test14.sh.log: test14.sh
+	@p='test14.sh'; \
+	b='test14.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test15.sh.log: test15.sh
+	@p='test15.sh'; \
+	b='test15.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test16.sh.log: test16.sh
+	@p='test16.sh'; \
+	b='test16.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -923,6 +906,8 @@ uninstall-am:
 
 .PRECIOUS: Makefile
 
+
+export SRCDIR = $(top_srcdir)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

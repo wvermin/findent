@@ -1,10 +1,11 @@
-// $Id: findent.cpp 199 2017-04-21 16:16:57Z willem_vermin $
+// $Id: findent.cpp 227 2017-12-03 12:16:49Z willem_vermin $
 #include <cstdio>
 #include <iostream>
 #include <stack>
 #include <queue>
 #include <iomanip>
 #include <unistd.h>
+#include <getopt.h>
 #include <algorithm>
 #include <string.h>
 #include "findent.h"
@@ -12,6 +13,8 @@
 #include "parser.h"
 #include "simpleostream.h"
 #include "pre_analyzer.h"
+#include "vim_plugin.h"
+#include "gedit_plugin.h"
 extern "C" FILE *yyin;
 std::string mygetline();
 void get_full_statement();
@@ -32,6 +35,7 @@ void pop_all(void);
 
 std::string whatprop(struct propstruct p);
 std::string stoupper(const std::string s);
+std::string stolower(const std::string s);
 char firstchar(const std::string s);
 char lastchar(const std::string s);
 
@@ -129,12 +133,13 @@ bool last_indent_only;
 bool last_usable_only;
 bool label_left;              // 1: put statement labels on the start of the line
 const bool label_left_default = 1;
-bool refactor_routines = 0;   // 1: refactor routine-end statements
+bool refactor_routines   = 0; // 1: refactor routine-end statements
 bool upcase_routine_type = 0; // 1: use 'SUBROUTINE' etc in stead of 'subroutine'
-bool simple_end_found  = 0;
-bool return_format = 0;       // 1: return 2 if format==free, 4 if format==fixed
-bool only_fix_free = 0;       // 1: determine only if fixed or free (-q)
-bool apply_indent = 1;        // 1: output indented line, else output original lines
+
+bool simple_end_found    = 0;
+bool return_format       = 0; // 1: return 2 if format==free, 4 if format==fixed
+bool only_fix_free       = 0; // 1: determine only if fixed or free (-q)
+bool apply_indent        = 1; // 1: output indented line, else output original lines
 
 simpleostream mycout;
 
@@ -153,57 +158,150 @@ int main(int argc, char*argv[])
    last_usable_only    = 0;
    apply_indent        = 1;
 
+   char *envopts = getenv("FINDENT_FLAGS");
+   char **flags;
+   char *envflags = strdup("");
+   int nflags = 1;
+   if (envopts != 0)
+   {
+      // collect flags from environment:
+      envflags = strdup(envopts);
+      // malloc enough space for all flags:
+      flags    = (char**) malloc(sizeof(char*)*(strlen(envflags)+argc));
+      flags[0] = argv[0];
+      char *a  = strtok(envflags," \t:");
+      while (a != 0)
+      {
+	 flags[nflags++] = a;
+	 a = strtok(0," \t:");
+      }
+   }
+   else
+   {
+      flags    = (char**) malloc(sizeof(char*)*argc);
+      flags[0] = argv[0];
+   }
+
+   for (int i = 1; i<argc; i++)
+   {
+      // collect flags from command line:
+      flags[nflags++] = argv[i];
+   }
+
+   enum {
+      DO_DUMMY = 1000,
+      DO_INDENT_CONTAINS,
+      DO_INPUT_FORMAT,
+      DO_INDENT,
+      DO_LAST_INDENT,
+      DO_LAST_USABLE,
+      DO_LABEL_LEFT,
+      DO_REFACTOR_PROCEDURE,
+      DO_VIM_FINDENT,
+      DO_VIM_HELP,
+      DO_VIM_FORTRAN,
+      DO_GEDIT_HELP,
+      DO_GEDIT_EXTERNAL,
+      DO_GEDIT_PLUGIN,
+      DO_GEDIT_PLUGIN_PY,
+   };
+
+   static struct option longopts[] =
+   {
+      {"indent"             , required_argument, 0, DO_INDENT            },
+      {"indent_associate"   , required_argument, 0, 'a'                  },
+      {"indent_block"       , required_argument, 0, 'b'                  },
+      {"indent_case"        , required_argument, 0, 'c'                  },
+      {"indent_contains"    , required_argument, 0, DO_INDENT_CONTAINS   },
+      {"indent_do"          , required_argument, 0, 'd'                  },
+      {"indent_entry"       , required_argument, 0, 'e'                  },
+      {"indent_enum"        , required_argument, 0, 'E'                  },
+      {"indent_if"          , required_argument, 0, 'f'                  },
+      {"indent_forall"      , required_argument, 0, 'F'                  },
+      {"help"               , no_argument      , 0, 'h'                  },
+      {"manpage"            , no_argument      , 0, 'H'                  },
+      {"input_format"       , required_argument, 0, DO_INPUT_FORMAT      },
+      {"start_indent"       , required_argument, 0, 'I'                  },
+      {"indent_interface"   , required_argument, 0, 'j'                  },
+      {"indent_continuation", required_argument, 0, 'k'                  },
+      {"last_indent"        , no_argument      , 0, DO_LAST_INDENT       },
+      {"last_usable"        , no_argument      , 0, DO_LAST_USABLE       },
+      {"label_left"         , required_argument, 0, DO_LABEL_LEFT        },
+      {"input_line_length"  , required_argument, 0, 'L'                  },
+      {"indent_module"      , required_argument, 0, 'm'                  },
+      {"output_format"      , required_argument, 0, 'o'                  },
+      {"query_fix_free"     , no_argument      , 0, 'q'                  },
+      {"indent_procedure"   , required_argument, 0, 'r'                  },
+      {"refactor_procedures", optional_argument, 0, DO_REFACTOR_PROCEDURE},
+      {"indent_select"      , required_argument, 0, 's'                  },
+      {"indent_type"        , required_argument, 0, 't'                  },
+      {"version"            , no_argument      , 0, 'v'                  },
+      {"indent_where"       , required_argument, 0, 'w'                  },
+      {"indent_critical"    , required_argument, 0, 'x'                  },
+      {"vim_help"           , no_argument      , 0, DO_VIM_HELP          },
+      {"gedit_help"         , no_argument      , 0, DO_GEDIT_HELP        },
+      {"vim_fortran"        , no_argument      , 0, DO_VIM_FORTRAN       },
+      {"vim_findent"        , no_argument      , 0, DO_VIM_FINDENT       },
+      {"gedit_external"     , no_argument      , 0, DO_GEDIT_EXTERNAL    },
+      {"gedit_plugin"       , no_argument      , 0, DO_GEDIT_PLUGIN      },
+      {"gedit_plugin_py"    , no_argument      , 0, DO_GEDIT_PLUGIN_PY   },
+
+      {0,0,0,0}
+   };
    int c;
    opterr = 0;
-   while((c=getopt(argc,argv,"a:b:c:C:d:e:E:f:F:hHi:I:j:k:l:L:m:o:qQr:R:s:t:vw:x:"))!=-1)
+   int option_index = 0;
+   std::string option_name;
+   while((c=getopt_long(nflags,flags,"a:b:c:C:d:e:E:f:F:hHi:I:j:k:l:L:m:o:qQr:R:s:t:vw:x:",
+	       longopts, &option_index))!=-1)
       switch(c)
       {
-	 case 'a' :
+	 case 'a' :                            // --indent_associate=nn
 	    associate_indent  = atoi(optarg);
 	    break;
 	 case 'b' :
-	    block_indent      = atoi(optarg);
+	    block_indent      = atoi(optarg);  // --indent_block=nn
 	    break;
 	 case 'c' :
-	    case_indent       = atoi(optarg);
+	    case_indent       = atoi(optarg);  // --indent_case=nn
 	    break;
-	 case 'C' :
+	 case 'C' :                            // --indent_contains=nn/none
 	    if(optarg[0] == '-')
 	       indent_contain = 0;
 	    else
 	       contains_indent   = atoi(optarg);
 	    break;
-	 case 'd' :
+	 case 'd' :                            // --indent_do=nn
 	    do_indent         = atoi(optarg);
 	    break;
 	 case 'e' :
-	    entry_indent      = atoi(optarg);
+	    entry_indent      = atoi(optarg);  // --indent_entry=nn
 	    break;
 	 case 'E' :
-	    enum_indent       = atoi(optarg);
+	    enum_indent       = atoi(optarg);  // --indent_enum=nn
 	    break;
 	 case 'f' :
-	    if_indent         = atoi(optarg);
+	    if_indent         = atoi(optarg);  // --indent_if=nn
 	    break;
 	 case 'F' :   
-	    forall_indent     = atoi(optarg);
+	    forall_indent     = atoi(optarg);  // --indent_forall=nn
 	    break;
-	 case 'h' :
+	 case 'h' :                            // --help
 	    usage(0);
 	    return 0;
 	    break;
-	 case 'H':
+	 case 'H':                             // --manpage
 	    usage(1);
 	    return 0;
 	    break;
-	 case 'i' :
+	 case 'i' :                            // --input_format=fixed/free/auto
 	    if      (std::string(optarg) == "fixed")
 	       input_format = FIXED;
 	    else if (std::string(optarg) == "free")
 	       input_format = FREE;
 	    else if (std::string(optarg) == "auto")
-	       input_format = determine_fix_or_free(1);
-	    else if (optarg[0] == '-')
+	       input_format = 0;
+	    else if (optarg[0] == '-')        // --indent=no/nn
 	       apply_indent = 0;
 	    else
 	    {
@@ -215,7 +313,7 @@ int main(int argc, char*argv[])
 		  if (input_format == FREE)  O("free")
 	     )
 	       break;
-	 case 'I' :
+	 case 'I' :                          // --start_indent=nn/auto
 	    if (optarg[0] == 'a')
 	       auto_firstindent = 1;
 	    else
@@ -225,44 +323,52 @@ int main(int argc, char*argv[])
 	    }
 	    break;
 	 case 'j' :
-	    interface_indent  = atoi(optarg);
+	    interface_indent  = atoi(optarg);  // --indent_interface=nn
 	    break;
-	 case 'k' :
-	    if (optarg[0] == '-')
+	 case 'k' :                           // --indent_continuation=nn/no
+	    if (optarg[0] == '-' || !strcmp(optarg,"none"))
 	       indent_cont = 0;
 	    else
 	       cont_indent = atoi(optarg);
 	    break;
 	 case 'l' :
-	    if(std::string(optarg) == "astindent")
+	    if(std::string(optarg) == "astindent")      // --last_indent
 	       last_indent_only = 1;
-	    else if(std::string(optarg) == "astusable")
+	    else if(std::string(optarg) == "astusable")  // --last_usable
 	       last_usable_only = 1;
 	    else
-	       label_left     = (atoi(optarg) != 0);
+	       label_left     = (atoi(optarg) != 0);     // --label_left=0/1
 	    break;
 	 case 'L' :
-	    input_line_length = atoi(optarg);
+	    input_line_length = atoi(optarg);            // --input_line_length=nn
 	    input_format_gnu  = (optarg[strlen(optarg)-1] == 'g');
 	 case 'm' :
-	    module_indent     = atoi(optarg);
+	    module_indent     = atoi(optarg);           // --indent_module=nn
 	    break;
 	 case 'o' :
-	    if(std::string(optarg) == "free")
+	    if(std::string(optarg) == "free")           // --output_format=free/same
+	    {
 	       output_format = FREE;
-	    break;
-	 case 'q' :
+	       break;
+	    }
+	    if(std::string(optarg) == "same")
+	    {
+	       output_format = 0;
+	       break;
+	    }
+
+	 case 'q' :                                    // --query_fix_free
 	    only_fix_free = 1;
 	    break;
 	 case 'Q':
 	    // return 2 if free, 4 if fixed
-	    // not dodumented, maybe useful in the future
+	    // not documented, maybe useful in the future
 	    return_format = 1;
 	    break;
-	 case 'r' :
+	 case 'r' :                                    // --indent_procedure
 	    routine_indent    = atoi(optarg);
 	    break;
-	 case 'R':
+	 case 'R':                                     // --refactor_procedures[=upcase]
 	    switch(optarg[0])
 	    {
 	       case 'R' :
@@ -272,23 +378,88 @@ int main(int argc, char*argv[])
 		  break;
 	    }
 	    break;
-	 case 's' :
+	 case 's' :                                 // --indent_select=nn
 	    select_indent     = atoi(optarg);
 	    break;
 	 case 't' :
-	    type_indent       = atoi(optarg);
+	    type_indent       = atoi(optarg);      // --indent_type=nn
 	    break;
 	 case 'v' :
-	    std::cout << "findent version "<<VERSION<<std::endl;
+	    std::cout << "findent version "<<VERSION<<std::endl;  // --version
 	    return 0;
 	    break;
 	 case 'w' :
-	    where_indent      = atoi(optarg);
+	    where_indent      = atoi(optarg);       // --indent_where=nn
 	    break;
 	 case 'x' :
-	    critical_indent   = atoi(optarg);
+	    critical_indent   = atoi(optarg);       // --indent_critical=nn
 	    break;
+	 case DO_INDENT_CONTAINS:
+	    if (!strcmp(optarg,"restart"))
+	       indent_contain = 0;
+	    else
+	       contains_indent = atoi(optarg);
+	    break;
+	 case DO_INPUT_FORMAT:
+	    if (!strcmp(optarg,"fixed"))
+	       input_format = FIXED;
+	    else if (!strcmp(optarg,"free"))
+	       input_format = FREE;
+	    else if (!strcmp(optarg,"auto"))
+	       input_format = 0;
+	    break;
+	 case DO_INDENT:
+	    if (!strcmp(optarg,"none"))
+	       apply_indent = 0;
+	    else
+	    {
+	       all_indent = atoi(optarg);
+	       set_default_indents();
+	    }
+	    break;
+	 case DO_LAST_INDENT:
+	    last_indent_only = 1;
+	    break;
+	 case DO_LAST_USABLE:
+	    last_usable_only = 1;
+	    break;
+	 case DO_LABEL_LEFT:
+	    label_left     = (atoi(optarg) != 0);     // --label_left=0/1
+	    break;
+	 case DO_REFACTOR_PROCEDURE:
+	    refactor_routines    = 1;
+	    upcase_routine_type  = 0;
+	    if (optarg != 0)
+	    {
+	       if (!strcmp(optarg,"upcase"))
+		  upcase_routine_type = 1;
+	    }
+	    break;
+	 case DO_VIM_HELP:
+	    do_vim_help();
+	    return 0;
+	 case DO_VIM_FINDENT:
+	    do_vim_findent();
+	    return 0;
+	 case DO_VIM_FORTRAN:
+	    do_vim_fortran();
+	    return 0;
+	 case DO_GEDIT_HELP:
+	    do_gedit_help();
+	    return 0;
+	 case DO_GEDIT_EXTERNAL:
+	    do_gedit_external();
+	    return 0;
+	 case DO_GEDIT_PLUGIN:
+	    do_gedit_plugin();
+	    return 0;
+	 case DO_GEDIT_PLUGIN_PY:
+	    do_gedit_plugin_py();
+	    return 0;
       }
+
+   free(flags);
+   free(envflags);
 
    handle_reading_from_tty();
 
@@ -1235,6 +1406,15 @@ std::string stoupper(const std::string s)
    return sl;
 }
 
+std::string stolower(const std::string s)
+{
+   std::string sl = s;
+   int l     = sl.size();
+   for (int i=0; i<l; i++)
+      sl[i] = tolower(sl[i]);
+   return sl;
+}
+
 void output_line()
 {
    D(O("output_line, nr of lines:");O(lines.size());O("cur_indent");O(cur_indent);O("already done:"););
@@ -1767,39 +1947,42 @@ void usage(const bool doman)
       std::cout << "  general:"                                               << std::endl;
    }
 
-   manout("-h","print this text",                                         doman);
-   manout("-H","print man page",                                          doman);
-   manout("-v","prints findent version",                                  doman);
-   manout("-q","guess free or fixed, prints 'fixed' or 'free' and exits", doman);
+   manout(" ","Below: <n> denotes an unsigned decimal number."                                             ,doman);
+   manout("-h, --help"                       ,"print this text"                                            ,doman);
+   manout("-H, --manpage"                    ,"print man page"                                             ,doman);
+   manout("-v, --version"                    ,"prints findent version"                                     ,doman);
+   manout("-q, --query_fix_free"             ,"guess free or fixed, prints 'fixed' or 'free' and exits"    ,doman);
    //manout("-Q","returncode=2 for free, 4 for fixed",                      doman);
    //manout(" ","      (for usage with vim)",                               doman);
-   manout("-l","(0/1) 1: statement labels to start of line (default:1)",  doman);
-   manout(" ","      (only for free format)",                             doman);
-   manout("-lastindent","prints computed indentation of last line",       doman);
-   manout(" ","      (for usage with vim)",                               doman);
-   manout("-lastusable","prints line number of last line usable",         doman);
-   manout(" ","      as start for indenting(for usage with vim)",         doman);
-   manout("-iauto","determine automatically input format (free or fixed)",doman);
-   manout("-ifixed","force input format fixed",                           doman);
-   manout(" ","(default: auto)",                                          doman);
-   manout("-ifree","force input format free",                             doman);
-   manout(" ","(default: auto)",                                          doman);
-   manout("-i-","do not change indent (useful in combination with -R)",   doman);
-   manout("-Lnnn","use only first nnn characters of each line",           doman);
-   manout(" ","default=0: take whole lines",                              doman);
-   manout("-Lnnng","same as above, but use gfortran convention",          doman);
-   manout(" ","for counting the characters with tabbed lines",            doman);
-   manout("-ofree","force free format output",                            doman);
-   manout("-Rr","refactor blocks: a single 'end'",                        doman);
-   manout(" "," is, if possible, replaced by",                            doman);
-   manout(" "," 'end subroutine <name>' or",                              doman);
-   manout(" "," 'end function <name>' or",                                doman);
-   manout(" "," 'end program <name>' or",                                 doman);
-   manout(" "," 'end blockdata <name>' or",                               doman);
-   manout(" "," 'end module <name>'",                                     doman);
-   manout(" "," where <name> is the name of the appropriate block",       doman);
-   manout("-RR","same as -Rr, but 'SUBROUTINE'",                          doman);
-   manout(" ","in stead of 'subroutine' etc",                             doman);
+   manout("-l<n>, --label_left=<n>"          ,"(0/1) 1: move statement labels to start of line (default:1)",doman);
+   manout(" ","      (only for free format)"                                                               ,doman);
+   manout("-lastindent, --last_indent"       ,"prints computed indentation of last line"                   ,doman);
+   manout(" ","      (for usage with vim)"                                                                 ,doman);
+   manout("-lastusable, --last_usable"       ,"prints line number of last line usable"                     ,doman);
+   manout(" ","      as start for indenting(for usage with vim)"                                           ,doman);
+   manout("-iauto, --input_format=auto"      ,"determine automatically input format (free or fixed)"       ,doman);
+   manout("-ifixed, --input_format=fixed"    ,"force input format fixed"                                   ,doman);
+   manout(" ","(default: auto)"                                                                            ,doman);
+   manout("-ifree, --input_format=free"      ,"force input format free"                                    ,doman);
+   manout(" ","(default: auto)"                                                                            ,doman);
+   manout("-i-, --indent=none"               ,"do not change indent (useful in combination with -R)"       ,doman);
+   manout("-L<n>, --input_line_length=<n>"   ,"use only first <n> characters of each line"                 ,doman);
+   manout(" ","default=0: take whole lines"                                                                ,doman);
+   manout("-L<n>g, --input_line_length=<n>g" ,"same as above, but use gfortran convention"                 ,doman);
+   manout(" ","for counting the characters with tabbed lines"                                              ,doman);
+   manout(" "," example: --input_line_length=72g"                                                          ,doman);
+   manout("-ofree, --output_format=free"     ,"force free format output"                                   ,doman);
+   manout("-osame, --output_format=same"     ,"output format same is input format"                         ,doman);
+   manout("-Rr, --refactor_procedures"       ,"refactor procedures and modules: a single 'end'"            ,doman);
+   manout(" "," is, if possible, replaced by"                                                              ,doman);
+   manout(" "," 'end subroutine <name>' or"                                                                ,doman);
+   manout(" "," 'end function <name>' or"                                                                  ,doman);
+   manout(" "," 'end program <name>' or"                                                                   ,doman);
+   manout(" "," 'end blockdata <name>' or"                                                                 ,doman);
+   manout(" "," 'end module <name>'"                                                                       ,doman);
+   manout(" "," where <name> is the name of the appropriate block"                                         ,doman);
+   manout("-RR, --refactor_procedures=upcase","same as -Rr, but 'SUBROUTINE'"                              ,doman);
+   manout(" ","in stead of 'subroutine' etc"                                                               ,doman);
    if(doman)
    {
       std::cout << ".PP" << std::endl << ".SS \"Indenting options:" << std::endl;
@@ -1808,43 +1991,68 @@ void usage(const bool doman)
    {
       std::cout << "  indents:"                                     << std::endl;
    }
-   manout("-In","starting  indent (default:0)",                                                 doman);
-   manout("-Ia","determine starting indent from first line",                                    doman);
-   manout("-in","all       indents except I,c,C,e (default: "+number2string(default_indent)+")",doman);
-   manout("-an","ASSOCIATE    indent",               doman);
-   manout("-bn","BLOCK        indent",               doman);
-   manout("-dn","DO           indent",               doman);
-   manout("-fn","IF           indent",               doman);
-   manout("-En","ENUM         indent",               doman);
-   manout("-Fn","FORALL       indent",               doman);
-   manout("-jn","INTERFACE    indent",               doman);
-   manout("-mn","MODULE       indent",               doman);
-   manout("-rn","FUNCTION and"       ,               doman);
-   manout(" ",  " SUBROUTINE  indent",               doman);
-   manout("-sn","SELECT       indent",               doman);
-   manout("-tn","TYPE         indent",               doman);
-   manout("-wn","WHERE        indent",               doman);
-   manout("-xn","CRITICAL     indent",               doman);
-   manout("-C-","restart indent after CONTAINS",     doman);
-   manout("-kn","continuation indent except   ",     doman);
-   manout(" ","  for lines starting with '&'",       doman);
-   manout(" ","     free to free only",              doman);
-   manout("-k-","continuation lines not preceded",   doman);
-   manout(" ","  by '&' are untouched",              doman);
-   manout(" ","     free to free only",              doman);
-   manout("  ","next defaults are: all - all/2",     doman);
-   manout("-cn","CASE      negative indent",         doman);
-   manout("-Cn","CONTAINS  negative indent",         doman);
-   manout("-en","ENTRY     negative indent",         doman);
-   manout(" "," ",                                   doman);
+   manout("-I<n>, --start_indent=<n>"       ,"starting  indent (default:0)"                                                 ,doman);
+   manout("-Ia, --start_indent=a"           ,"determine starting indent from first line"                                    ,doman);
+   manout("-i<n>, --indent=<n>"             ,"all       indents except I,c,C,e (default: "+number2string(default_indent)+")",doman);
+   manout("-a<n>, --indent_associate=<n>"   ,"ASSOCIATE    indent"                                                          ,doman);
+   manout("-b<n>, --indent_block=<n>"       ,"BLOCK        indent"                                                          ,doman);
+   manout("-d<n> --indent_do=<n>"           ,"DO           indent"                                                          ,doman);
+   manout("-f<n>, --indent_if=<n>"          ,"IF           indent"                                                          ,doman);
+   manout("-E<n>, --indent_enum=<n>"        ,"ENUM         indent"                                                          ,doman);
+   manout("-F<n>, --indent_forall=<n>"      ,"FORALL       indent"                                                          ,doman);
+   manout("-j<n>, --indent_interface=<n>"   ,"INTERFACE    indent"                                                          ,doman);
+   manout("-m<n>, --indent_module=<n>"      ,"MODULE       indent"                                                          ,doman);
+   manout("-r<n>, --indent_procedure=<n>"   ,"FUNCTION and"                                                                 ,doman);
+   manout(" ",  " SUBROUTINE  indent"                                                                                       ,doman);
+   manout("-s<n>, --indent_select=<n>"      ,"SELECT       indent"                                                          ,doman);
+   manout("-t<n>, --indent_type=<n>"        ,"TYPE         indent"                                                          ,doman);
+   manout("-w<n>, --indent_where=<n>"       ,"WHERE        indent"                                                          ,doman);
+   manout("-x<n>, --indent_critical=<n>"    ,"CRITICAL     indent"                                                          ,doman);
+   manout("-C-, --indent_contains=restart, ","restart indent after CONTAINS"                                                ,doman);
+   manout("-k<n>, --indent_continuation=<n>","continuation indent except   "                                                ,doman);
+   manout(" ","  for lines starting with '&'"                                                                               ,doman);
+   manout(" ","     free to free only"                                                                                      ,doman);
+   manout("-k-, --indent_continuation=none" ,"continuation lines not preceded"                                              ,doman);
+   manout(" ","  by '&' are untouched"                                                                                      ,doman);
+   manout(" ","     free to free only"                                                                                      ,doman);
+   manout("  ","next defaults are: all - all/2"                                                                             ,doman);
+   manout("-c<n>, --indent_case=<n>"        ,"CASE      negative indent"                                                    ,doman);
+   manout("-C<n>, --indent_contains=<n>"    ,"CONTAINS  negative indent"                                                    ,doman);
+   manout("-e<n>, --indent_entry=<n>"       ,"ENTRY     negative indent"                                                    ,doman);
+   manout(" "," "                                                                                                           ,doman);
+   if(doman)
+   {
+      std::cout << ".PP" << std::endl << ".SS \"Usage with vim:" << std::endl;
+   }
+   else
+   {
+      std::cout << "  Usage with vim:" << std::endl;
+   }
+   manout("--vim_help"     ,"outputs directions to use findent in (g)vim" ,doman);
+   manout("--vim_fortran"  ,"outputs file 'fortran.vim', see --vim_help"  ,doman);
+   manout("--vim_findent"  ,"outputs file 'findent.vim', see --vim_help"  ,doman); 
+   manout(" "," "                                                         ,doman);
+   if(doman)
+   {
+      std::cout << ".PP" << std::endl << ".SS \"Usage with gedit:" << std::endl;
+   }
+   else
+   {
+      std::cout << "  Usage with gedit:" << std::endl;
+   }
+   manout("--gedit_help"      ,"outputs directions to use findent in gedit"       ,doman);
+   manout("--gedit_external"  ,"outputs script 'findent-gedit', see --gedit_help" ,doman);
+   manout("--gedit_plugin"    ,"outputs file 'findent.plugin', see --gedit_help"  ,doman);
+   manout("--gedit_plugin_py" ,"outputs file 'python.py', see --gedit_help"       ,doman);
+   manout(" "," "                                                                 ,doman);
    if(doman)
    {
       std::cout << ".PP" << std::endl << ".SS" << std::endl;
    }
    std::cout << "Examples:"                    << std::endl;
-   manout(" ","indent: findent < in.f > out.f",                doman);
-   manout(" ","        findent -i2 -r0 < in.f > out.f",        doman);
-   manout(" ","convert: findent -ofree < prog.f > prog.f90",   doman);
+   manout(" ","indent: findent < in.f > out.f"                ,doman);
+   manout(" ","        findent -i2 -r0 < in.f > out.f"        ,doman);
+   manout(" ","convert: findent -ofree < prog.f > prog.f90"   ,doman);
    manout(" ","refactor 'end': findent -Rr < in.f90 > out.f90",doman);
    if(doman)
    {
@@ -2114,8 +2322,8 @@ char lastchar(const std::string s)
 }
 
 bool cleanfive(const std::string s)
-// returns 1, if columns 1-5 contain only [0-9 \t]
-// else returns 0
+   // returns 1, if columns 1-5 contain only [0-9 \t]
+   // else returns 0
 {
    int l = std::min((int)s.size(), 5);
    for (int i=0; i<l; i++)

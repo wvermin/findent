@@ -369,3 +369,17 @@ do i=1,7
 x=x+4
 enddo
    end
+
+subroutine nok
+implicit none
+type domain_data
+real, dimension(:, :), allocatable :: temperature
+integer:: ibound, icopy, todomain
+end type
+
+type(domain_data), dimension(2), target :: dom
+allocate(dom(1) % temperature(20, 20))
+dom(1) % temperature = 0.
+dom(1) % temperature(:, 1) = 1.
+
+end subroutine nok

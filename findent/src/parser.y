@@ -209,6 +209,7 @@ lvalue:              IDENTIFIER
       |              IDENTIFIER LR
       |              TIDENTIFIER
       |              TIDENTIFIER LR
+      |              lvalue '%' lvalue
       ;
 construct_name:      enable_identifier empty
 	      |      enable_identifier IDENTIFIER getname

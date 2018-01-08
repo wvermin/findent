@@ -39,6 +39,11 @@ findent-2.7.4:
 	test:
 	   use only one or two lines for testing flags -h, -H
 	   add tests (test16.sh) for vim and gedit related flags
+	parser.y:  bugfix
+	   take care that "dom(1)%t" is recognized as an lvalue
+	   so that "dom(1)%t = 0" is not classified as the start
+	   of a do-loop, but as an assignement by adding:
+	      lvalue:  lvalue '%' lvalue
 
 findent-2.7.3:
 findent-2.7.2:

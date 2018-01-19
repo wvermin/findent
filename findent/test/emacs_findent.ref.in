@@ -1,0 +1,2 @@
+;;;; this file contains an interface to use findent within emacs.
+;;;; the C-M-q command ("indent function") is redefined to

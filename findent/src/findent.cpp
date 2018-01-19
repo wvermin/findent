@@ -1,4 +1,4 @@
-// $Id: findent.cpp 227 2017-12-03 12:16:49Z willem_vermin $
+// $Id: findent.cpp 237 2018-01-17 15:08:45Z willem_vermin $
 #include <cstdio>
 #include <iostream>
 #include <stack>
@@ -15,6 +15,8 @@
 #include "pre_analyzer.h"
 #include "vim_plugin.h"
 #include "gedit_plugin.h"
+#include "emacs_plugin.h"
+#include "readme_plugin.h"
 extern "C" FILE *yyin;
 std::string mygetline();
 void get_full_statement();
@@ -73,9 +75,13 @@ int lines_read        = 0;
 int input_line_length = 0;
 bool input_format_gnu = 0;
 int determine_fix_or_free(const bool store);
-bool isfixedcmt(const std::string s);
+bool isfixedcmtp(const std::string s);
 char fixedmissingquote(const std::string s);
 int what_to_return(void);
+
+std::string afterwordincomment(const std::string s, const std::string w);
+
+const std::string findentfix="findentfix:";
 
 bool nbseen;                                 // true if non-blank-line is seen
 
@@ -204,47 +210,127 @@ int main(int argc, char*argv[])
       DO_GEDIT_EXTERNAL,
       DO_GEDIT_PLUGIN,
       DO_GEDIT_PLUGIN_PY,
+      DO_EMACS_FINDENT,
+      DO_EMACS_HELP,
+      DO_README,
    };
 
    static struct option longopts[] =
    {
       {"indent"             , required_argument, 0, DO_INDENT            },
+
       {"indent_associate"   , required_argument, 0, 'a'                  },
+      {"indent-associate"   , required_argument, 0, 'a'                  },
+
       {"indent_block"       , required_argument, 0, 'b'                  },
+      {"indent-block"       , required_argument, 0, 'b'                  },
+
       {"indent_case"        , required_argument, 0, 'c'                  },
+      {"indent-case"        , required_argument, 0, 'c'                  },
+
       {"indent_contains"    , required_argument, 0, DO_INDENT_CONTAINS   },
+      {"indent-contains"    , required_argument, 0, DO_INDENT_CONTAINS   },
+
       {"indent_do"          , required_argument, 0, 'd'                  },
+      {"indent-do"          , required_argument, 0, 'd'                  },
+
       {"indent_entry"       , required_argument, 0, 'e'                  },
+      {"indent-entry"       , required_argument, 0, 'e'                  },
+
       {"indent_enum"        , required_argument, 0, 'E'                  },
+      {"indent-enum"        , required_argument, 0, 'E'                  },
+
       {"indent_if"          , required_argument, 0, 'f'                  },
+      {"indent-if"          , required_argument, 0, 'f'                  },
+
       {"indent_forall"      , required_argument, 0, 'F'                  },
+      {"indent-forall"      , required_argument, 0, 'F'                  },
+
       {"help"               , no_argument      , 0, 'h'                  },
+
       {"manpage"            , no_argument      , 0, 'H'                  },
+
       {"input_format"       , required_argument, 0, DO_INPUT_FORMAT      },
+      {"input-format"       , required_argument, 0, DO_INPUT_FORMAT      },
+
       {"start_indent"       , required_argument, 0, 'I'                  },
+      {"start-indent"       , required_argument, 0, 'I'                  },
+
       {"indent_interface"   , required_argument, 0, 'j'                  },
+      {"indent-interface"   , required_argument, 0, 'j'                  },
+
       {"indent_continuation", required_argument, 0, 'k'                  },
+      {"indent-continuation", required_argument, 0, 'k'                  },
+
       {"last_indent"        , no_argument      , 0, DO_LAST_INDENT       },
+      {"last-indent"        , no_argument      , 0, DO_LAST_INDENT       },
+
       {"last_usable"        , no_argument      , 0, DO_LAST_USABLE       },
+      {"last-usable"        , no_argument      , 0, DO_LAST_USABLE       },
+
       {"label_left"         , required_argument, 0, DO_LABEL_LEFT        },
+      {"label-left"         , required_argument, 0, DO_LABEL_LEFT        },
+
       {"input_line_length"  , required_argument, 0, 'L'                  },
+      {"input-line-length"  , required_argument, 0, 'L'                  },
+
       {"indent_module"      , required_argument, 0, 'm'                  },
+      {"indent-module"      , required_argument, 0, 'm'                  },
+
       {"output_format"      , required_argument, 0, 'o'                  },
+      {"output-format"      , required_argument, 0, 'o'                  },
+
       {"query_fix_free"     , no_argument      , 0, 'q'                  },
+      {"query-fix-free"     , no_argument      , 0, 'q'                  },
+
       {"indent_procedure"   , required_argument, 0, 'r'                  },
+      {"indent-procedure"   , required_argument, 0, 'r'                  },
+
       {"refactor_procedures", optional_argument, 0, DO_REFACTOR_PROCEDURE},
+      {"refactor-procedures", optional_argument, 0, DO_REFACTOR_PROCEDURE},
+
       {"indent_select"      , required_argument, 0, 's'                  },
+      {"indent-select"      , required_argument, 0, 's'                  },
+
       {"indent_type"        , required_argument, 0, 't'                  },
+      {"indent-type"        , required_argument, 0, 't'                  },
+
       {"version"            , no_argument      , 0, 'v'                  },
+
       {"indent_where"       , required_argument, 0, 'w'                  },
+      {"indent-where"       , required_argument, 0, 'w'                  },
+
       {"indent_critical"    , required_argument, 0, 'x'                  },
+      {"indent-critical"    , required_argument, 0, 'x'                  },
+
       {"vim_help"           , no_argument      , 0, DO_VIM_HELP          },
+      {"vim-help"           , no_argument      , 0, DO_VIM_HELP          },
+
       {"gedit_help"         , no_argument      , 0, DO_GEDIT_HELP        },
+      {"gedit-help"         , no_argument      , 0, DO_GEDIT_HELP        },
+
       {"vim_fortran"        , no_argument      , 0, DO_VIM_FORTRAN       },
+      {"vim-fortran"        , no_argument      , 0, DO_VIM_FORTRAN       },
+
       {"vim_findent"        , no_argument      , 0, DO_VIM_FINDENT       },
+      {"vim-findent"        , no_argument      , 0, DO_VIM_FINDENT       },
+
       {"gedit_external"     , no_argument      , 0, DO_GEDIT_EXTERNAL    },
+      {"gedit-external"     , no_argument      , 0, DO_GEDIT_EXTERNAL    },
+
       {"gedit_plugin"       , no_argument      , 0, DO_GEDIT_PLUGIN      },
+      {"gedit-plugin"       , no_argument      , 0, DO_GEDIT_PLUGIN      },
+
       {"gedit_plugin_py"    , no_argument      , 0, DO_GEDIT_PLUGIN_PY   },
+      {"gedit-plugin-py"    , no_argument      , 0, DO_GEDIT_PLUGIN_PY   },
+
+      {"emacs_help"         , no_argument      , 0, DO_EMACS_HELP        },
+      {"emacs-help"         , no_argument      , 0, DO_EMACS_HELP        },
+
+      {"emacs_findent"      , no_argument      , 0, DO_EMACS_FINDENT     },
+      {"emacs-findent"      , no_argument      , 0, DO_EMACS_FINDENT     },
+
+      {"readme"             , no_argument      , 0, DO_README            },
 
       {0,0,0,0}
    };
@@ -455,6 +541,15 @@ int main(int argc, char*argv[])
 	    return 0;
 	 case DO_GEDIT_PLUGIN_PY:
 	    do_gedit_plugin_py();
+	    return 0;
+	 case DO_EMACS_HELP:
+	    do_emacs_help();
+	    return 0;
+	 case DO_EMACS_FINDENT:
+	    do_emacs_findent();
+	    return 0;
+	 case DO_README:
+	    do_readme();
 	    return 0;
       }
 
@@ -1147,6 +1242,7 @@ void get_full_statement()
       else
       {
 	 handle_fixed(s, fortran_more);
+	 D(O("more:");O(fortran_more));
 	 if (fortran_more)
 	    continue;
 	 else
@@ -1188,6 +1284,17 @@ void handle_free(std::string s, bool &more)
       D(O("end of file"););
       more = 0;
       return;
+   }
+
+   // handle findentfix: the free case is simpler than the
+   // fixed case. 
+   if (lines.empty())
+   {
+      std::string fix = afterwordincomment(s,findentfix);
+      if (fix != "")
+      {
+	 full_statement = fix;
+      }
    }
 
    if (input_line_length !=0)
@@ -1248,6 +1355,33 @@ void handle_fixed(std::string s, bool &more)
 
    D(O("fixed s");O(s););
 
+   // if this is a findentfix line:
+   //    Assume that no continuation lines can follow.
+   //    So, if there are already one or more lines read,
+   //    push this line on linestack and do not expect
+   //    continuation lines.
+   //    If, however this is the first line, handle this 
+   //    as a normal comment line: in that case no continuation
+   //    lines are requested either.
+
+   std::string fix = afterwordincomment(s,findentfix);
+   if (fix != "")
+   {
+      if (lines.empty())
+      {
+	 full_statement = fix;
+	 D(O("findentfix:");O(full_statement));
+      }
+      else 
+      {
+	 D(O("pushing back because of findentfix");O(s0));
+	 linestack.push(s0);
+	 num_lines--;
+	 more = 0;
+	 return;
+      }
+   }
+
    if (input_line_length != 0)
    {
       // with tabbed input there is a difference between
@@ -1261,7 +1395,7 @@ void handle_fixed(std::string s, bool &more)
       s = s.substr(0,input_line_length);
    }
 
-   if (isfixedcmt(s))
+   if (isfixedcmtp(s))
    {  // this is a blank or comment or preprocessor line
       lines.push_back(trim(s));
       olines.push_back(s);
@@ -1587,7 +1721,7 @@ void output_line()
 	    handle_pre(s);
 	    continue;
 	 }
-	 if(isfixedcmt(s))
+	 if(isfixedcmtp(s))
 	 {  // this is an empty line or comment line
 	    if (output_format == FIXED)
 	    {
@@ -1757,9 +1891,9 @@ void output_line()
 		  }
 		  prevlchar = lastchar(*it);
 		  inpreproc = (firstchar(*it) == '#');
-		  if (!isfixedcmt(*it++))
+		  if (!isfixedcmtp(*it++))
 		  {
-		     D(O("!isfixedcmt"););
+		     D(O("!isfixedcmtp"););
 		     needamp =  '&';
 		     // we have to put an '&' at the end of the line,
 		     // but what if the line ends in a ! comment, as in
@@ -1929,27 +2063,44 @@ void usage(const bool doman)
       std::cout << ".SH SYNOPSIS"                                                               << std::endl;
       std::cout << ".B findent"                                                                 << std::endl;
       std::cout << "[\\fIOPTION\\fR]..."                                                        << std::endl;
-      std::cout << ".PP"<<std::endl<< "findent reads from stdin and writes to stdout."          << std::endl;
+      std::cout << ".PP"<<std::endl<< "Findent reads from STDIN and writes to STDOUT."          << std::endl;
       std::cout << ".SH DESCRIPTION"                                                            << std::endl;
       std::cout << "Findent indents a Fortran source. Findent uses various kinds of"            << std::endl;
       std::cout << "indentations, see OPTIONS. Findent can convert from fixed form to"          << std::endl;
       std::cout << "free form, and can supplement single END statements, see 'Refactor' below." << std::endl;
-      std::cout << "Errors in OPTIONS are silently ignored."                                    << std::endl;
+      std::cout << "Comment lines with '!' in column one are not indented."                     << std::endl;
+      std::cout << " You can correct findent related indenting errors by inserting comment"     << std::endl;
+      std::cout << "lines: "                                                                    << std::endl;
+      std::cout << " !  findentfix: <fortran statement>"                                        << std::endl;
+      std::cout << " where <fortran statement> is for example DO, END, WHERE() etcetera."       << std::endl;
+      std::cout << "Findent will adjust the indentation according to <fortran statement>."      << std::endl;
+      std::cout << " Errors in OPTIONS are silently ignored."                                   << std::endl;
       std::cout << ".PP" << std::endl << ".SS \"General options:"                               << std::endl;
    }
    else
    {
-      std::cout << "findent [options]"                                        << std::endl;
-      std::cout << "   format fortran program"                                << std::endl;
-      std::cout << "   reads from STDIN, writes to STDOUT"                    << std::endl;
-      std::cout << "   comment lines with '!' in column one are not indented" << std::endl;
-      std::cout << "options: (errors are silently ignored)"                   << std::endl;
-      std::cout << "  general:"                                               << std::endl;
+      std::cout << "findent [options]"                                                        << std::endl;
+      std::cout << "   Format fortran source."                                                << std::endl;
+      std::cout << "   Reads from STDIN, writes to STDOUT."                                   << std::endl;
+      std::cout << "   Comment lines with '!' in column one are not indented."                << std::endl;
+      std::cout << "   You can correct findent related indenting errors by"                   << std::endl;
+      std::cout << "   inserting comment lines: "                                             << std::endl;
+      std::cout << "    !  findentfix: <fortran statement>"                                   << std::endl;
+      std::cout << "   where <fortran statement> is for example DO, END, WHERE() etcetera."   << std::endl;
+      std::cout << "   Findent will adjust the indentation according to <fortran statement>." << std::endl;
+      std::cout << "Options (errors are silently ignored):"                                   << std::endl;
+      std::cout                                                                               << std::endl;
+      std::cout << "  General options:"                                                       << std::endl;
+      std::cout                                                                               << std::endl;
    }
 
    manout(" ","Below: <n> denotes an unsigned decimal number."                                             ,doman);
+   manout(" ","In the long options, you can replace '_' with '-'."                                         ,doman);
+   if (!doman)
+      std::cout << std::endl;
    manout("-h, --help"                       ,"print this text"                                            ,doman);
    manout("-H, --manpage"                    ,"print man page"                                             ,doman);
+   manout("--readme"                         ,"print some background information"                          ,doman);
    manout("-v, --version"                    ,"prints findent version"                                     ,doman);
    manout("-q, --query_fix_free"             ,"guess free or fixed, prints 'fixed' or 'free' and exits"    ,doman);
    //manout("-Q","returncode=2 for free, 4 for fixed",                      doman);
@@ -1989,7 +2140,9 @@ void usage(const bool doman)
    }
    else
    {
-      std::cout << "  indents:"                                     << std::endl;
+      std::cout << std::endl;
+      std::cout << "  Indenting options:"                           << std::endl;
+      std::cout << std::endl;
    }
    manout("-I<n>, --start_indent=<n>"       ,"starting  indent (default:0)"                                                 ,doman);
    manout("-Ia, --start_indent=a"           ,"determine starting indent from first line"                                    ,doman);
@@ -2047,6 +2200,17 @@ void usage(const bool doman)
    manout(" "," "                                                                 ,doman);
    if(doman)
    {
+      std::cout << ".PP" << std::endl << ".SS \"Usage with emacs:" << std::endl;
+   }
+   else
+   {
+      std::cout << "  Usage with emacs:" << std::endl;
+   }
+   manout("--emacs_help"      ,"outputs directions to use findent in emacs"       ,doman);
+   manout("--emacs_findent"   ,"outputs script 'findent.el', see --emacs_help"    ,doman);
+   manout(" "," "                                                                 ,doman);
+   if(doman)
+   {
       std::cout << ".PP" << std::endl << ".SS" << std::endl;
    }
    std::cout << "Examples:"                    << std::endl;
@@ -2087,7 +2251,10 @@ void manout(const std::string flag, const std::string txt, const bool doman)
    }
    else
    {
-      std::cout << flag << "\t" << ": " << txt << std::endl;
+      if (flag == " ")
+	 std::cout << flag << "\t" << "  " << txt << std::endl;
+      else
+	 std::cout << flag << "\t" << ": " << txt << std::endl;
    }
 }
 
@@ -2171,7 +2338,7 @@ std::string handle_dos(const std::string s)
    return sl;
 }
 
-bool isfixedcmt(const std::string s)
+bool isfixedcmtp(const std::string s)
 {
    // returns 1 if this is a fixed empty line or fixed comment line or preprocessor line
    //                                         or debug line ('d' or 'D' in column 1)
@@ -2180,6 +2347,51 @@ bool isfixedcmt(const std::string s)
    char c = firstchar(s);
    char cts = firstchar(trim(s));
    return (cts == 0 || c == 'C' || c == 'c' || cts == '!' || c == '*' || cts == '#' || c == 'd' || c == 'D'); 
+}
+
+std::string afterwordincomment(const std::string s, const std::string w)
+{
+   // if s is a comment line, if comment starts with w, return 
+   //   string after w
+   // else return ""
+   //   ignore case in w
+   // example:
+   // s = "!   HOppa  tralala hop"
+   // w = "hoppa"
+   // return "  tralala hop"
+
+   std::string sl = trim(s);
+   if (sl.length() == 0)
+      return "";
+   if (input_format == FREE)
+   {
+      if (sl[0] !=  '!')
+	 return "";
+   }
+   else
+   {
+      bool com = 0;
+      char c = s[0];
+      switch (c)
+      {
+	 case 'c':
+	 case 'C':
+	 case '*':
+	    com = 1;
+      }
+      if (sl[0] == '!')
+      {
+	 com = 1;
+      }
+      if (!com)
+	 return "";
+   }
+   sl = ltrim(sl.substr(1));
+   size_t l = w.length();
+   if (stolower(sl.substr(0,l)) == stolower(w)) 
+      return sl.substr(l);
+   else
+      return "";
 }
 
 char fixedmissingquote(const std::string s)

@@ -94,7 +94,16 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = prelude test-compile.sh doit progfixed-dos.f \
+	progfixed-dos.f.try.f.ref progfixed.f progfixed.f.try.f.ref \
+	progfixedfree-dos.f progfixedfree-dos.f.try.f.ref \
+	progfixedfree.f progfixedfree.f.try.f.ref progfree-dos.f \
+	progfree-dos.f.try.f.ref progfree.f progfree.f.try.f.ref \
+	progfree1.f progfree1.f.try.f.ref progfixed1.f \
+	progfixed1.f.try.f.ref manpage.ref help.ref vim_fortran.ref \
+	vim_findent.ref gedit_help.ref vim_help.ref gedit_external.ref \
+	gedit_plugin.ref gedit_plugin_py.ref emacs_help.ref \
+	emacs_findent.ref readme.ref
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -320,7 +329,26 @@ TEST_LOGS = $(am__test_logs2:.test.log=.log)
 TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
-am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/test-driver
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/doit.in \
+	$(srcdir)/emacs_findent.ref.in $(srcdir)/emacs_help.ref.in \
+	$(srcdir)/gedit_external.ref.in $(srcdir)/gedit_help.ref.in \
+	$(srcdir)/gedit_plugin.ref.in $(srcdir)/gedit_plugin_py.ref.in \
+	$(srcdir)/help.ref.in $(srcdir)/manpage.ref.in \
+	$(srcdir)/prelude.in $(srcdir)/progfixed-dos.f.in \
+	$(srcdir)/progfixed-dos.f.try.f.ref.in \
+	$(srcdir)/progfixed.f.in $(srcdir)/progfixed.f.try.f.ref.in \
+	$(srcdir)/progfixed1.f.in $(srcdir)/progfixed1.f.try.f.ref.in \
+	$(srcdir)/progfixedfree-dos.f.in \
+	$(srcdir)/progfixedfree-dos.f.try.f.ref.in \
+	$(srcdir)/progfixedfree.f.in \
+	$(srcdir)/progfixedfree.f.try.f.ref.in \
+	$(srcdir)/progfree-dos.f.in \
+	$(srcdir)/progfree-dos.f.try.f.ref.in $(srcdir)/progfree.f.in \
+	$(srcdir)/progfree.f.try.f.ref.in $(srcdir)/progfree1.f.in \
+	$(srcdir)/progfree1.f.try.f.ref.in $(srcdir)/readme.ref.in \
+	$(srcdir)/test-compile.sh.in $(srcdir)/vim_findent.ref.in \
+	$(srcdir)/vim_fortran.ref.in $(srcdir)/vim_help.ref.in \
+	$(top_srcdir)/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -428,8 +456,8 @@ TESTS = test1.sh test2.sh test3.sh test4.sh test5.sh test6.sh \
 	test9.sh test10.sh test11.sh test12.sh \
 	test13.sh test14.sh test15.sh test16.sh
 
-EXTRA_DIST = test1.sh test2.sh test3.sh test4.sh test5.sh test6.sh \
-	test7.sh test8.sh \
+EXTRA_DIST = test1.sh test2.sh test3.sh test4.sh test5.sh \
+	test6.sh test7.sh test8.sh \
 	test9.sh test10.sh test11.sh test12.sh \
 	test13.sh test14.sh test15.sh test16.sh \
 	test-compile.sh \
@@ -443,10 +471,10 @@ EXTRA_DIST = test1.sh test2.sh test3.sh test4.sh test5.sh test6.sh \
 	help.ref manpage.ref \
         vim_help.ref gedit_help.ref vim_fortran.ref vim_findent.ref \
 	gedit_external.ref gedit_plugin.ref gedit_plugin_py.ref \
+	emacs_help.ref emacs_findent.ref \
+	readme.ref \
 	doit
 
-CLEANFILES = prog expect result  *.mod *.try
-DISTCLEANFILES = *.f.try.f
 all: all-am
 
 .SUFFIXES:
@@ -480,6 +508,68 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+prelude: $(top_builddir)/config.status $(srcdir)/prelude.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+test-compile.sh: $(top_builddir)/config.status $(srcdir)/test-compile.sh.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+doit: $(top_builddir)/config.status $(srcdir)/doit.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixed-dos.f: $(top_builddir)/config.status $(srcdir)/progfixed-dos.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixed-dos.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixed-dos.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixed.f: $(top_builddir)/config.status $(srcdir)/progfixed.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixed.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixed.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixedfree-dos.f: $(top_builddir)/config.status $(srcdir)/progfixedfree-dos.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixedfree-dos.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixedfree-dos.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixedfree.f: $(top_builddir)/config.status $(srcdir)/progfixedfree.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixedfree.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixedfree.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfree-dos.f: $(top_builddir)/config.status $(srcdir)/progfree-dos.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfree-dos.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfree-dos.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfree.f: $(top_builddir)/config.status $(srcdir)/progfree.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfree.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfree.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfree1.f: $(top_builddir)/config.status $(srcdir)/progfree1.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfree1.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfree1.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixed1.f: $(top_builddir)/config.status $(srcdir)/progfixed1.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixed1.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixed1.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+manpage.ref: $(top_builddir)/config.status $(srcdir)/manpage.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+help.ref: $(top_builddir)/config.status $(srcdir)/help.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+vim_fortran.ref: $(top_builddir)/config.status $(srcdir)/vim_fortran.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+vim_findent.ref: $(top_builddir)/config.status $(srcdir)/vim_findent.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+gedit_help.ref: $(top_builddir)/config.status $(srcdir)/gedit_help.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+vim_help.ref: $(top_builddir)/config.status $(srcdir)/vim_help.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+gedit_external.ref: $(top_builddir)/config.status $(srcdir)/gedit_external.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+gedit_plugin.ref: $(top_builddir)/config.status $(srcdir)/gedit_plugin.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+gedit_plugin_py.ref: $(top_builddir)/config.status $(srcdir)/gedit_plugin_py.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+emacs_help.ref: $(top_builddir)/config.status $(srcdir)/emacs_help.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+emacs_findent.ref: $(top_builddir)/config.status $(srcdir)/emacs_findent.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+readme.ref: $(top_builddir)/config.status $(srcdir)/readme.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 tags TAGS:
 
 ctags CTAGS:
@@ -815,19 +905,17 @@ mostlyclean-generic:
 	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic mostlyclean-am
+clean-am: clean-generic clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -894,20 +982,25 @@ uninstall-am:
 .MAKE: check-am install-am install-strip
 
 .PHONY: all all-am check check-TESTS check-am clean clean-generic \
-	cscopelist-am ctags-am distclean distclean-generic distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am recheck tags-am uninstall uninstall-am
+	clean-local cscopelist-am ctags-am distclean distclean-generic \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic pdf pdf-am ps ps-am recheck tags-am \
+	uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
 
 export SRCDIR = $(top_srcdir)
+@MAKEWIN_TRUE@   export WINDOWS = yes
+@MAKEWIN_FALSE@   export WINDOWS = no
+clean-local:
+	rm -rf *.tmpdir
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

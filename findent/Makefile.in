@@ -303,8 +303,11 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
-SUBDIRS = src scripts test vim gedit
+SUBDIRS = src scripts test vim gedit emacs doc
 MAINTAINERCLEANFILES = config.h.in~
+EXTRA_DIST = bootstrap getversion LICENCE README.1st README.windows  \
+	     maketar makezip README.2nd
+
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 

@@ -1,0 +1,30 @@
+Usage of findent in emacs
+
+Method 1:
+   - Put the output of
+
+      findent --emacs_findent
+
+   to the directory where you store your emacs scripts, for example:
+
+      mkdir -p ~/.emacs.d/lisp && findent --emacs_findent > ~/.emacs.d/lisp/findent.el
+
+   - Edit .emacs or .emacs.el or .emacs.d/init.el :
+
+      - If not already done, add the following two lines to extend load-path :
+
+         (add-to-list 'load-path (concat user-emacs-directory
+	 (convert-standard-filename "lisp/")))
+
+      - Add a command to load findent.el :
+
+	 (load "findent")
+  
+Method 2:
+
+  - Add the output of 
+
+      findent --emacs_findent
+
+    to ~/.emacs ~/.emacs.el or ~/.emacs.d/init.el
+

@@ -1,6 +1,7 @@
 #!/bin/sh
+. ./prelude
 rc=0
-doit=$SRCDIR/test/doit
+doit=../doit
 cat << eof > prog
       program main
       continue

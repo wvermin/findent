@@ -1,4 +1,5 @@
 #!/bin/sh
+. ./prelude
 rc=0
 cat << eof > prog
    program prog
@@ -9,7 +10,7 @@ cat << eof > expect
 2
 eof
 
-$SRCDIR/test/doit "-lastusable --last_usable" "-ifree -Ia" "" 
+../doit "-lastusable --last_usable" "-ifree -Ia" "" 
 rc=`expr $rc + $?`
 
 exit $rc

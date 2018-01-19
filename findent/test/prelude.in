@@ -1,0 +1,16 @@
+rp()
+{
+   # poor man's realpath
+   cd "$1"
+   pwd
+}
+
+export FINDENT=`rp ../src`/findent
+if [ "$WINDOWS" = yes ]; then
+   FINDENT=$FINDENT.exe
+fi
+dir=`basename $0`.tmpdir
+rm -rf $dir
+mkdir $dir
+cd $dir
+# vim: filetype=sh

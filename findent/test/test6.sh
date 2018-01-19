@@ -1,4 +1,5 @@
 #!/bin/sh
-$SRCDIR/test/test-compile.sh $SRCDIR/test/progfree.f
+. ./prelude
+../test-compile.sh ../progfree.f
 rc=$?
 exit $rc

@@ -102,7 +102,8 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_findent_OBJECTS = findent.$(OBJEXT) lexer.$(OBJEXT) \
 	parser.$(OBJEXT) line_prep.$(OBJEXT) pre_analyzer.$(OBJEXT) \
-	vim_plugin.$(OBJEXT) gedit_plugin.$(OBJEXT)
+	vim_plugin.$(OBJEXT) gedit_plugin.$(OBJEXT) \
+	emacs_plugin.$(OBJEXT) readme_plugin.$(OBJEXT)
 findent_OBJECTS = $(am_findent_OBJECTS)
 findent_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -314,19 +315,23 @@ LEXFILES = lexer.cpp
 BUILDLEXFILES = buildlexer.cpp
 AM_CXXFLAGS = -fPIC
 MOSTLYCLEANFILES = 
-CLEANFILES = $(LEXFILES) $(PARFILES) findent findent.exe findent.1 parser.cpp.h parser.hpp parser_report.txt *.inc
+CLEANFILES = $(LEXFILES) $(PARFILES) findent findent.exe findent.1 parser.cpp.h parser.hpp parser_report.txt *.inc parsermade
 DISTCLEANFILES = dummylexer dummyparser
 MAINTAINERCLEANFILES = $(BUILDPARFILES) $(BUILDLEXFILES)
 @MAKEMAN_TRUE@man1_MANS = findent.1
 TOCPP = $(top_srcdir)/src/tocpp.sh
 VIMDIR = $(top_srcdir)/vim
 GEDITDIR = $(top_srcdir)/gedit
+EMACSDIR = $(top_srcdir)/emacs
+READMEDIR = $(top_srcdir)/doc
 findent_SOURCES = findent.cpp lexer.cpp parser.cpp \
 		  line_prep.cpp pre_analyzer.cpp debug.h \
 		  line_prep.h pre_analyzer.h version.h \
 		  findent.h simpleostream.h \
 		  vim_plugin.cpp vim_plugin.h \
-		  gedit_plugin.cpp gedit_plugin.h 
+		  gedit_plugin.cpp gedit_plugin.h \
+		  emacs_plugin.cpp emacs_plugin.h \
+		  readme_plugin.cpp readme_plugin.h
 
 EXTRA_DIST = lexer.l parser.y tocpp.sh
 all: all-am
@@ -421,12 +426,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emacs_plugin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/findent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gedit_plugin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lexer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/line_prep.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pre_analyzer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/readme_plugin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vim_plugin.Po@am__quote@
 
 .cpp.o:
@@ -697,7 +704,7 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
-@USEBISON_TRUE@parser.cpp parser.h: parser.y
+@USEBISON_TRUE@parsermade: parser.y
 @USEBISON_TRUE@	$(YACC) -o parser.cpp -d $<
 @USEBISON_TRUE@	if test -f parser.cpp.h ; then mv parser.cpp.h parser.h ; fi
 @USEBISON_TRUE@	if test -f parser.hpp ; then mv parser.hpp parser.h ; fi
@@ -705,6 +712,9 @@ uninstall-man: uninstall-man1
 @USEBISON_TRUE@	   then  cp parser.cpp buildparser.cpp.in ; fi
 @USEBISON_TRUE@	if test -f buildparser.h.in ; \
 @USEBISON_TRUE@	   then cp parser.h buildparser.h.in ; fi
+@USEBISON_TRUE@	@touch $@
+
+@USEBISON_TRUE@parser.cpp parser.h: parsermade
 @USEBISON_FALSE@dummyparser: parser.y
 @USEBISON_FALSE@	@echo ""
 @USEBISON_FALSE@	@echo "********************************************************"
@@ -736,6 +746,8 @@ uninstall-man: uninstall-man1
 @USEFLEX_FALSE@lexer.cpp: buildlexer.cpp dummylexer
 @USEFLEX_FALSE@	cp $< $@
 
+lexer.o: parser.h
+
 @MAKEMAN_TRUE@findent.1: findent
 @MAKEMAN_TRUE@	./findent -H > $@
 
@@ -745,6 +757,10 @@ vim_plugin.o: vim_fortran.inc vim_findent.inc vim_help.inc
 
 gedit_plugin.o: gedit_external.inc gedit_plugin.inc gedit_plugin_py.inc \
    gedit_help.inc
+
+emacs_plugin.o: emacs_findent.inc emacs_help.inc
+
+readme_plugin.o: readme.inc
 
 vim_fortran.inc: $(VIMDIR)/fortran.vim $(TOCPP)
 	$(TOCPP) < $(VIMDIR)/fortran.vim > $@
@@ -766,6 +782,15 @@ gedit_plugin_py.inc: $(GEDITDIR)/findent.py $(TOCPP)
 
 gedit_help.inc: $(GEDITDIR)/README $(TOCPP)
 	$(TOCPP) < $(GEDITDIR)/README > $@
+
+emacs_findent.inc: $(EMACSDIR)/findent.el $(TOCPP)
+	$(TOCPP) < $(EMACSDIR)/findent.el > $@
+
+emacs_help.inc: $(EMACSDIR)/README $(TOCPP)
+	$(TOCPP) < $(EMACSDIR)/README > $@
+
+readme.inc: $(READMEDIR)/README $(TOCPP)
+	$(TOCPP) < $(READMEDIR)/README > $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -1,0 +1,26 @@
+#!/bin/sh
+# $Id: makezip 238 2018-01-18 16:14:03Z willem_vermin $
+dir=`pwd`
+./bootstrap                                                       || exit 1
+./configure --with-windows                                        || exit 1 
+make clean                                                        || exit 1
+rm -rf bin
+make
+strip src/findent.exe                                             || exit 1
+version=`./getversion`                                            || exit 1
+echo "version = $version"
+cd ..                                                             || exit 1
+mkdir -p versions                                                 || exit 1
+cp $dir/README.windows versions/README.txt                        || exit 1
+cp $dir/src/findent.exe versions                                  || exit 1
+cp $dir/scripts/wfindent.bat versions                             || exit 1
+cp $dir/COPYING versions/COPYING.txt
+cd versions                                                       || exit 1
+unix2dos README.txt COPYING.txt                                   || exit 1
+rm -f "findent-$version.zip"
+zip   "findent-$version.zip" findent.exe README.txt \
+                             COPYING.txt wfindent.bat             || exit 1
+rm -f findent.exe README.txt wfindent.bat COPYING.txt
+cd "$dir"                                                         || exit 1
+make maintainer-clean                                             || exit 1
+echo "$0 done"

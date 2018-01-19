@@ -1,0 +1,74 @@
+findent: indents/beautifies/converts Fortran sources
+
+ - findent supports Fortran-2008
+ - findent can convert from fixed form to free form
+ - binaries for Unix and Windows (findent and findent.exe respectively)
+ - high speed: 50K - 100K lines per second
+ - since version 2.7.0, findent is very vim-aware an can be used
+   in equalprg and indentexpr
+ - wrapper for processing one or more files in one call available
+      for Unix and Windows (wfindent and wfindent.bat respectively)
+ - (g)vim users: findent can act as a plug-in to format your
+      edit file with the '=' command
+ - gedit users: findent can be used as indenter for the files you are editing
+ - gui frontent available in a separate package: jfindent
+
+Unix-Linux users: 
+    prerequisites: gnumake, g++
+    make findent and wfindent:    
+             download findent-x.y.tgz
+             $ tar xf findent-x.y.z.tgz
+             $ cd findent-x.y
+	     $ ./configure --prefix=<Your installation directory, default /usr/local>
+	     $ make clean
+             $ make
+	     $ sudo make install
+		if bison or flex are found, they will
+		be used to regenerate the parser and lexer
+		sources. See ./configure --help
+
+    You can create an Windows executable (requires package mingw32):
+	     $ ./configure --with-windows
+             $ make clean
+	     $ make
+
+	If things are ok:
+	   findent.exe will be available in src/
+	   wfindent.bat is available in scripts/
+
+
+Windows users: download findent-x.y.zip
+               $ unzip findent-x.y.zip
+               $ copy findent.exe C:\WINDOWS
+	       $ copy wfindent.bat C:\WINDOWS
+
+
+All systems:
+
+Usage:    $ findent -h
+Examples: $ findent < in.f90 > out.f90
+          $ findent -i4 -Rr < in.f > out.f90
+          $ wfindent -i4 -Rr *.f
+
+(g)vim users:
+   Install findent, the following command shows instructions
+   how to use findent in (g)vim:
+
+    findent --vim_help
+
+   Documentation:
+     in (g)vim:
+	:help equalprg
+	:help indentexpr
+     vim/README
+     and the comments in the files vim/findent.vim and vim/fortran.vim
+
+gedit users:
+   Install findent, the following command shows instructions
+   how to use findent in gedit:
+
+    findent --gedit_help
+
+
+
+# $Id: README.1st 232 2017-12-04 13:38:08Z willem_vermin $

@@ -1,0 +1,586 @@
+For installation instructions and usage, see README.1st and INSTALL
+
+findent, what?
+==============
+
+   findent is an indenter for Fortran programs, fixed and free format.
+   findent can also translate fixed format to free format.
+
+   findent will take care of:
+
+      continuation lines
+      multi-statement lines
+      labelled and unlabelled do-loops
+      IF
+      IF ... THEN ... ENDIF
+      where
+      FORALL
+      WHERE constructs
+      FORALL constructs
+      etc. see findent.cpp for details
+
+   findent will remove trailing spaces and tabs, and convert
+   tabs at the start of a line into spaces. By default, statement 
+   labels are placed at the start of a line. Apart from this and
+   indenting, findent will not alter the input, trying to
+   preserve alignment. For example, the alignment in:
+
+      X = 3.0*A + 4*B +  &
+      &   2  *C +   Y
+
+   will remain intact.
+
+   Optionally, findent will refactor optionally single 'end' statements:
+
+      SUBROUTINE SUB
+      ...
+      END
+
+   will become:
+
+      SUBROUTINE SUB
+      ...
+      END SUBROUTINE SUB
+
+   findent is space-insensitive, for example a line like:
+
+      REALFUN  CTIONFUN(X)
+
+   is recognized as the start of a function definition.
+
+   Usage:
+
+       findent -h
+
+findent, why?
+=============
+
+   There are a number of public domain Fortran indenting tools, for example:
+
+   - vim is shipped with an simple Fortran indenter
+   - emacs has a Fortran indenter
+   - floppy, only for fixed format: http://www.netlib.org/floppy/
+   - convert.f90: converts from fixed to free format, and indents:
+        ftp://ftp.numerical.rl.ac.uk/pub/MandR/convert.f90
+   - f2f90: based of convert.f90: http://www.fortran.com/f2f90.tar.gz
+   - f90ppr: an impressive piece of software that beautifies
+        Fortran code and contains a macro processor.
+        http://www.ifremer.fr/ditigo/molagnon/fortran90/
+
+   For me, the problem with these tools is, that 
+
+    - they are too simple (for example, do not recognize labelled 
+      do-loops) 
+    - or do too much (destroying neatly aligned pieces of code)
+    - or are for me too complicated to adapt and extend.
+
+   Furthermore, I want that indenting does not make irreversible changes 
+   to the source: I want always be able to get back to the version after
+   the first indenting. (Exceptions: converting from fixed to free format;
+   adding 'subroutine foo' after 'end').
+
+   Therefore I decided, having some spare time after my retirement, 
+   to try to build a Fortran indenter, based on flex and bison for
+   readability.
+   As programming language I chose C++, because of the availability
+   of string, queue, stack and deque.
+
+
+findent, how?
+=============
+
+   So, here it is, a Fortran indenter to my taste, based on flex,
+   bison and g++. 
+
+   The program performs the following major tasks:
+
+    - determine the input format: free or fixed
+    - glue together continuation lines removing comments
+    - pre-process the assembled input line, to make it better processable 
+        by flex: remove whitespace, substitute strings, hollerith's, statement
+        label and operators like .EQ. by special tokens
+    - perform a two-stage parsing:
+      - try if the line is an assignment
+      - if it is not an assignment, parse the line using as tokens the
+        Fortran keywords (SUBROUTINE, DO, ...)
+    - based on the outcome of the parse, determine the indentation
+    - output the lines that were read in to compose the full line,
+      trying to preserve the lay-out after the original leading white
+      space, optionally converting from fixed-form to free-form.
+      Also optionally, lines with a single END are completed as in:
+        END subroutine mysub
+      Preprocessor statements are accounted for to prevent that code like:
+
+        #ifdef one
+        SUBROUTINE ONE
+        #else
+        SUBROUTINE TWO
+        #endif
+
+       would result in a double SUBROUTINE indentation.
+       Moreover, track is kept of do-labels, in order to correctly indent
+       constructs like:
+
+           DO 10 I=1,20
+             X(I) = Y(I)
+        10 CONTINUE
+
+
+   The code consists of the following files:
+
+    - findent.h         include file for some common functions and variables
+    - version.h         include file for the version number
+    - lexer.l:          the lexer, written for flex
+    - parser.y:         the parser, written for bison
+    - findent.cpp:      reads the input and produces the output
+    - line_prep.cpp:    converts a line Fortran code to something that
+                        can easily be digested by flex
+    - pre_analyzer.cpp: code to handle pre-processor statements
+    - line_prep.h:      header file for line_prep.cpp
+    - simpleostream.h   wrapper for std::cout
+    - pre_analyzer.h    header file for pre_analyzer.cpp
+    - wfindent:         a sh script that calls findent to indent
+                        Fortran sources in-place
+
+   lexer.l
+      
+      This file contains the rules to recognize parts of Fortran 
+      statements or identifiers. Also a state is defined that is
+      used during the determination if the input is fixed or free
+      form.
+
+   parser.y
+
+      This file contains the parser which recognizes assignments and
+      Fortran keywords important for indentation.
+
+   findent.cpp
+
+      The main program, including a number of functions needed for 
+      glueing the continuation lines and constructing the output
+      file. 
+
+   line_prep.cpp
+
+      Defines a class used to pre-parse the full input line. I did not
+      succeed in training flex to properly and timely recognize statement
+      labels, strings ("this is a string"), hollerith's (7hfortran) and 
+      (possibly user defined) operators (.eq. , .my_op.). Therefore I 
+      created a class that takes care of these things and produces a line
+      that can easily be processed by flex.
+
+   simpleostream.h
+
+      Defines a wrapper for std::cout, with the possibility to
+      not perform output at all, but only store the things that
+      would have been output.
+
+   pre_analyzer.cpp pre_analyzer.h
+
+      Findent does not evaluate preprocessor statements (#if etc.),
+      but does keep track of them, so that a construction like:
+
+      #ifdef foo
+         do i=1,10
+      #elif defined bar
+         do i=1,20
+      #else
+         do i=1,30
+      #endif
+
+      is indented correctly.
+
+findent, usage?
+===============
+
+   Findent reads from standard input and writes to standard output:
+
+      findent < prog.f90 > prog1.f90
+
+   See also 'wfindent', later in this file.
+
+   The command
+
+      findent -h
+
+   gives an overview of the possible flags and there effect. Most
+   interesting are:
+
+      -i<n>  
+        example: -i5
+        which determines the amount of indent to be used by every
+        item that calls for indenting
+      -Ia
+        The starting indent is determined from the first line (more
+        or less), useful when using findent within vim, for example
+        to intent a selected region:
+
+           '<,'>:!findent -Ia
+
+      -ofree
+        converts from fixed format to free format.
+
+      -L<n>
+        example: -L72
+        limit input line length to 72 characters.
+
+   NOTE 1: findent knows about tabbed input: for fixed-format input,
+           the following transformations are made:
+
+           10<tab>I=   -> 10<sp><sp><sp><sp>I=
+           <tab>1K*J   -> <sp><sp><sp><sp><sp>1K*J
+           <tab>X=Y    -> <sp><sp><sp><sp><sp><sp>X=Y
+
+           So, a tab followed by 1-9 is transformed to a continuation line,
+           otherwise to a normal line, starting in column 7.
+
+   NOTE 2: findent silently ignores errors in the flags
+
+   NOTE 3: handling of continuation lines
+           Example:
+
+              a = &
+                 (/ 3, 10, 12, 4, &
+                    5,  9,  1, 0, &
+                   13,  2, 25, 6 /)
+
+           After running findent, with standard parameters, you get this:
+
+              a = &
+                 (/ 3, 10, 12, 4, &
+                 5,  9,  1, 0, &
+                 13,  2, 25, 6 /)
+
+          That is probably not what you really want.
+
+          The recommended solution is: add '&' at the start of the 
+          continuation lines:
+
+           a = &
+              &   (/ 3, 10, 12, 4, &
+              &      5,  9,  1, 0, &
+              &     13,  2, 25, 6 /) 
+
+          Findent will indent this as:
+
+           a = &
+           &   (/ 3, 10, 12, 4, &
+           &      5,  9,  1, 0, &
+           &     13,  2, 25, 6 /)
+
+         Not recommended solution: You can use the '-k-' flag, like:
+           findent -k- < prog.f90 > prog1.f90
+          
+         Findent will in this case not touch continuation lines without 
+         a starting '&', but leave them as they are.
+
+   NOTE 4:
+        
+        Findent does not check the length of an output line, so it could
+        be that the length will be larger than 72 or 132 for fixed and 
+        free format respectively. In fact, indenting old fixed format
+        sources will very likely result in lines longer than 72 columns.
+        If you are lucky, the compiler will generate an error message,
+        but too long lines can result in changing the semantics of a program 
+        without notice.
+        Advice: use a compiler flag that allows long lines:
+
+          gfortran, free format:    -ffree-line-length-none  # unlimited
+          gfortran, fixed formtat:  -ffixed-line-length-none # unlimited
+          ifort, free format:       # no flag needed, default is unlimited
+          ifort, fixed format:      -132  # max line length is 132
+          pgf90, free format:       # max line length is 264, error if longer
+          pgf90, fixed format:      -Mextend  # max line length is 132, 
+                                    no error if longer
+
+   NOTE 4.1:
+        Here a script to check for line length:
+
+>>>> snip ---------- checklength ---------------------------------------
+
+#!/bin/bash
+# checks file line lengths
+# Usage:
+# checklength <length> [file ...]
+# outputs "filename:line number:line length:line" for lines longer than length
+# tabs are coverted to spaces using expand
+# if no file is given, read from stdin
+usage()
+{
+   echo "Usage:"
+   echo "$0 <length> [file ...]"
+}
+if [ -z "$1" ] ; then
+   usage
+   exit 1
+fi
+l="$1"
+doit()
+{
+   expand | awk -v l="$1" -v f="$2" '{
+   if (length($0) > l)
+	 printf "%s:%d:%d:%s\n",f,FNR,length($0),$0
+   }'
+}
+
+if [ -z "$2" ] ; then
+   doit "$l" "-"
+   exit 0
+fi
+
+shift
+while [ "$1" ] ; do
+   cat "$1" | doit "$l" "$1"
+   shift
+done
+
+<<<< snip ---------- checklength --------------------------------------
+
+   Example of usage:
+       checklength 72 *.f
+
+   NOTE 5: handling of comment lines
+
+        Findent indents comment lines, but does not touch comment lines
+        with the '!' in column one.
+
+   NOTE 5.1: handling of comment lines converting fixed to free format
+
+        As said above, findent does not touch comments starting
+        in column 1. Since all vintage comments start in column 1,
+        this has the effect that these comments will not be indented
+        when converting from fixed to free format (using -ofree).
+        If you want the comments indented, convert to free format,
+        add a space before every line and use findent again.
+
+        Example if the stream editor 'sed' is available:
+
+          findent -ofree < prog.f | sed 's/^/ /' | findent > prog.f90
+
+        If 'sed' is not available (on Windows for example), you
+        can create the program 'addspace' or, on Windows, 'addspace.exe'
+        by compiling this program:
+
+>>>> snip -------- addspace.f ------------------------------------------
+program addspace
+   implicit none
+   character(1000) :: line
+   integer         :: io
+   do
+      read(*,'(a)',iostat=io) line
+      if (io .ne. 0) exit
+      write(*,'(1x,a)') trim(line)
+   enddo
+end program addspace
+<<<< snip -------- addspace.f ------------------------------------------
+
+        Or, if you have a vintage Fortran-4 compiler, by compiling
+        this program:
+
+>>>> snip -------- ADDSPACE.F ------------------------------------------
+      DIMENSION L(1000)
+      DATA LB/1H /
+   10 DO 15 I=1,1000
+   15 L(I)=LB
+      READ(5,100,END=30) L
+      DO 20 I=1000,1,-1
+         IF (L(I)-LB) 25,20,25
+   20 CONTINUE
+      WRITE(6,110)
+      GOTO 10
+   25 WRITE(6,110) (L(J),J=1,I)
+      GOTO 10
+   30 CONTINUE
+  100 FORMAT(1000A1)
+  110 FORMAT(1H ,1000A1)
+      END
+<<<< snip -------- ADDSPACE.F ------------------------------------------
+
+        Use the generated program 'addspace' in stead of 'sed':
+
+        findent -ofree < prog.f | addspace | findent > prog.f90
+
+findent, failure, findentfix:
+=============================
+
+   One thing is certain: findent contains errors. I appreciate it 
+   if you bring errors to my attention. If possible I will fix them.
+
+   On the other hand, it is possible to fool findent, for example
+   by using #ifdef, #else, #endif in a way that confuses findent.
+
+   Both cases can be solved using ! findentfix: , read on:
+
+   The next program will not be indented correctly:
+
+>>>> snip -------- fixdemo.f90 -----------------------------------------
+! compile with: gfortran -cpp fixdemo.f90
+! or
+!               gfortran -cpp -DLOOPJ fixdemo.f90
+   program fixdemo
+      implicit none
+      integer i,j
+      j=4
+      do i=1,3
+#ifdef LOOPJ
+      do j=1,2
+#endif
+      print *,i*j
+      enddo
+#ifdef LOOPJ
+      enddo
+      print *,'with j-loop'
+#else
+      print *,'without j-loop'
+#endif
+      continue
+   end program fixdemo
+<<<< snip -------- fixdemo.f90 -----------------------------------------
+
+   That is because findent takes the indentation from:
+#ifdef LOOPJ
+      do j=1,2
+#endif
+   and
+#else
+      print *,'without j-loop'
+#endif
+   So, findent is missing an enddo for the j-loop.
+
+   In this case, the solution would be to insert #else just before the
+   first #endif. 
+   If, however, in a real-world example this is not possible, or 
+   when findent really makes an error, you can use findentfix.
+   In the example above, insert directly after the last #endif:
+     ! findentfix: enddo
+   and findent will indent correctly. In general, the text after
+     ! findentfix:
+   will be used by findent as a normal source line, so the following
+   could also be useful:
+     ! FINDENTfix: subroutine dummy
+     ! findentFIX: do;do;do
+     ! FINDENTFIX: end;end
+     ! findentfix: where ()
+   But the following would do nothing:
+     ! findentfix: continue
+
+
+findent, installation:
+======================
+
+   (For a more comprehensive text, see README.1st and INSTALL)
+
+   Linux:
+         $ ./configure --prefix=/usr/local
+         $ make
+         $ sudo make install
+
+   Windows:
+      copy findent.exe C:\WINDOWS
+
+wfindent
+========
+
+  wfindent, a bash shell script, indents Fortran source in-place, performing a
+  sanity check.
+  It accepts all flags that findent accepts.
+
+  Usage:
+
+     wfindent [ findent flags ] files
+
+   example
+
+     wfindent -I4 *.f90
+
+   Installation:
+     
+      If you installed findent with the ./configure, make, make install 
+      method, wfindent is installed as well.
+      Otherwise:
+      $ sudo install scripts/wfindent /usr/local/bin
+
+
+wfindent.bat
+============
+
+  wfindent.bat is for usage in the cmd shell of Windows and has the same
+  functionality as wfindent, described just above.
+
+  Installation:
+
+    copy wfindent.bat C:\WINDOWS
+
+
+jfindent or jfindent.jar
+========================
+
+  jfindent is a graphical front end for findent, and is available as
+  a separate package on findent.sourceforge.net
+
+findent and vim
+===============
+
+   Findent is since version 2.7 very vim-aware. When using the vim scripts
+   mentioned in README.1st, findent is used as equalprg ( :help equalprg )
+   end indentexpr ( :help indentexpr )
+   This is possible because of the speed of findent: it indents about 
+   50000 - 100000 lines per second.
+
+   Findent can emit configuration files, look at the output of:
+
+      findent --vim_help
+
+findent and gedit
+=================
+
+   To enable findent in gedit, look at the output of:
+
+      findent --gedit_help
+
+findent and emacs
+=================
+
+   To enable findent in emacs, look at the output of:
+
+      findent --emacs_help
+
+Issues
+======
+   
+   Since findent parses line-by-line, there are situations that are ambiguous:
+
+     F(X) = X**2        An assignment or a statement function?
+
+     ELSE WHERE          Is this an ELSEWHERE as in
+                        WHERE(X .EQ. 0)
+                           Y=10
+                        ELSE WHERE
+                           Y=1
+                        END WHERE
+
+                         or is it part of an IF construct with name WHERE:
+                        WHERE: IF (X .EQ. 0) THEN
+                                  Y=10
+                               ELSE WHERE
+                                  Y=1
+                               ENDIF WHERE
+
+                         Findent chooses the first possibility.
+
+   And there must be more ...
+   Luckily, it seems that these ambiguities do not affect indentation.
+
+   I tried to make findent Fortran-2008 compatible. This raised another
+   ambiguity, because findent is space-insensitive:
+
+   MODULE PROCEDURE MYPROC  Is this an module PROCEDUREMYPROC or
+                            an moduleprocedure MYPROC?
+                            Findent assumes the last.
+
+I am happy to receive comments, error reports and suggestions for
+improvements.
+
+Januari 2018, Willem Vermin, wvermin@gmail.com
+
+# $Id: README 206 2017-07-19 07:06:28Z willem_vermin $

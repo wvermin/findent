@@ -1,5 +1,5 @@
 #!/bin/sh
-SRCDIR=${SRCDIR:-.}
-$SRCDIR/test/test-compile.sh $SRCDIR/test/progfixed.f
+. ./prelude
+../test-compile.sh ../progfixed.f
 rc=$?
 exit $rc

@@ -9,7 +9,7 @@ BUILDLEXFILES = buildlexer.cpp
 AM_CXXFLAGS = -fPIC
 
 if USEBISON
-parser.cpp parser.h: parser.y
+parsermade: parser.y
 	$(YACC) -o parser.cpp -d $<
 	if test -f parser.cpp.h ; then mv parser.cpp.h parser.h ; fi
 	if test -f parser.hpp ; then mv parser.hpp parser.h ; fi
@@ -17,6 +17,9 @@ parser.cpp parser.h: parser.y
 	   then  cp parser.cpp buildparser.cpp.in ; fi
 	if test -f buildparser.h.in ; \
 	   then cp parser.h buildparser.h.in ; fi
+	@touch $@
+
+parser.cpp parser.h: parsermade
 else
 dummyparser: parser.y
 	@echo ""
@@ -53,9 +56,11 @@ lexer.cpp: buildlexer.cpp dummylexer
 	cp $< $@
 endif
 
+lexer.o: parser.h
+
 MOSTLYCLEANFILES =
 
-CLEANFILES = $(LEXFILES) $(PARFILES) findent findent.exe findent.1 parser.cpp.h parser.hpp parser_report.txt *.inc
+CLEANFILES = $(LEXFILES) $(PARFILES) findent findent.exe findent.1 parser.cpp.h parser.hpp parser_report.txt *.inc parsermade
 
 
 DISTCLEANFILES = dummylexer dummyparser
@@ -78,9 +83,15 @@ vim_plugin.o: vim_fortran.inc vim_findent.inc vim_help.inc
 gedit_plugin.o: gedit_external.inc gedit_plugin.inc gedit_plugin_py.inc \
    gedit_help.inc
 
-TOCPP    = $(top_srcdir)/src/tocpp.sh
-VIMDIR   = $(top_srcdir)/vim
-GEDITDIR = $(top_srcdir)/gedit
+emacs_plugin.o: emacs_findent.inc emacs_help.inc
+
+readme_plugin.o: readme.inc
+
+TOCPP     = $(top_srcdir)/src/tocpp.sh
+VIMDIR    = $(top_srcdir)/vim
+GEDITDIR  = $(top_srcdir)/gedit
+EMACSDIR  = $(top_srcdir)/emacs
+READMEDIR = $(top_srcdir)/doc
 
 vim_fortran.inc: $(VIMDIR)/fortran.vim $(TOCPP)
 	$(TOCPP) < $(VIMDIR)/fortran.vim > $@
@@ -103,6 +114,15 @@ gedit_plugin_py.inc: $(GEDITDIR)/findent.py $(TOCPP)
 gedit_help.inc: $(GEDITDIR)/README $(TOCPP)
 	$(TOCPP) < $(GEDITDIR)/README > $@
 
+emacs_findent.inc: $(EMACSDIR)/findent.el $(TOCPP)
+	$(TOCPP) < $(EMACSDIR)/findent.el > $@
+
+emacs_help.inc: $(EMACSDIR)/README $(TOCPP)
+	$(TOCPP) < $(EMACSDIR)/README > $@
+
+readme.inc: $(READMEDIR)/README $(TOCPP)
+	$(TOCPP) < $(READMEDIR)/README > $@
+
 bin_PROGRAMS    = findent
 
 findent_SOURCES = findent.cpp lexer.cpp parser.cpp \
@@ -110,6 +130,8 @@ findent_SOURCES = findent.cpp lexer.cpp parser.cpp \
 		  line_prep.h pre_analyzer.h version.h \
 		  findent.h simpleostream.h \
 		  vim_plugin.cpp vim_plugin.h \
-		  gedit_plugin.cpp gedit_plugin.h 
+		  gedit_plugin.cpp gedit_plugin.h \
+		  emacs_plugin.cpp emacs_plugin.h \
+		  readme_plugin.cpp readme_plugin.h
 
 EXTRA_DIST  = lexer.l parser.y tocpp.sh

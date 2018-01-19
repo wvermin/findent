@@ -1,4 +1,8 @@
-$Id: ChangeLog 220 2017-12-01 08:44:21Z willem_vermin $
+$Id: ChangeLog 238 2018-01-18 16:14:03Z willem_vermin $
+findent-2.8.0:
+	implement ! findentfix:
+	clean up code, enhance documentation
+	parallel make, also for make check, seems to work now
 findent-2.7.4:
 	src/Makefile.am, configure.ac: if flex/bison is not
 	  to be used, but lexer.l or parser.y has been changed,
@@ -38,12 +42,19 @@ findent-2.7.4:
 	    --gedit_plugin_py
 	test:
 	   use only one or two lines for testing flags -h, -H
-	   add tests (test16.sh) for vim and gedit related flags
+	   add tests (test16.sh) for vim and gedit related flags.
+	   make use of MAKEWIN (see configure.ac) to determine
+	   if we made an windows executable.
 	parser.y:  bugfix
 	   take care that "dom(1)%t" is recognized as an lvalue
 	   so that "dom(1)%t = 0" is not classified as the start
 	   of a do-loop, but as an assignement by adding:
 	      lvalue:  lvalue '%' lvalue
+
+	test, findent.cpp, emacs
+	   add ability to generate emacs config file.
+	   add aliases for flags containing '_': 
+	     '-' can be used instead
 
 findent-2.7.3:
 findent-2.7.2:

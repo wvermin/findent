@@ -1,9 +1,10 @@
 #!/bin/sh
+. ./prelude
 rc=0
-SRCDIR=${SRCDIR:-.}
+exe=$FINDENT
 for flag in -h --help ; do
-   ../src/findent "$flag" | head -n 1 | tr -d '\r' > help.try
-   cmp -s $SRCDIR/test/help.ref help.try
+   $exe "$flag" | head -n 1 | tr -d '\r' > help.try
+   cmp -s ../help.ref help.try
    r=$?
    if [ $r -eq 0 ] ; then
       echo "$flag : works OK"
@@ -14,8 +15,8 @@ for flag in -h --help ; do
 done
 
 for flag in -H --manpage ; do
-   ../src/findent "$flag" | head -n 1 | tr -d '\r' > manpage.try
-   cmp -s $SRCDIR/test/manpage.ref manpage.try
+   $exe "$flag" | head -n 1 | tr -d '\r' > manpage.try
+   cmp -s ../manpage.ref manpage.try
    r=$?
    if [ $r -eq 0 ] ; then
       echo "$flag : OK"
@@ -26,7 +27,7 @@ for flag in -H --manpage ; do
 done
 
 for flag in -v --version ; do
-   ../src/findent $flag > result
+   $exe $flag > result
    if grep -q "^findent version" result ; then
       echo "$flag: OK"
    else

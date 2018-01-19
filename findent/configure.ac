@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT(findent, 2.7.4~pre7, wvermin@gmail.com)
+AC_INIT(findent, 2.8.0, wvermin@gmail.com)
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/findent.cpp])
@@ -74,6 +74,38 @@ AS_IF( [test "x$useflex" = "xno"],
 
 AM_CONDITIONAL([USEFLEX],[test "x$useflex" = "xyes"])
 
+AC_CONFIG_FILES([test/prelude])
+AC_CONFIG_FILES([test/test-compile.sh],[chmod +x test/test-compile.sh])
+AC_CONFIG_FILES([test/doit],[chmod +x test/doit])
+AC_CONFIG_FILES([test/progfixed-dos.f])
+AC_CONFIG_FILES([test/progfixed-dos.f.try.f.ref])
+AC_CONFIG_FILES([test/progfixed.f])
+AC_CONFIG_FILES([test/progfixed.f.try.f.ref])
+AC_CONFIG_FILES([test/progfixedfree-dos.f])
+AC_CONFIG_FILES([test/progfixedfree-dos.f.try.f.ref])
+AC_CONFIG_FILES([test/progfixedfree.f])
+AC_CONFIG_FILES([test/progfixedfree.f.try.f.ref])
+AC_CONFIG_FILES([test/progfree-dos.f])
+AC_CONFIG_FILES([test/progfree-dos.f.try.f.ref])
+AC_CONFIG_FILES([test/progfree.f])
+AC_CONFIG_FILES([test/progfree.f.try.f.ref])
+AC_CONFIG_FILES([test/progfree1.f])
+AC_CONFIG_FILES([test/progfree1.f.try.f.ref])
+AC_CONFIG_FILES([test/progfixed1.f])
+AC_CONFIG_FILES([test/progfixed1.f.try.f.ref])
+AC_CONFIG_FILES([test/manpage.ref])
+AC_CONFIG_FILES([test/help.ref])
+AC_CONFIG_FILES([test/vim_fortran.ref])
+AC_CONFIG_FILES([test/vim_findent.ref])
+AC_CONFIG_FILES([test/gedit_help.ref])
+AC_CONFIG_FILES([test/vim_help.ref])
+AC_CONFIG_FILES([test/gedit_external.ref])
+AC_CONFIG_FILES([test/gedit_plugin.ref])
+AC_CONFIG_FILES([test/gedit_plugin_py.ref])
+AC_CONFIG_FILES([test/emacs_help.ref])
+AC_CONFIG_FILES([test/emacs_findent.ref])
+AC_CONFIG_FILES([test/readme.ref])
+
 AC_PROG_CXX
 AC_PROG_AWK
 AC_PROG_SED
@@ -82,4 +114,4 @@ AC_LANG([C++])
 AC_HEADER_STDC
 AC_CHECK_HEADERS([iostream string stack vector cstdio queue algorithm sstream],[],AC_MSG_ERROR([Exiting])) 
 
-AC_OUTPUT(Makefile src/Makefile scripts/Makefile test/Makefile vim/Makefile gedit/Makefile)
+AC_OUTPUT(Makefile src/Makefile scripts/Makefile test/Makefile vim/Makefile gedit/Makefile emacs/Makefile doc/Makefile)

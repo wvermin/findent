@@ -255,7 +255,7 @@ top_srcdir = @top_srcdir@
 bin_SCRIPTS = wfindent
 man1_MANS = wfindent.1
 CLEANFILES = wfindent
-EXTRA_DIST = wfindent.tmpl wfindent.1
+EXTRA_DIST = wfindent.tmpl wfindent.1 wfindent.bat
 all: all-am
 
 .SUFFIXES:

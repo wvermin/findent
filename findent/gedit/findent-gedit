@@ -65,10 +65,10 @@ case "$suffix" in
 esac
 findentflags="$flags $fflag"
 # run findent:
-$FINDENT $findentflags $GEDIT_FINDENT_FLAGS < $fin > $fout 2>/dev/null
+$FINDENT $findentflags < $fin > $fout 2>/dev/null
 if [ $? -ne 0 ] ; then
    echo "findent reports error" >&2
-   echo "using \"$FINDENT $findentflags $GEDIT_FINDENT_FLAGS\"" >&2
+   echo "using \"$FINDENT $findentflags\"" >&2
    restore
 fi
 # check if output has same number of lines as input:

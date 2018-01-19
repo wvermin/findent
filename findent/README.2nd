@@ -1,0 +1,13 @@
+Extra scripts:
+
+  - bootstrap: 
+      distribute version to various files 
+      does some preliminary work for preserving the output of lex and bison
+      autoreconf -fvi
+
+  - maketar:
+      creates, using make -distcheck, a tarball in ../versions
+
+  - makezip:
+      creates zipfile for usage in wondows in ../versions
+

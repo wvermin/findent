@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: maketar 223 2017-12-01 09:46:42Z willem_vermin $
+# $Id: maketar 240 2018-01-20 08:41:12Z willem_vermin $
 curdir=`pwd`                                       || exit 1
 version=`./getversion`                             || exit 1
 echo "version = $version"

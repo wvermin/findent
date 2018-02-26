@@ -1,4 +1,7 @@
-$Id: ChangeLog 238 2018-01-18 16:14:03Z willem_vermin $
+$Id: ChangeLog 243 2018-02-25 14:53:06Z willem_vermin $
+findent-2.8.1:
+	adapt wfindent and wfindent.bat to long options
+	parser.y: get rid of shift-reduce conflict
 findent-2.8.0:
 	implement ! findentfix:
 	clean up code, enhance documentation

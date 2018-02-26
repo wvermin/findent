@@ -1,5 +1,5 @@
 %{
-// $Id: parser.y 233 2018-01-08 12:30:32Z willem_vermin $
+// $Id: parser.y 243 2018-02-25 14:53:06Z willem_vermin $
 #include <iostream>
 #include "findent.h"
 #include "line_prep.h"
@@ -41,6 +41,8 @@ struct propstruct properties;
 %token UNCLASSIFIED
 %token ERROR
 %token LAST_TOKEN
+
+%left '%'
 
 %%
 

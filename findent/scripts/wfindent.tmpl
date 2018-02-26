@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: wfindent.tmpl 145 2016-11-13 16:16:33Z willem_vermin $
+# $Id: wfindent.tmpl 240 2018-01-20 08:41:12Z willem_vermin $
 # vim: filetype=sh
 #
 # in-place indenting of fortran sources using findent
@@ -22,7 +22,36 @@ if ! "$FINDENT" -v >/dev/null 2>&1 ; then
    fi
 fi
 echo "$0 using: "`"$FINDENT" -v`
-parms=$( getopt -o a:b:c:C:d:e:E:f:F:hHi:I:j:k:l:L:m:o:qr:R:s:t:vw:x: -- "$@" )
+parms=$( getopt -o a:b:c:C:d:e:E:f:F:hHi:I:j:k:l:L:m:o:qr:R:s:t:vw:x: \
+   -l version                                     \
+   -l help                                        \
+   -l manpage                                     \
+   -l indent:                                     \
+   -l indent_associate:,indent-associate:         \
+   -l indent_block:,indent-block:                 \
+   -l indent_case:,indent-case:                   \
+   -l indent_contains:,indent-contains:           \
+   -l indent_do:,indent-do:                       \
+   -l indent_entry:,indent-entry:                 \
+   -l indent_enum:,indent-enum:                   \
+   -l indent_if:,indent-if:                       \
+   -l indent_forall:,indent-forall:               \
+   -l indent_interface:,indent-interface:         \
+   -l indent_continuation:,indent-continuation:   \
+   -l indent_procedure:,indent-procedure:         \
+   -l indent_select:,indent-select:               \
+   -l indent_type:,indent-type:                   \
+   -l indent_where:,indent-where:                 \
+   -l indent_critical:,indent-critical:           \
+   -l input_format:,input-format:                 \
+   -l start_indent:,start-indent:                 \
+   -l label_left:,label-left:                     \
+   -l input_line_length:,input-line-length:       \
+   -l indent_module:,indent-module                \
+   -l output_format:,output-format:               \
+   -l refactor_procedures::,refactor-procedures:: \
+   -- "$@" )
+
 if [ $? -ne 0 ] ; then
    exit 1
 fi
@@ -31,25 +60,28 @@ fparms=""
 while [ "$1" ] ; do
    case "$1" in
       --) shift
-	  break
-	  ;;
-      *) if [ "$1" = "-v" ] ; then
-	    echo "wfindent using $FINDENT"
-	    "$FINDENT" -v
-	    echo "wfindent: indented files: 0"
-	    exit $?
+	 break
+	 ;;
+      "-v"|"--version")
+	 echo "wfindent using $FINDENT"
+	 "$FINDENT" -v
+	 echo "wfindent: indented files: 0"
+	 exit $?
+	 ;;
+      "-h"|"-H"|"--help"|"--manpage") 
+	 "$FINDENT" "$1"
+	 exit $?
+	 ;;
+      --refactor*)
+	 fparms="$fparms $1" 
+	 shift
+	 if [ "$1" ] ; then
+	    fparms="$fparms=$1"
 	 fi
-	 case "$1" in
-	    "-h"|"-H") "$FINDENT" "$1"
-	               exit $?
-		       ;;
-	 esac
-	 if [ "$1" != "-q" ] ; then
-	    fparms="$fparms $1" 
-	 else
-	    echo "wfindent: ignored flag -q"
-	    echo "          use $FINDENT -q < filename"
-	 fi
+	 shift
+	 ;;
+      *)
+	 fparms="$fparms $1" 
 	 shift
 	 ;;
    esac

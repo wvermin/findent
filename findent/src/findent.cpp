@@ -1,4 +1,4 @@
-// $Id: findent.cpp 237 2018-01-17 15:08:45Z willem_vermin $
+// $Id: findent.cpp 242 2018-02-20 14:24:28Z willem_vermin $
 #include <cstdio>
 #include <iostream>
 #include <stack>
@@ -2057,7 +2057,7 @@ void usage(const bool doman)
    if (doman)
    {
       std::cout << ".\\\" DO NOT MODIFY THIS FILE! It was created by findent -H"                << std::endl;
-      std::cout << ".TH FINDENT \"1\" \"2015\" \"findent-" << VERSION << "\" \"User Commands\"" << std::endl;
+      std::cout << ".TH FINDENT \"1\" \"2018\" \"findent-" << VERSION << "\" \"User Commands\"" << std::endl;
       std::cout << ".SH NAME"                                                                   << std::endl;
       std::cout << "findent \\- Indents and optionally converts Fortran program source"         << std::endl;
       std::cout << ".SH SYNOPSIS"                                                               << std::endl;

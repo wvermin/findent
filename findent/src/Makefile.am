@@ -38,10 +38,13 @@ parser.h: buildparser.h dummyparser
 endif
 
 if USEFLEX
-lexer.cpp: lexer.l
-	$(LEX) -i -o $@ $<
+lexermade: lexer.l
+	$(LEX) -i -o lexer.cpp $<
 	if test -f buildlexer.cpp.in ; \
 	   then cp lexer.cpp buildlexer.cpp.in ; fi
+	@touch $@
+
+lexer.cpp: lexermade
 else
 dummylexer: lexer.l
 	@echo ""
@@ -60,7 +63,8 @@ lexer.o: parser.h
 
 MOSTLYCLEANFILES =
 
-CLEANFILES = $(LEXFILES) $(PARFILES) findent findent.exe findent.1 parser.cpp.h parser.hpp parser_report.txt *.inc parsermade
+CLEANFILES = $(LEXFILES) $(PARFILES) findent findent.exe findent.1 \
+	     parser.cpp.h parser.hpp parser_report.txt *.inc parsermade lexermade
 
 
 DISTCLEANFILES = dummylexer dummyparser

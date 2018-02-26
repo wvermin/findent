@@ -315,7 +315,9 @@ LEXFILES = lexer.cpp
 BUILDLEXFILES = buildlexer.cpp
 AM_CXXFLAGS = -fPIC
 MOSTLYCLEANFILES = 
-CLEANFILES = $(LEXFILES) $(PARFILES) findent findent.exe findent.1 parser.cpp.h parser.hpp parser_report.txt *.inc parsermade
+CLEANFILES = $(LEXFILES) $(PARFILES) findent findent.exe findent.1 \
+	     parser.cpp.h parser.hpp parser_report.txt *.inc parsermade lexermade
+
 DISTCLEANFILES = dummylexer dummyparser
 MAINTAINERCLEANFILES = $(BUILDPARFILES) $(BUILDLEXFILES)
 @MAKEMAN_TRUE@man1_MANS = findent.1
@@ -730,10 +732,13 @@ uninstall-man: uninstall-man1
 @USEBISON_FALSE@parser.h: buildparser.h dummyparser
 @USEBISON_FALSE@	cp $< $@
 
-@USEFLEX_TRUE@lexer.cpp: lexer.l
-@USEFLEX_TRUE@	$(LEX) -i -o $@ $<
+@USEFLEX_TRUE@lexermade: lexer.l
+@USEFLEX_TRUE@	$(LEX) -i -o lexer.cpp $<
 @USEFLEX_TRUE@	if test -f buildlexer.cpp.in ; \
 @USEFLEX_TRUE@	   then cp lexer.cpp buildlexer.cpp.in ; fi
+@USEFLEX_TRUE@	@touch $@
+
+@USEFLEX_TRUE@lexer.cpp: lexermade
 @USEFLEX_FALSE@dummylexer: lexer.l
 @USEFLEX_FALSE@	@echo ""
 @USEFLEX_FALSE@	@echo "*******************************************************"

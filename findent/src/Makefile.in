@@ -717,6 +717,8 @@ uninstall-man: uninstall-man1
 @USEBISON_TRUE@	@touch $@
 
 @USEBISON_TRUE@parser.cpp parser.h: parsermade
+@USEBISON_TRUE@	@touch $@
+
 @USEBISON_FALSE@dummyparser: parser.y
 @USEBISON_FALSE@	@echo ""
 @USEBISON_FALSE@	@echo "********************************************************"
@@ -739,6 +741,8 @@ uninstall-man: uninstall-man1
 @USEFLEX_TRUE@	@touch $@
 
 @USEFLEX_TRUE@lexer.cpp: lexermade
+@USEFLEX_TRUE@	@touch $@
+
 @USEFLEX_FALSE@dummylexer: lexer.l
 @USEFLEX_FALSE@	@echo ""
 @USEFLEX_FALSE@	@echo "*******************************************************"

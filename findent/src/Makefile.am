@@ -20,7 +20,10 @@ parsermade: parser.y
 	@touch $@
 
 parser.cpp parser.h: parsermade
+	@touch $@
+
 else
+
 dummyparser: parser.y
 	@echo ""
 	@echo "********************************************************"
@@ -45,7 +48,10 @@ lexermade: lexer.l
 	@touch $@
 
 lexer.cpp: lexermade
+	@touch $@
+
 else
+
 dummylexer: lexer.l
 	@echo ""
 	@echo "*******************************************************"

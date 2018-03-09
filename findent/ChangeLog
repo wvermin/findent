@@ -1,4 +1,6 @@
-$Id: ChangeLog 243 2018-02-25 14:53:06Z willem_vermin $
+$Id: ChangeLog 247 2018-03-04 11:19:55Z willem_vermin $
+findent-2.8.2: 
+	debianizing ...
 findent-2.8.1:
 	adapt wfindent and wfindent.bat to long options
 	parser.y: get rid of shift-reduce conflict

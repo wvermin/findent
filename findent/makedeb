@@ -1,0 +1,42 @@
+#!/bin/bash
+# parameter all: produce debs for i386-wheezy, amd64=wheezy, amd64-sid
+curdir=$PWD
+version=`./getversion`
+echo "version = $version"
+tar=$PWD/../versions/findent-$version.tar.gz
+dir=findent-$version
+dsc=findent_$version-1.dsc
+debdir=$PWD/../debian/findent-$version-deb
+if [ -e debian/changelog ] ; then
+   sed -i "1s/(.*)/($version-1)/" debian/changelog   || exit 1
+fi
+rm -rf $debdir
+mkdir -p $debdir || exit
+cd $debdir || exit
+cp $tar . || exit
+tar xf $tar || exit
+cd $dir || exit
+cp -r $curdir/debian . || exit
+dh_make --yes --s -f $tar
+debuild -us -uc --lintian-opts --profile debian || exit
+# dpkg-buildpackage -us -uc
+if test "x$1" != xall ; then 
+   cd ..
+   rm -r $dir || exit 1
+   exit 0
+fi
+cd ..
+pwd
+exit
+for dist in i386-wheezy wheezy sid ; do
+   echo building for $dist ...
+   sudo bash `which pbuilder` --build --configfile ~root/pbuilderrc.$dist $dsc || exit
+done
+rm -r $dir || exit 1
+echo '***********************************************************'
+echo '** i386-wheezy in /var/cache/pbuilder/result-i386-wheezy **'
+echo '** wheezy in /var/cache/pbuilder/result-amd64-wheezy     **'
+echo '** sid in /var/cache/pbuilder/result-amd64-sid           **'
+echo '** do not forget to debsign .changes                     **'
+echo '***********************************************************'
+echo $0 done

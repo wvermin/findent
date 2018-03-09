@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT(findent, 2.8.1, wvermin@gmail.com)
+AC_INIT(findent, 2.8.2, wvermin@gmail.com)
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/findent.cpp])
@@ -40,12 +40,8 @@ AS_IF( [test "x$with_bison" = "xyes"],
 AS_IF( [test "x$with_bison" = "xuse-bison-if-available"],
        [AX_PROG_BISON(AC_MSG_NOTICE([Will use bison if necessary to create parser.]) 
 	[usebison="yes"],
-        AC_MSG_NOTICE([No bison found. Will use pre-build parser.])
+        AC_MSG_NOTICE([No bison found. Will use pre-built parser.])
 	[usebison="no"])])
-
-AS_IF( [test "x$usebison" = "xno"],
-       [ AC_CONFIG_FILES([src/buildparser.cpp])
-         AC_CONFIG_FILES([src/buildparser.h])])
 
 AM_CONDITIONAL([USEBISON],[test "x$usebison" = "xyes"])
 
@@ -66,11 +62,8 @@ AS_IF( [test "x$with_flex" = "xyes"],
 AS_IF( [test "x$with_flex" = "xuse-flex-if-available"],
        [AX_PROG_FLEX(AC_MSG_NOTICE([Will use flex if necessary to create lexer.]) 
 	[useflex="yes"],
-        AC_MSG_NOTICE([No flex found. Will use pre-build lexer.])
+        AC_MSG_NOTICE([No flex found. Will use pre-built lexer.])
 	[useflex="no"])])
-
-AS_IF( [test "x$useflex" = "xno"],
-       [ AC_CONFIG_FILES([src/buildlexer.cpp])])
 
 AM_CONDITIONAL([USEFLEX],[test "x$useflex" = "xyes"])
 

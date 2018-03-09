@@ -1,13 +1,32 @@
-Extra scripts:
+Extra maintainer scripts:
 
   - bootstrap: 
-      distribute version to various files 
-      does some preliminary work for preserving the output of lex and bison
+      Distribute version to various files.
       autoreconf -fvi
+      Creates the output of flex and bison for usage on
+	 systems that do not have bison and/or flex installed.
+	 (make sure YOU have bison and flex installed)
+      make distclean
 
   - maketar:
-      creates, using make -distcheck, a tarball in ../versions
+      Calls ./bootstrap.
+      Creates, using make -distcheck, a tarball in ../versions .
 
   - makezip:
-      creates zipfile for usage in wondows in ../versions
+      Creates zipfile for usage in wondows in ../versions .
+
+  - makesid:
+      Calls ./maketar.
+      Creates a sid debian distribution in ../debian .
+      Usage is made from pbuilder. The makesid script contains
+      information about the details.
+
+  - makesid all
+      After creating a sid debian distribution in ../debian,
+      it creates wheezy-amd64 and wheezy-1386 debian distributions
+      in ../debian .
+
+  - makedeb:
+      obsolete
+
 

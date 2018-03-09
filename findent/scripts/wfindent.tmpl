@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: wfindent.tmpl 240 2018-01-20 08:41:12Z willem_vermin $
+# $Id: wfindent.tmpl 251 2018-03-04 12:37:08Z willem_vermin $
 # vim: filetype=sh
 #
 # in-place indenting of fortran sources using findent
@@ -13,7 +13,7 @@
 #
 
 # the location of findent, replace with correct location:
-FINDENT=findent-location
+FINDENT=${FINDENT:-findent-location}
 if ! "$FINDENT" -v >/dev/null 2>&1 ; then
    FINDENT="findent"   # try if findent is in PATH
    if ! "$FINDENT" -v >/dev/null 2>&1 ; then

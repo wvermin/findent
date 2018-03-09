@@ -454,12 +454,12 @@ top_srcdir = @top_srcdir@
 TESTS = test1.sh test2.sh test3.sh test4.sh test5.sh test6.sh \
 	test7.sh test8.sh \
 	test9.sh test10.sh test11.sh test12.sh \
-	test13.sh test14.sh test15.sh test16.sh
+	test13.sh test14.sh test15.sh test16.sh test17.sh
 
 EXTRA_DIST = test1.sh test2.sh test3.sh test4.sh test5.sh \
 	test6.sh test7.sh test8.sh \
 	test9.sh test10.sh test11.sh test12.sh \
-	test13.sh test14.sh test15.sh test16.sh \
+	test13.sh test14.sh test15.sh test16.sh test17.sh \
 	test-compile.sh \
 	progfixed-dos.f progfixed.f progfixed1.f progfixed.f \
 	progfixedfree.f progfree-dos.f progfixed-dos.f \
@@ -826,6 +826,13 @@ test15.sh.log: test15.sh
 test16.sh.log: test16.sh
 	@p='test16.sh'; \
 	b='test16.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test17.sh.log: test17.sh
+	@p='test17.sh'; \
+	b='test17.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

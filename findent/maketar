@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: maketar 240 2018-01-20 08:41:12Z willem_vermin $
+# $Id: maketar 247 2018-03-04 11:19:55Z willem_vermin $
 curdir=`pwd`                                       || exit 1
 version=`./getversion`                             || exit 1
 echo "version = $version"
@@ -9,4 +9,5 @@ make -j4 distcheck                                 || exit 1
 mkdir -p ../versions                               || exit 1
 mv findent*.tar.gz ../versions                     || exit 1
 unix2dos -n README.1st ../versions/README          || exit 1
+make distclean
 echo "$0 done"

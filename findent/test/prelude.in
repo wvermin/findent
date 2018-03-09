@@ -6,6 +6,7 @@ rp()
 }
 
 export FINDENT=`rp ../src`/findent
+export WFINDENT=`rp ../scripts`/wfindent
 if [ "$WINDOWS" = yes ]; then
    FINDENT=$FINDENT.exe
 fi

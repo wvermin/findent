@@ -3,7 +3,7 @@
 " or place it in ~/.vim/plugin/ as findent.vim
 "Author: Willem Vermin wvermin@gmail.com
 "Licence: fair
-"Date: nov 2016
+"Date: nov 2016,2017,2018
 "
 
 if exists("g:use_findent")

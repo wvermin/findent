@@ -303,7 +303,7 @@ findent, usage?
 # Usage:
 # checklength <length> [file ...]
 # outputs "filename:line number:line length:line" for lines longer than length
-# tabs are coverted to spaces using expand
+# tabs are converted to spaces using expand
 # if no file is given, read from stdin
 usage()
 {

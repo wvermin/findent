@@ -1,4 +1,4 @@
-// $Id: findent.cpp 242 2018-02-20 14:24:28Z willem_vermin $
+// $Id: findent.cpp 252 2018-03-04 13:52:01Z willem_vermin $
 #include <cstdio>
 #include <iostream>
 #include <stack>
@@ -58,6 +58,7 @@ void indent_and_output();
 
 void set_default_indents();
 void usage(const bool doman);
+void replaceAll( std::string &s, const std::string &search, const std::string &replace );
 void manout(const std::string flag, const std::string txt, const bool doman);
 std::string trim(const std::string& str);
 std::string rtrim(const std::string& str);
@@ -2056,8 +2057,8 @@ void usage(const bool doman)
 {
    if (doman)
    {
-      std::cout << ".\\\" DO NOT MODIFY THIS FILE! It was created by findent -H"                << std::endl;
-      std::cout << ".TH FINDENT \"1\" \"2018\" \"findent-" << VERSION << "\" \"User Commands\"" << std::endl;
+      std::cout << ".\\\" DO NOT MODIFY THIS FILE! It was created by findent \\-H"                << std::endl;
+      std::cout << ".TH FINDENT \"1\" \"2018\" \"findent\\-" << VERSION << "\" \"User Commands\"" << std::endl;
       std::cout << ".SH NAME"                                                                   << std::endl;
       std::cout << "findent \\- Indents and optionally converts Fortran program source"         << std::endl;
       std::cout << ".SH SYNOPSIS"                                                               << std::endl;
@@ -2149,7 +2150,7 @@ void usage(const bool doman)
    manout("-i<n>, --indent=<n>"             ,"all       indents except I,c,C,e (default: "+number2string(default_indent)+")",doman);
    manout("-a<n>, --indent_associate=<n>"   ,"ASSOCIATE    indent"                                                          ,doman);
    manout("-b<n>, --indent_block=<n>"       ,"BLOCK        indent"                                                          ,doman);
-   manout("-d<n> --indent_do=<n>"           ,"DO           indent"                                                          ,doman);
+   manout("-d<n>, --indent_do=<n>"           ,"DO           indent"                                                          ,doman);
    manout("-f<n>, --indent_if=<n>"          ,"IF           indent"                                                          ,doman);
    manout("-E<n>, --indent_enum=<n>"        ,"ENUM         indent"                                                          ,doman);
    manout("-F<n>, --indent_forall=<n>"      ,"FORALL       indent"                                                          ,doman);
@@ -2230,23 +2231,39 @@ void usage(const bool doman)
    std::cout << "This is free software; see the source for copying conditions.  There is NO"  <<std::endl;
    std::cout << "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE." <<std::endl;
 }
+void replaceAll( std::string &s, const std::string &search, const std::string &replace ) 
+{
+// https://stackoverflow.com/questions/4643512/replace-substring-with-another-substring-c
+    for( size_t pos = 0; ; pos += replace.length() ) {
+        // Locate the substring to replace
+        pos = s.find( search, pos );
+        if( pos == std::string::npos ) break;
+        // Replace by erasing and inserting
+        s.erase( pos, search.length() );
+        s.insert( pos, replace );
+    }
+}
 
 // doman == 1: output in man page format
 // flag: " ": normal continuation line
 //       otherwize : skip to new paragraph and use bold format
-// txt: Line to be output
+// txt: Line to output
 //
 void manout(const std::string flag, const std::string txt, const bool doman)
 {
 
    if (doman)
    {
-      if (flag == " ")
-	 std::cout << txt   << std::endl;
+      std::string mantxt  = txt;
+      std::string manflag = flag;
+      replaceAll(mantxt,"-","\\-");
+      replaceAll(manflag,"-","\\-");
+      if (manflag == " ")
+	 std::cout << mantxt << std::endl;
       else
       {
-	 std::cout << ".TP" << std::endl << "\\fB\\"<<flag<<"\\fR"<<std::endl;
-	 std::cout << txt   << std::endl;
+	 std::cout << ".TP" << std::endl << "\\fB"<<manflag<<"\\fR"<<std::endl;
+	 std::cout << mantxt << std::endl;
       }
    }
    else

@@ -1,13 +1,13 @@
 #!/bin/bash
 version=`./getversion`
+date=`date -R`
 echo "version = $version"
-for f in src/buildlexer.cpp.in src/buildparser.cpp.in src/buildparser.h.in ; do
-   if [ ! -e "$f" ] ; then
-      touch "$f"
-   fi
-done
 sed -i "/^AC_INIT(findent/s/^.*/AC_INIT(findent, $version, wvermin@gmail.com)/" configure.ac
 if [ -e debian/changelog ] ; then
    sed -i "1s/(.*)/($version-1)/" debian/changelog   || exit 1
+   sed -i "0,/^ --/s/>.*/>  $date/" debian/changelog || exit 1
 fi
 autoreconf -fvi
+./configure
+make builtparser builtlexer
+make distclean

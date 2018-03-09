@@ -1,81 +1,61 @@
 AM_LDFLAGS =
 
-PARFILES      =      parser.cpp      parser.h
-BUILDPARFILES = buildparser.cpp buildparser.h
-
-LEXFILES      =      lexer.cpp
-BUILDLEXFILES = buildlexer.cpp
-
 AM_CXXFLAGS = -fPIC
 
 if USEBISON
-parsermade: parser.y
+parser.cpp: parser.y
 	$(YACC) -o parser.cpp -d $<
 	if test -f parser.cpp.h ; then mv parser.cpp.h parser.h ; fi
 	if test -f parser.hpp ; then mv parser.hpp parser.h ; fi
-	if test -f buildparser.cpp.in ; \
-	   then  cp parser.cpp buildparser.cpp.in ; fi
-	if test -f buildparser.h.in ; \
-	   then cp parser.h buildparser.h.in ; fi
-	@touch $@
+	
+parser.h: parser.cpp
 
-parser.cpp parser.h: parsermade
-	@touch $@
+builtparser: parser.cpp
+	mv parser.cpp builtparser.cpp
+	mv parser.h builtparser.h
 
 else
 
-dummyparser: parser.y
+parser.cpp: builtparser.cpp 
 	@echo ""
 	@echo "********************************************************"
 	@echo "*** At configuration time, bison (or yacc) was not   ***"
 	@echo "*** available, or it was specified not to use bison. ***"
-	@echo "*** I will use the pre-build parser.                 ***"
+	@echo "*** I will use the pre-built parser.                 ***"
 	@echo "********************************************************"
-	touch $@
-
-parser.cpp: buildparser.cpp dummyparser 
 	cp $< $@
 
-parser.h: buildparser.h dummyparser
+parser.h: builtparser.h
 	cp $< $@
 endif
 
 if USEFLEX
-lexermade: lexer.l
+lexer.cpp: lexer.l
 	$(LEX) -i -o lexer.cpp $<
-	if test -f buildlexer.cpp.in ; \
-	   then cp lexer.cpp buildlexer.cpp.in ; fi
-	@touch $@
 
-lexer.cpp: lexermade
-	@touch $@
+builtlexer: lexer.cpp
+	mv $< builtlexer.cpp
 
 else
 
-dummylexer: lexer.l
+lexer.cpp: builtlexer.cpp
 	@echo ""
 	@echo "*******************************************************"
 	@echo "*** At configuration time, flex (or lex) was not    ***"
 	@echo "*** available, or it was specified not to use flex. ***"
-	@echo "*** I will use the pre-build lexer.                 ***"
+	@echo "*** I will use the pre-built lexer.                 ***"
 	@echo "*******************************************************"
-	touch $@
-
-lexer.cpp: buildlexer.cpp dummylexer
 	cp $< $@
 endif
 
-lexer.o: parser.h
-
 MOSTLYCLEANFILES =
 
-CLEANFILES = $(LEXFILES) $(PARFILES) findent findent.exe findent.1 \
-	     parser.cpp.h parser.hpp parser_report.txt *.inc parsermade lexermade
+CLEANFILES = findent findent.exe findent.1 \
+	     parser.cpp.h parser.hpp parser_report.txt *.inc \
+	     parser.cpp parser.h lexer.cpp
 
 
-DISTCLEANFILES = dummylexer dummyparser
-
-MAINTAINERCLEANFILES = $(BUILDPARFILES) $(BUILDLEXFILES)
+MAINTAINERCLEANFILES = builtparser.cpp builtparser.h builtlexer.cpp
 
 if MAKEMAN
 
@@ -135,7 +115,7 @@ readme.inc: $(READMEDIR)/README $(TOCPP)
 
 bin_PROGRAMS    = findent
 
-findent_SOURCES = findent.cpp lexer.cpp parser.cpp \
+findent_SOURCES = findent.cpp mylexer.cpp myparser.cpp parser.h \
 		  line_prep.cpp pre_analyzer.cpp debug.h \
 		  line_prep.h pre_analyzer.h version.h \
 		  findent.h simpleostream.h \
@@ -144,4 +124,7 @@ findent_SOURCES = findent.cpp lexer.cpp parser.cpp \
 		  emacs_plugin.cpp emacs_plugin.h \
 		  readme_plugin.cpp readme_plugin.h
 
-EXTRA_DIST  = lexer.l parser.y tocpp.sh
+BUILT_SOURCES = parser.cpp parser.h lexer.cpp
+
+EXTRA_DIST  = lexer.l parser.y tocpp.sh builtparser.cpp \
+	      builtparser.h builtlexer.cpp

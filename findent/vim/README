@@ -42,7 +42,7 @@ In ~/.vimrc you can specify:
   default is 0
 
 In findent.vim, the following mappings are defined
-  (asuming your LocalLeader = \):
+  (assuming your LocalLeader = \):
 
    \w  toggle: to determine the indent of the line being edited:
        use whole buffer (status line: wb)

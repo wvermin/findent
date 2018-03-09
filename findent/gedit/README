@@ -2,7 +2,7 @@ Usage of findent in gedit
 
 1) as an external tool:
 
-   Enter the following comamnds:
+   Enter the following commands:
 
 #################################################
 mkdir -p $HOME/bin

@@ -20,17 +20,27 @@ fi
 ./maketar  || exit 1
 for dist in $dists; do
    debdir=$curdir/../debian/findent-$version-deb.$dist
-   rm -rf $debdir
-   mkdir -p $debdir || exit 1
+   debdirbuild=$curdir/../debian/findent-$version-deb-build.$dist
+   rm -rf $debdir $debdirbuild
+   mkdir -p $debdir $debdirbuild || exit 1
    cd $debdir || exit 1
    cp $tar . || exit 1
    tar xf $tar || exit 1
    cp $tar findent_$version.orig.tar.gz || exit 1
    cd $dir || exit 1
    echo building for $dist ...
-   pdebuild  --debbuildopts "-us -uc"  -- --configfile ~root/pbuilderrc.$dist \
+   case $dist in
+      *i386*) arch=i386
+	 ;;
+      *)
+	 arch=amd64
+	 ;;
+   esac
+   pdebuild  --architecture $arch --debbuildopts "-us -uc"  -- --configfile ~root/pbuilderrc.$dist \
       --hookdir ~/pbuilderhooks || exit 1
-   sudo pbuilder --build --configfile /root/pbuilderrc.sid --buildresult $debdir $debdir/*dsc
-   sudo chown -h $USER.$USER $debdir/*
+   debsign $debdir/*.changes
+   echo creating .deb for $dist ...
+   sudo pbuilder --build --configfile /root/pbuilderrc.$dist --buildresult $debdirbuild $debdir/*dsc
+   sudo chown -h $USER.$USER $debdirbuild/*
 done
 echo $0 done

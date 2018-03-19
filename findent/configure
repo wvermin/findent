@@ -2826,7 +2826,7 @@ else
 fi
 
 
-mingw32="i586-mingw32msvc-g++"
+mingw32="i686-w64-mingw32-g++"
 if test "x$with_windows" = xyes; then :
   # Extract the first word of "$mingw32", so it can be a program name with args.
 set dummy $mingw32; ac_word=$2

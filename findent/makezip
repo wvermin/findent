@@ -5,7 +5,8 @@ dir=`pwd`
 ./configure --with-windows                                        || exit 1 
 make clean                                                        || exit 1
 rm -rf bin
-make
+make                                                              || exit 1
+make check                                                        || exit 1
 strip src/findent.exe                                             || exit 1
 version=`./getversion`                                            || exit 1
 echo "version = $version"

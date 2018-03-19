@@ -11,7 +11,7 @@ AC_SUBST([make_include], ["include"])
 
 AC_ARG_WITH(windows, [AS_HELP_STRING([--with-windows],[Build findent.exe @<:@default=no@:>@])],[],[with_windows=no])
 
-mingw32="i586-mingw32msvc-g++"
+mingw32="i686-w64-mingw32-g++"
 AS_IF( [test "x$with_windows" = xyes],[AC_CHECK_PROG([MINGW32],[$mingw32],[$mingw32],[none])]) 
 
 AS_IF( [test "x$MINGW32" = xnone],

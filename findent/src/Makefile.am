@@ -1,6 +1,10 @@
 AM_LDFLAGS =
 
+if MAKEWIN
+AM_CXXFLAGS = -static
+else
 AM_CXXFLAGS = -fPIC
+endif
 
 if USEBISON
 parser.cpp: parser.y

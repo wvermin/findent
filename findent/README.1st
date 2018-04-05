@@ -8,9 +8,8 @@ findent: indents/beautifies/converts Fortran sources
    in equalprg and indentexpr
  - wrapper for processing one or more files in one call available
       for Unix and Windows (wfindent and wfindent.bat respectively)
- - (g)vim users: findent can act as a plug-in to format your
-      edit file with the '=' command
- - gedit users: findent can be used as indenter for the files you are editing
+ - vim, gedit, emacs users: findent optionally emits configuration files
+   for these editors to use findent as a plugin.
  - gui frontent available in a separate package: jfindent
 
 Unix-Linux users: 
@@ -69,6 +68,11 @@ gedit users:
 
     findent --gedit_help
 
+emacs users:
+   Install findent, the following command shows instructions
+   how to use findent in emacs:
+
+   findent --emacs_help
 
 
-# $Id: README.1st 232 2017-12-04 13:38:08Z willem_vermin $
+# $Id: README.1st 262 2018-04-05 13:37:35Z willem_vermin $

@@ -105,7 +105,7 @@ function! Findent_getindent()
       " use whole buffer up to current line to determine indent
       let startline = 1
    else
-      let maxlines = 2*&lines
+      let maxlines = 10*&lines
       " use at most 'maxlines' previous lines to determine indent
       let s = max([v:lnum-maxlines,1])
       "let startline = system(g:findent." -lastusable -i".b:fortran_format,join(getline(1,v:lnum-1),"\n"))

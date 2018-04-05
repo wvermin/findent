@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: makezip 238 2018-01-18 16:14:03Z willem_vermin $
+# $Id: makezip 259 2018-03-20 07:50:38Z willem_vermin $
 dir=`pwd`
 ./bootstrap                                                       || exit 1
 ./configure --with-windows                                        || exit 1 
@@ -23,5 +23,5 @@ zip   "findent-$version.zip" findent.exe README.txt \
                              COPYING.txt wfindent.bat             || exit 1
 rm -f findent.exe README.txt wfindent.bat COPYING.txt
 cd "$dir"                                                         || exit 1
-make maintainer-clean                                             || exit 1
+make distclean
 echo "$0 done"

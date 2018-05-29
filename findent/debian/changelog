@@ -4,8 +4,10 @@ findent (2.8.2-1) unstable; urgency=low
   * Add support for vim, gedit, emacs
   * Add long options
   * Improve documentation
+  * Add 'tests' directory in debian/
+  * Add 'findentfix': correct wrong indentation
 
- -- Willem Vermin <wvermin@gmail.com>  Thu, 05 Apr 2018 16:34:49 +0200
+ -- Willem Vermin <wvermin@gmail.com>  Tue, 29 May 2018 13:56:46 +0200
 
 findent (2.7.3-1) unstable; urgency=low
 

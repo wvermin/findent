@@ -1,0 +1,2 @@
+" to enable the findent Fortran indent program: 
+" include this file in ~/.vimrc 

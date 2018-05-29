@@ -1,0 +1,32 @@
+#!/bin/bash
+# creates directory for upload
+# BTW: it seems that ./makedeb produces exactly the same ...
+# version numbers for upstream releases:
+newversion=`./getversion`
+oldversion=2.7.3
+curdir=`pwd`
+dist=sid
+tar=$curdir/../versions/findent-$newversion.tar.gz
+uploaddir=$curdir/../upload/upload-$newversion
+./maketar
+echo removing $uploaddir ...
+mkdir -p $uploaddir
+sudo chown -R willem.willem $uploaddir
+rm -rf $uploaddir
+mkdir -p $uploaddir
+cd $uploaddir || exit 1
+cp -v $tar . || exit 1
+sudo bash `which pbuilder` --execute --bindmounts $PWD \
+   --configfile ~root/pbuilderrc.$dist  \
+   -- $curdir/pbuilderscript $PWD $oldversion $newversion|| exit 1
+sudo chown -R willem.willem $uploaddir
+rm -r findent-$oldversion
+rm    findent_$oldversion-1.debian.tar.xz
+rm    findent_$oldversion-1.dsc
+rm    findent_$oldversion.orig.tar.gz
+rm -r findent-$newversion
+rm -r findent-$newversion.orig
+debsign *.changes
+echo to check: dput -s ftp-eu $uploaddir/*.changes
+echo to upload: dput ftp-eu $uploaddir/*.changes
+echo "$0 done"

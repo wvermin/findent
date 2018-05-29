@@ -1,0 +1,22 @@
+#!/bin/sh
+rc=0
+flags=$1
+eflags=$2
+comment=$3
+exe=$FINDENT
+for flag in $flags ; do
+   cat prog | $exe $eflags $flag | tr -d '\r' > result
+   if cmp -s expect result ; then
+      echo "$flag : OK $comment"
+   else
+      echo "$flag : NOT OK $comment"
+      echo "expected:"
+      cat expect
+      echo "got:"
+      cat result
+      echo "program is:"
+      cat prog
+      rc=`expr $rc + 1`
+   fi
+done
+exit $rc

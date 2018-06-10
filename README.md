@@ -11,3 +11,5 @@ indent and convert Fortran sources
  - (g)vim users: findent can act as a plug-in to format your
       edit file with the '=' command
  - gui frontent available in a separate package: jfindent
+
+The newest version of findent is located at findent.sourceforge.net .

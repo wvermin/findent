@@ -10,4 +10,4 @@ indent and convert Fortran sources
       for Unix and Windows (wfindent and wfindent.bat respectively)
  - gui frontent available in a separate package: jfindent
 
-The newest version of findent is located at findent.sourceforge.net .
+The newest version of findent (3.0.1) is located at findent.sourceforge.net .

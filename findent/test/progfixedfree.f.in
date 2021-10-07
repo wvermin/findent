@@ -21,16 +21,16 @@
      8        efgh"
        return
        end function
-#ifdef usempi
+#  ifdef usempi
            function f1(x,m)
                 real x,m
-#elif defined(useopenmp)
+#  elif defined(useopenmp)
            function f1(x,m,n)
                 real x,m,n
-#else
+#  else
            function f1(x)
                 real x
-#endif
+#  endif
                 continue
            end function f1
        end module
@@ -251,3 +251,18 @@ defined(q)
       x=x+4
       enddo
          end
+
+                 subroutine omp
+              integer i,j,k
+C$            integer m,n, 
+c$
+c$ !comment
+c$
+*$   1         o,p
+              print *,i,j,k
+!$           print*, m,n,o,p
+!$             do 100 i=1,20
+!$                  do 100 j=1,i
+c$              continue
+c$100          continue
+              end

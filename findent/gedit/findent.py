@@ -2,22 +2,33 @@
 #  Findent plugin
 #  This file is part of gedit
 #
-#  Copyright (C) 2017 Willem Vermin
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor,
-#  Boston, MA 02110-1301, USA.
+# -copyright-
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# 
+#-# License: BSD-3-Clause
+#-#  Redistribution and use in source and binary forms, with or without
+#-#  modification, are permitted provided that the following conditions
+#-#  are met:
+#-#  1. Redistributions of source code must retain the above copyright
+#-#     notice, this list of conditions and the following disclaimer.
+#-#  2. Redistributions in binary form must reproduce the above copyright
+#-#     notice, this list of conditions and the following disclaimer in the
+#-#     documentation and/or other materials provided with the distribution.
+#-#  3. Neither the name of the copyright holder nor the names of its
+#-#     contributors may be used to endorse or promote products derived
+#-#     from this software without specific prior written permission.
+#-#   
+#-#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+#-#  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#-#  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+#-#  A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE HOLDERS OR
+#-#  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+#-#  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#-#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+#-#  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+#-#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+#-#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+#-#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from gi.repository import GObject, Gio, Gtk, Gedit
 import gettext
@@ -37,7 +48,7 @@ class FindentAppActivatable(GObject.Object, Gedit.AppActivatable):
     def __init__(self):
         GObject.Object.__init__(self)
         global shortcut
-        shortcut = "<Ctrl><Alt>f"
+        shortcut = "<Ctrl><Alt>i"
 
     def do_activate(self):
         self.app.add_accelerator(shortcut, "win.findent", None)
@@ -172,13 +183,13 @@ class FindentViewActivatable(GObject.Object, Gedit.ViewActivatable):
 
         xy = self.view.window_to_buffer_coords(Gtk.TextWindowType.TEXT,0,0)
         z = self.view.get_line_at_y(xy[1])[0]
-        line = z.get_line()
+        line  = z.get_line()
         cline = doc.get_iter_at_mark(doc.get_insert()).get_line()
 
-        srcin = doc.get_text(doc.get_start_iter(),doc.get_end_iter(),True)
+        srcin  = doc.get_text(doc.get_start_iter(),doc.get_end_iter(),True)
 
-        uri = doc.get_location().get_uri()
-        suffix = os.path.splitext(uri)[1].lower()
+        name   = doc.get_short_name_for_display()
+        suffix = os.path.splitext(name)[1].lower()
 
         if suffix in {".f",".for",".fpp",".ftn",".fortran",".f77"}:
             ff = "-ifixed"

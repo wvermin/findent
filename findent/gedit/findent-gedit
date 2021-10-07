@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # to be used in gedit to indent fortran source
 # in gedit:
 #    Edit -> preferences -> enable "External Tools"
@@ -27,7 +27,7 @@ restore()
    exit
 }
 cat > $fin                    # copy input to $fin
-# gedit veresion 2 has some troubles keeping stdout and 
+# gedit version 2 has some troubles keeping stdout and 
 #  stderr separate when stdout does not end with newline.
 # add newline if input file does not end with newline:
 lastchar="$(tail -c1 $fin | od -a -An | tr -d ' ')"

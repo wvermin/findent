@@ -1,6 +1,33 @@
 #!/bin/sh
-# $Id: wfindent.tmpl 251 2018-03-04 12:37:08Z willem_vermin $
 # vim: filetype=sh
+#
+# -copyright-
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# 
+#-# License: BSD-3-Clause
+#-#  Redistribution and use in source and binary forms, with or without
+#-#  modification, are permitted provided that the following conditions
+#-#  are met:
+#-#  1. Redistributions of source code must retain the above copyright
+#-#     notice, this list of conditions and the following disclaimer.
+#-#  2. Redistributions in binary form must reproduce the above copyright
+#-#     notice, this list of conditions and the following disclaimer in the
+#-#     documentation and/or other materials provided with the distribution.
+#-#  3. Neither the name of the copyright holder nor the names of its
+#-#     contributors may be used to endorse or promote products derived
+#-#     from this software without specific prior written permission.
+#-#   
+#-#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+#-#  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#-#  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+#-#  A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE HOLDERS OR
+#-#  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+#-#  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#-#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+#-#  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+#-#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+#-#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+#-#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # in-place indenting of fortran sources using findent
 # example:
@@ -8,9 +35,9 @@
 # 
 # A check is made if the output file has the same number of lines
 # as the input file.
-# Only if this check succeeds, the file is overwritten, 
+# If this check succeeds, the file is overwritten, 
 # otherwize an error message is printed.
-#
+
 
 # the location of findent, replace with correct location:
 FINDENT=${FINDENT:-findent-location}
@@ -21,88 +48,93 @@ if ! "$FINDENT" -v >/dev/null 2>&1 ; then
       exit 1
    fi
 fi
-echo "$0 using: "`"$FINDENT" -v`
-parms=$( getopt -o a:b:c:C:d:e:E:f:F:hHi:I:j:k:l:L:m:o:qr:R:s:t:vw:x: \
-   -l version                                     \
-   -l help                                        \
-   -l manpage                                     \
-   -l indent:                                     \
-   -l indent_associate:,indent-associate:         \
-   -l indent_block:,indent-block:                 \
-   -l indent_case:,indent-case:                   \
-   -l indent_contains:,indent-contains:           \
-   -l indent_do:,indent-do:                       \
-   -l indent_entry:,indent-entry:                 \
-   -l indent_enum:,indent-enum:                   \
-   -l indent_if:,indent-if:                       \
-   -l indent_forall:,indent-forall:               \
-   -l indent_interface:,indent-interface:         \
-   -l indent_continuation:,indent-continuation:   \
-   -l indent_procedure:,indent-procedure:         \
-   -l indent_select:,indent-select:               \
-   -l indent_type:,indent-type:                   \
-   -l indent_where:,indent-where:                 \
-   -l indent_critical:,indent-critical:           \
-   -l input_format:,input-format:                 \
-   -l start_indent:,start-indent:                 \
-   -l label_left:,label-left:                     \
-   -l input_line_length:,input-line-length:       \
-   -l indent_module:,indent-module                \
-   -l output_format:,output-format:               \
-   -l refactor_procedures::,refactor-procedures:: \
-   -- "$@" )
 
-if [ $? -ne 0 ] ; then
-   exit 1
+# generate help for wfindent:
+# :r !MANWIDTH=72 man -l -7 --nh --nj scripts/wfindent.1
+
+if [ "$1" = "-h" -o "$1" = "--help" ]; then
+cat << eof
+WFINDENT(1)                  User Commands                 WFINDENT(1)
+
+NAME
+       wfindent - Indents, converts and relabels Fortran program
+       sources
+
+SYNOPSIS
+       wfindent [OPTION]... [-] [FILE]...
+
+DESCRIPTION
+       Wfindent is a wrapper for findent(1), calling findent for each
+       of the files. The files are overwritten by the modified
+       version. A sanity check is made before overwriting an input
+       file.  Files that are not regular and readable and writable are
+       silently skipped.
+
+NOTE
+       The end of the options is reached when a flag containing a '.'
+       is found, or when the flag '-' is found.
+
+       See 'man 1 findent' or 'findent -h' for the options. Only
+       options that create a (possibly modified) version of the input
+       are effective.
+
+ENVIRONMENT
+       The environment variable FINDENT influences the working of
+       wfindent.  If set, wfindent will use this as the location of
+       findent.
+
+EXAMPLE:
+       wfindent -i4 *.f90
+
+COPYRIGHT
+       This is free software; see the source for copying conditions.
+       There is NO warranty; not even for MERCHANTABILITY or FITNESS
+       FOR A PARTICULAR PURPOSE.
+
+wfindent                         2021                      WFINDENT(1)
+eof
+exit
 fi
-eval set -- "$parms"
-fparms=""
+   
+echo "$0 using: "`"$FINDENT" -v`
+
+# to collect the flags for findent,
+# scan flags until aflag, containing a '.' is found
+# or until "-" is found, this signifies that the rest of 
+# the parameters are file names
+
+fflags=""
 while [ "$1" ] ; do
    case "$1" in
-      --) shift
+      *.*)
 	 break
 	 ;;
-      "-v"|"--version")
-	 echo "wfindent using $FINDENT"
-	 "$FINDENT" -v
-	 echo "wfindent: indented files: 0"
-	 exit $?
-	 ;;
-      "-h"|"-H"|"--help"|"--manpage") 
-	 "$FINDENT" "$1"
-	 exit $?
-	 ;;
-      --refactor*)
-	 fparms="$fparms $1" 
-	 shift
-	 if [ "$1" ] ; then
-	    fparms="$fparms=$1"
-	 fi
-	 shift
-	 ;;
-      *)
-	 fparms="$fparms $1" 
-	 shift
-	 ;;
    esac
+   if [ "$1" = "-" ] ; then
+      shift
+      break
+   fi
+   fflags="$fflags $1"
+   shift
 done
+
 tmp=`mktemp`
 n=0
 while [ "$1" ] ; do
-   if [ -e "$1" ] ; then
+   if [ -f "$1" -a -r "$1" -a -w "$1" ] ; then
       norig=`wc -l < "$1"`
       # Check if file ends with newline. If not: correct number of lines
       lastchar="$(tail -c1 "$1" | od -a -An | tr -d ' ')"
       if [ "$lastchar" != "nl" ] ; then
-	 norig=`expr $norig + 1`
+         norig=`expr $norig + 1`
       fi
-      cat "$1" | "$FINDENT" $fparms > $tmp
+      cat "$1" | "$FINDENT" --safe $fflags > $tmp
       nnew=`wc -l < $tmp`
       if [ $norig -eq $nnew ] ; then
-	 cp $tmp "$1"
-	 n=`expr $n + 1`
+         cp $tmp "$1"
+         n=`expr $n + 1`
       else
-	 echo "***** wfindent: error while converting $1, conversion abandoned"
+         echo "***** wfindent: error while converting $1, conversion abandoned"
       fi
    fi
    shift

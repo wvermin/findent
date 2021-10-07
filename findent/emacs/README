@@ -1,5 +1,7 @@
 Usage of findent in emacs
 
+After following one of these two methods, the buffer is indented with Ctrl-Alt-q
+
 Method 1:
    - Put the output of
 

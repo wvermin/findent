@@ -51,7 +51,7 @@ findent --gedit_plugin_py > $geditroot/findent.py
  in gedit:
    (Edit ->) Preferences -> plugins -> check: findent
   findent is available in popup menu (right-click) and
-  shortcut <Ctrl><Alt>f . You can change that in 
+  shortcut <Ctrl><Alt>i . You can change that in 
   findent.py, look for the definition of 'shortcut'.
 
   Advantage of plugin over external tool: gedit scrolls
@@ -59,7 +59,7 @@ findent --gedit_plugin_py > $geditroot/findent.py
 
 Flags for findent:
 
-  both the external command as the plugin pass the environment
+  Both the external command as the plugin pass the environment
   variable GEDIT_FINDENT_FLAGS to findent. Example: if you
   want general indentation set to 2 but indentation of do-loops
   set to 4, specify:

@@ -3,14 +3,14 @@
 
   block data pblockdata
        common /xcomm/ p
-  end blockdata pblockdata
+  end block data pblockdata
 
   block data qblockdata
        common /qcomm/ p
   end block data qblockdata
   block data rblockdata
        common /rcomm/ p
-  end block data
+  end block data rblockdata
 
   ! submodule and 'module subroutine' not recognized by gfortran 4.8.2
 #if 0
@@ -20,13 +20,13 @@
        INTERFACE
             MODULE SUBROUTINE sub1(arg1)
                  INTEGER :: arg1
-            END SUBROUTINE
+            end subroutine sub1
 
             MODULE SUBROUTINE sub2(arg2)
                  INTEGER :: arg2
-            END SUBROUTINE
-       END INTERFACE
-  END MODULE
+            end subroutine sub2
+       end interface
+  end module ancestor
 
   SUBMODULE (ancestor) descendant
        INTEGER :: j
@@ -34,16 +34,21 @@
   CONTAINS
        MODULE SUBROUTINE sub1(arg1)
 
-            INTEGER :: arg 1
+            INTEGER :: arg1
             arg1 = 1
             i = 2
             j = 3
-       END SUBROUTINE
+       end subroutine sub1
+
+       module function fun1(arg1)
+            integer :: arg1
+            fun1 = 10
+       end function fun1
 
        MODULE PROCEDURE sub2
             arg2 = 1
-       END procedure sub2
-  END submodule descendant
+       end procedure sub2
+  end submodule descendant
 
 #endif
 
@@ -54,20 +59,23 @@
        end type onetype
        type name
             character(22) :: n
-       end type
+       end type name
+       type isname
+            integer i
+       end type isname
 
        complex ccc
        interface myinterface
             subroutine tx(a,b)
                  real a,b
             end subroutine tx
-       end interface
+       end interface myinterface
        interface anotherinterface
             module procedure funccc
 !
-!  trata
-            module procedure funcccc
-       end interface
+!  ticket 8
+            module procedure funcccc, funcy
+       end interface anotherinterface
        abstract interface
             character*8 recursive function func(x)
                  real :: x
@@ -79,18 +87,40 @@
             real :: x
             funcc = 'a'
        end function funcc
+#if 0
+! gfortran does not handle NON_RECURSIVE
+       integer non_recursive function norecur(x)
+            real::x
+            norecur = x*10
+       end function norecur
+#endif
+#if 0
+! test non-standards
+       real function myfunc()
+            continue
+       end function myfunc(something)
+       subroutine mysub
+            continue
+       end subroutine mysub(something)
+       procedure myproc
+            continue
+       end procedure myproc(something)
+       program myprog
+            continue
+       end program myprog(something)
+#endif
        integer(kind=4) pure function funccc(x)
             real, intent(in) :: x
             funccc = 2
-       end function
+       end function funccc
        type(onetype) function funcccc(x)
             type(onetype) :: x
             funcccc = x
-       end function
-       integer elemental function funcx(x)
-            integer, intent(in) :: x
-            funcx = x
-       end function
+       end function funcccc
+       double precision function funcy(x)
+            double precision :: x
+            funcy = x
+       end function funcy
 #define GCC_VERSION (__GNUC__ * 10000  + __GNUC_MINOR__ * 100  + __GNUC_PATCHLEVEL__)
        /* Test for GCC >= 4.8.0 */
 #if GCC_VERSION >= 40800
@@ -105,16 +135,16 @@
               class default
                  write(*,*) 'Unknown type'
             end select
-       end subroutine
+       end subroutine handleP
 #endif
        double complex function compx(x)
             double complex x
             compx = x
-       end function
+       end function compx
        complex recursive function compxx(x)
             complex x
             compxx = x
-       end function
+       end function compxx
        real function alpha_integral_function(x)
             implicit none
             real:: x
@@ -146,7 +176,7 @@
             print *,"abcd&
             & efgh"
             return
-       end function
+       end function f
        integer(kind=i8) function func1(a, b)
             integer(kind=i8), intent(in) :: a, b
             func1 = a + b
@@ -167,7 +197,25 @@
 #endif
             continue
        end function f1
-  end module
+  end module m1
+
+  subroutine ticket7
+       integer :: int
+       real :: float
+       logical :: bool
+
+#define COND                      \
+  if (float > 1.) then;           \
+    if (bool) write(*, *) 'nope'; \
+end if
+
+       COND
+       if (.true.) then
+           int = int + 1
+       end if
+
+  end subroutine ticket7
+
 
   program progfree
        type mytype  ! mytype
@@ -184,14 +232,20 @@
        loop: do i=1,20
           continue
        enddo loop
-       loop1 : do i=1,20
+       loop1 : do , i=1,20
           continue
        enddo loop1
        end = 10
        do while(i.eq.0)
           continue
        enddo
+       do , while(i.eq.0)
+          continue
+       enddo
        do concurrent(i=1:10)
+          x(i) = 0
+       enddo
+       do , concurrent(i=1:10)
           x(i) = 0
        enddo
 
@@ -297,7 +351,7 @@
             print *,0
        endselect
 
-  end program
+  end program progfree
 
   subroutine one(a)
        continue
@@ -318,7 +372,7 @@
 #endif
             5
        return
-  endsubroutine
+  end subroutine two
   subroutine three(a)
        do 10 i=1,4
           do 5 j=1,2
@@ -332,7 +386,7 @@
   subroutine four(a)
        continue
        return
-  endsubroutine four
+  end subroutine four
   subrou&
   &tine five
        continue
@@ -375,7 +429,7 @@ defined(q)
        type domain_data
             real, dimension(:, :), allocatable :: temperature
             integer:: ibound, icopy, todomain
-       end type
+       end type domain_data
 
        type(domain_data), dimension(2), target :: dom
        allocate(dom(1) % temperature(20, 20))
@@ -385,7 +439,7 @@ defined(q)
   end subroutine nok
 
 
-  ! testing with indentfix:
+  ! testing with findentfix:
   subroutine testfix
        implicit none
        integer i,j,k
@@ -403,3 +457,26 @@ defined(q)
           continue
        enddo
   end subroutine testfix
+
+  subroutine omp
+       integer i,j,k
+!$     integer m,n, &
+!$          o,p
+       print *,i,j,k
+!$     print*, m,n,o,p
+!$     do i=1,20
+          continue
+!$     enddo
+  end subroutine omp
+
+  subroutine label_excercise
+       do 010&
+       &0 i=1,10
+          continue
+01&
+       &00 continue
+       continue
+120    do i=1,10
+          continue
+       enddo
+  end subroutine label_excercise

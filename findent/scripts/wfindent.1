@@ -1,18 +1,27 @@
-.TH WFINDENT "1" "2015" "wfindent" "User Commands"
+.TH WFINDENT "1" "2021" "wfindent" "User Commands"
 .SH NAME
-wfindent \- Indents and optionally converts Fortran program sources
+wfindent \- Indents, converts and relabels Fortran program sources
 .SH SYNOPSIS
 .B wfindent
-[\fIOPTION\fR]... [\fIFILE\fR]...
-.PP
-See 'man 1 findent' for the options.
+[\fIOPTION\fR]... [\-\fR] [\fIFILE\fR]...
 .SH DESCRIPTION
 Wfindent is a wrapper for findent(1), calling findent for each of the 
-files. The files are overwritten by the indented version. A sanity
-check is made before oerwriting a input file.
+files. The files are overwritten by the modified version. A sanity
+check is made before overwriting an input file.
+Files that are not regular and readable and writable are silently skipped.
+.SH NOTE
+The end of the options is reached when a flag containing a '.' 
+(e.g. 'prog.f90') is found, or when the flag '-' is found. 
+.PP
+See 'man 1 findent' or 'findent -h' for the options. Only options that
+create a (probably modified) version of the input are effective.
+.SH ENVIRONMENT
+The environment variable FINDENT influences the working of wfindent.
+If set, wfindent will use this as the location of findent.
+.br
 .PP
 .SS
-Example:
+.SH EXAMPLE:
 wfindent \-i4 *.f90
 .SH COPYRIGHT
 .br

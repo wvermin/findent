@@ -1,13 +1,62 @@
-#!/bin/bash
-version=`./getversion`
-date=`date -R`
-echo "version = $version"
-sed -i "/^AC_INIT(findent/s/^.*/AC_INIT(findent, $version, wvermin@gmail.com)/" configure.ac
-if [ -e debian/changelog ] ; then
-   sed -i "1s/(.*)/($version-1)/" debian/changelog   || exit 1
-   sed -i "0,/^ --/s/>.*/>  $date/" debian/changelog || exit 1
+#!/bin/sh
+# -copyright-
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# 
+#-# License: BSD-3-Clause
+#-#  Redistribution and use in source and binary forms, with or without
+#-#  modification, are permitted provided that the following conditions
+#-#  are met:
+#-#  1. Redistributions of source code must retain the above copyright
+#-#     notice, this list of conditions and the following disclaimer.
+#-#  2. Redistributions in binary form must reproduce the above copyright
+#-#     notice, this list of conditions and the following disclaimer in the
+#-#     documentation and/or other materials provided with the distribution.
+#-#  3. Neither the name of the copyright holder nor the names of its
+#-#     contributors may be used to endorse or promote products derived
+#-#     from this software without specific prior written permission.
+#-#   
+#-#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+#-#  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#-#  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+#-#  A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE HOLDERS OR
+#-#  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+#-#  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#-#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+#-#  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+#-#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+#-#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+#-#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+debroot=../findent-debian
+deb=$debroot/debian
+
+./addcopyright.sh Makefile.am addcopyright.sh bootstrap configure.ac README* simplemake.sh
+
+find src \( -name '*.cpp' -o -name '*.h' -o -name '*.y' -o -name '*.l' -o -name '*.am'  \
+   -o -name '*.sh' \) -print0 | xargs -0 ./addcopyright.sh
+
+
+./addcopyright.sh test/*.sh test/*.am test/*.sh.in doc/*.am emacs/*.am gedit/*.am gedit/*.py \
+   scripts/wfindent.tmpl scripts/*.am
+
+head -n 2 ChangeLog > test/changelog.ref.in                    || exit 1
+
+autoreconf -fvi                                                || exit 1
+./configure                                                    || exit 1
+make clean                                                     || exit 1
+
+# make builtparser.cpp etc beforehand, so that they can be
+# used as EXTRA_DIST's
+make builtparser builtlexer                                    || exit 1
+
+# create autopkg suite in debian directory, if present
+if [ -d $deb ] ; then
+   cp test/*.f test/*.ref test/*.sh test/doit $deb/tests       || exit 1
+   echo "Tests:" > $deb/tests/control                          || exit 1
+   for f in $deb/tests/test?.sh $deb/tests/test??.sh ; do
+      echo "     `basename $f`" >> $deb/tests/control          || exit 1
+   done
 fi
-autoreconf -fvi
-./configure
-make builtparser builtlexer
-make distclean
+
+make distclean                                                 || exit 1
+echo "bootstrap done"

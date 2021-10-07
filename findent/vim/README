@@ -68,4 +68,3 @@ determined from the extension:
   a proof is found for free format, the format is assumed to be
   free, else the format is assumed to be fixed.
 
-# $Id: vim/README 145 2016-11-13 16:16:33Z willem_vermin $

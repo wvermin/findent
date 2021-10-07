@@ -1,32 +1,40 @@
-TESTS = test1.sh test2.sh test3.sh test4.sh test5.sh test6.sh \
-	test7.sh test8.sh \
-	test9.sh test10.sh test11.sh test12.sh \
-	test13.sh test14.sh test15.sh test16.sh test17.sh
+# -copyright-
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# 
+#-# License: BSD-3-Clause
+#-#  Redistribution and use in source and binary forms, with or without
+#-#  modification, are permitted provided that the following conditions
+#-#  are met:
+#-#  1. Redistributions of source code must retain the above copyright
+#-#     notice, this list of conditions and the following disclaimer.
+#-#  2. Redistributions in binary form must reproduce the above copyright
+#-#     notice, this list of conditions and the following disclaimer in the
+#-#     documentation and/or other materials provided with the distribution.
+#-#  3. Neither the name of the copyright holder nor the names of its
+#-#     contributors may be used to endorse or promote products derived
+#-#     from this software without specific prior written permission.
+#-#   
+#-#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+#-#  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#-#  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+#-#  A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE HOLDERS OR
+#-#  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+#-#  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#-#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+#-#  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+#-#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+#-#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+#-#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+TESTS = \
+	 test1.sh  test2.sh  test3.sh  test4.sh  test5.sh  test6.sh  \
+         test7.sh  test8.sh  test9.sh  test10.sh test11.sh test12.sh \
+	 test13.sh test14.sh test15.sh test16.sh test17.sh test18.sh \
+	 test19.sh test20.sh test21.sh test22.sh test23.sh test24.sh 
 
-EXTRA_DIST = test1.sh test2.sh test3.sh test4.sh test5.sh \
-	test6.sh test7.sh test8.sh \
-	test9.sh test10.sh test11.sh test12.sh \
-	test13.sh test14.sh test15.sh test16.sh test17.sh \
-	test-compile.sh \
-	progfixed-dos.f progfixed.f progfixed1.f progfixed.f \
-	progfixedfree.f progfree-dos.f progfixed-dos.f \
-	progfixedfree-dos.f progfree1.f progfree.f \
-	progfixed-dos.f.try.f.ref progfixed.f.try.f.ref \
-	progfixedfree-dos.f.try.f.ref progfixedfree.f.try.f.ref \
-	progfree-dos.f.try.f.ref progfree.f.try.f.ref \
-	progfree1.f.try.f.ref progfixed1.f.try.f.ref \
-	help.ref manpage.ref \
-        vim_help.ref gedit_help.ref vim_fortran.ref vim_findent.ref \
-	gedit_external.ref gedit_plugin.ref gedit_plugin_py.ref \
-	emacs_help.ref emacs_findent.ref \
-	readme.ref \
-	doit
+AM_TESTS_ENVIRONMENT = ./init.sh ;
 
-export SRCDIR = $(top_srcdir)
-if MAKEWIN
-   export WINDOWS = yes
-else
-   export WINDOWS = no
-endif
+EXTRA_DIST = $(TESTS)
+
 clean-local:
 	rm -rf *.tmpdir

@@ -45,8 +45,8 @@
         & is&
         & no comment!"
         print *,a,b,&
-        &        c,d&
-        &       ,e,f
+        &c,d&
+        &,e,f
         do i=1,20
            block
              do 90 k=1,90

@@ -32,6 +32,9 @@ if !b:use_findent
    finish
 endif
 
+" no interesting side-effects caused by settings in FINDENT_FLAGS:
+let $FINDENT_FLAGS = ""
+
 if !exists("b:use_findent_indentexpr")
    let b:use_findent_indentexpr = 1
 endif
@@ -64,7 +67,7 @@ endfunction
 " The output of this external command must be "free" or "fixed"
 function! Findent_get_freefixed()
    let indentparmsq = ' -q'
-   let f = g:findent.indentparmsq.' 2>/dev/null'
+   let f = g:findent.indentparmsq
    if strpart(system(f," continue"),0,4) != "free"
       let f = ""
    endif
@@ -75,9 +78,9 @@ endfunction
 " Return "" if no such command can be found
 " side effect: s:findent_getindent is the command tried
 function! Findent_get_getindent()
-   let getindent=g:findent.' -Ia -lastindent -i'.b:fortran_format.' '.b:findent_flags.' 2>/dev/null'
+   let getindent=g:findent.' -Ia -lastindent -i'.b:fortran_format.' '.b:findent_flags
    let s:findent_getindent = getindent
-   if system(getindent,'    continue') == 4
+   if system(getindent,'      continue') == 6
       return getindent
    else
       return ""
@@ -90,7 +93,7 @@ endfunction
 function! Findent_get_indentprog()
    " first a test:
    let indentparms = ' -Ia -i'.b:fortran_format.' '.b:findent_flags
-   let indentprog = g:findent.indentparms.' 2>/dev/null'
+   let indentprog = g:findent.indentparms
    let s:fortran_indentprog = indentprog
    if strpart(system(indentprog,"continue"),0,8) == "continue"
       return indentprog
@@ -177,7 +180,12 @@ endfunction
 function! Findent_use_wb_toggle()
    if b:use_findent_indentexpr
       let b:findent_use_whole_buffer = !b:findent_use_whole_buffer
-      echomsg "toggled 'use whole buffer'"
+      if b:findent_use_whole_buffer 
+	 let p = "ON"
+      else
+	 let p = "OFF"
+      endif
+      echomsg "use whole buffer = ".p
    else
       echomsg "not using findent for indentexpr"
    endif
@@ -240,7 +248,7 @@ if b:fortran_format == "free"
    let g:fortran_free_source = 1
    let b:fortran_free_source = 1
    let b:fortran_fixed_source = 0
-   setlocal colorcolumn=133
+   "setlocal colorcolumn=133
    if exists("g:findent_setcolumns")
       if(g:findent_setcolumns)
 	 setlocal numberwidth=6
@@ -253,7 +261,7 @@ else
    let g:fortran_fixed_source = 1
    let b:fortran_fixed_source = 1
    let b:fortran_free_source = 0
-   setlocal colorcolumn=6,73
+   "setlocal colorcolumn=6,73
 endif
 
 call Findent_set_indentprog()

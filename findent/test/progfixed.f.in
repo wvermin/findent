@@ -31,6 +31,21 @@
                 continue
            end function f1
        end 
+
+       subroutine ticket7
+                integer :: int
+       real :: float
+       logical :: bool
+#define COND \
+               if (float > 1.) then; \
+                  continue ; \
+                end if
+      COND
+      if (.true.) then
+      int = int + 1
+        end if
+
+       end
       
       program progfixed
          type mytype  ! mytype
@@ -258,7 +273,7 @@ defined(q)
       end subroutine nok
 
 
-         ! testing with indentfix:
+      ! testing with findentfix:
          subroutine testfix
             implicit none
             integer i,j,k
@@ -273,6 +288,44 @@ c             comment
             enddo
 C FINDENTFIX: enddo
          enddo
+* findentFIX: do;do
+      continue
+* findentfix:    enddo;enddo
          continue
          enddo
          end subroutine testfix
+      subroutine testpointer
+      integer, pointer :: subroutinesub
+      integer, target :: i
+      subroutinesub=>i     ! must not be recognized as subroutine statement
+      end
+
+                 subroutine omp
+              integer i,j,k
+C$            integer m,n, 
+c$  ! comment in omp sentinel
+! normal comment
+*$
+*$   1         o,p
+              print *,i,j,k
+!$           print*, m,n,o,p
+!$           do 100 i=1,20
+!$           do 100 j=1,i
+c$           continue
+c$100        continue
+c$omp parallel
+c$omp do
+       do i=1,20
+       continue
+       enddo
+c$omp end parallel
+              end
+      subroutine label_excercise
+      do 10
+     x 0 i=1,10
+      continue
+01 00  continue
+      do 02 0 i=1,10
+         continue
+   20   continue
+      end

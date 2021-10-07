@@ -1,7 +1,35 @@
+# -copyright-
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# 
+#-# License: BSD-3-Clause
+#-#  Redistribution and use in source and binary forms, with or without
+#-#  modification, are permitted provided that the following conditions
+#-#  are met:
+#-#  1. Redistributions of source code must retain the above copyright
+#-#     notice, this list of conditions and the following disclaimer.
+#-#  2. Redistributions in binary form must reproduce the above copyright
+#-#     notice, this list of conditions and the following disclaimer in the
+#-#     documentation and/or other materials provided with the distribution.
+#-#  3. Neither the name of the copyright holder nor the names of its
+#-#     contributors may be used to endorse or promote products derived
+#-#     from this software without specific prior written permission.
+#-#   
+#-#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+#-#  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#-#  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+#-#  A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE HOLDERS OR
+#-#  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+#-#  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#-#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+#-#  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+#-#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+#-#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+#-#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT(findent, 2.8.2, wvermin@gmail.com)
+AC_INIT([findent], [4.1.2], [wvermin@gmail.com])
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/findent.cpp])
@@ -20,10 +48,14 @@ AS_IF( [test "x$MINGW32" = xnone],
 AS_IF( [test "x$with_windows" = xyes],
        [CXX=$MINGW32
         AC_MSG_NOTICE([mingw c++ compiler: $MINGW32])
-        AC_MSG_NOTICE([Will create WINDOWS executable findent.exe])])
+        AC_MSG_NOTICE([Will create WINDOWS executable findent.exe])
+	AC_SUBST([EXEEXT],[.exe])])
 
 AM_CONDITIONAL([MAKEMAN],[test "x$with_windows" != "xyes"])
 AM_CONDITIONAL([MAKEWIN],[test "x$with_windows" = "xyes"])
+
+AC_ARG_WITH(esope, [AS_HELP_STRING([--with-esope],[Build with esope support @<:@default=no@:>@])],[],[with_esope=no])
+AM_CONDITIONAL([USEESOPE],[test "x$with_esope" = "xyes"])
 
 # test if bison available etc...
 
@@ -67,37 +99,60 @@ AS_IF( [test "x$with_flex" = "xuse-flex-if-available"],
 
 AM_CONDITIONAL([USEFLEX],[test "x$useflex" = "xyes"])
 
+
+# test for working gfortran (only used in make check):
+
+AC_PROG_FC([gfortran])
+AS_IF( [test "x$FC" = "xgfortran"],
+      [AC_MSG_NOTICE([gfortran will be used to compile test sources in 'make check'])],
+      [AC_MSG_NOTICE([No gfortran compiler found. 'make check' will not try to compile test sources])])
+
+
 AC_CONFIG_FILES([test/prelude])
+AC_CONFIG_FILES([test/postlude])
 AC_CONFIG_FILES([test/test-compile.sh],[chmod +x test/test-compile.sh])
 AC_CONFIG_FILES([test/doit],[chmod +x test/doit])
-AC_CONFIG_FILES([test/progfixed-dos.f])
+AC_CONFIG_FILES([test/init.sh],[chmod +x test/init.sh])
+
 AC_CONFIG_FILES([test/progfixed-dos.f.try.f.ref])
-AC_CONFIG_FILES([test/progfixed.f])
+AC_CONFIG_FILES([test/progfixed-dos.f])
 AC_CONFIG_FILES([test/progfixed.f.try.f.ref])
-AC_CONFIG_FILES([test/progfixedfree-dos.f])
-AC_CONFIG_FILES([test/progfixedfree-dos.f.try.f.ref])
-AC_CONFIG_FILES([test/progfixedfree.f])
-AC_CONFIG_FILES([test/progfixedfree.f.try.f.ref])
-AC_CONFIG_FILES([test/progfree-dos.f])
-AC_CONFIG_FILES([test/progfree-dos.f.try.f.ref])
-AC_CONFIG_FILES([test/progfree.f])
-AC_CONFIG_FILES([test/progfree.f.try.f.ref])
-AC_CONFIG_FILES([test/progfree1.f])
-AC_CONFIG_FILES([test/progfree1.f.try.f.ref])
-AC_CONFIG_FILES([test/progfixed1.f])
+AC_CONFIG_FILES([test/progfixed.f])
 AC_CONFIG_FILES([test/progfixed1.f.try.f.ref])
-AC_CONFIG_FILES([test/manpage.ref])
-AC_CONFIG_FILES([test/help.ref])
-AC_CONFIG_FILES([test/vim_fortran.ref])
-AC_CONFIG_FILES([test/vim_findent.ref])
-AC_CONFIG_FILES([test/gedit_help.ref])
-AC_CONFIG_FILES([test/vim_help.ref])
+AC_CONFIG_FILES([test/progfixed1.f])
+AC_CONFIG_FILES([test/progfixedfree-dos.f.try.f.ref])
+AC_CONFIG_FILES([test/progfixedfree-dos.f])
+AC_CONFIG_FILES([test/progfixedfree.f.try.f.ref])
+AC_CONFIG_FILES([test/progfixedfree.f])
+AC_CONFIG_FILES([test/progfree-dos.f.try.f.ref])
+AC_CONFIG_FILES([test/progfree-dos.f])
+AC_CONFIG_FILES([test/progfree.f.try.f.ref])
+AC_CONFIG_FILES([test/progfree.f])
+AC_CONFIG_FILES([test/progfree1.f.try.f.ref])
+AC_CONFIG_FILES([test/progfree1.f])
+AC_CONFIG_FILES([test/progfreefixed.f.try.f.ref])
+AC_CONFIG_FILES([test/progfreefixed.f])
+AC_CONFIG_FILES([test/esope.f.try.f.ref])
+AC_CONFIG_FILES([test/esope.f])
+AC_CONFIG_FILES([test/progrelabelfree.f])
+AC_CONFIG_FILES([test/progrelabelfree.f.try.f.ref])
+AC_CONFIG_FILES([test/progfixedrelabelfixed.f])
+AC_CONFIG_FILES([test/progfixedrelabelfixed.f.try.f.ref])
+
+AC_CONFIG_FILES([test/changelog.ref])
+AC_CONFIG_FILES([test/emacs_findent.ref])
+AC_CONFIG_FILES([test/emacs_help.ref])
 AC_CONFIG_FILES([test/gedit_external.ref])
+AC_CONFIG_FILES([test/gedit_help.ref])
 AC_CONFIG_FILES([test/gedit_plugin.ref])
 AC_CONFIG_FILES([test/gedit_plugin_py.ref])
-AC_CONFIG_FILES([test/emacs_help.ref])
-AC_CONFIG_FILES([test/emacs_findent.ref])
+AC_CONFIG_FILES([test/help.ref])
+AC_CONFIG_FILES([test/makefdeps.ref])
+AC_CONFIG_FILES([test/manpage.ref])
 AC_CONFIG_FILES([test/readme.ref])
+AC_CONFIG_FILES([test/vim_findent.ref])
+AC_CONFIG_FILES([test/vim_fortran.ref])
+AC_CONFIG_FILES([test/vim_help.ref])
 
 AC_PROG_CXX
 AC_PROG_AWK
@@ -105,6 +160,8 @@ AC_PROG_SED
 
 AC_LANG([C++])
 AC_HEADER_STDC
-AC_CHECK_HEADERS([iostream string stack vector cstdio queue algorithm sstream],[],AC_MSG_ERROR([Exiting])) 
+AC_CHECK_HEADERS([iostream string deque map algorithm sstream iomanip set typeinfo utility],[],AC_MSG_ERROR([Exiting])) 
+AC_CHECK_HEADERS([assert.h errno.h getopt.h inttypes.h stdio.h stdlib.h string.h unistd.h],[],AC_MSG_ERROR([Exiting])) 
 
-AC_OUTPUT(Makefile src/Makefile scripts/Makefile test/Makefile vim/Makefile gedit/Makefile emacs/Makefile doc/Makefile)
+AC_OUTPUT(Makefile src/Makefile scripts/Makefile test/Makefile vim/Makefile 
+	  gedit/Makefile emacs/Makefile doc/Makefile deps/Makefile)

@@ -32,6 +32,21 @@
            end function f1
       end module m1
 
+      subroutine ticket7
+           integer :: int
+           real :: float
+           logical :: bool
+#define COND \
+               if (float > 1.) then; \
+                  continue ; \
+                end if
+           COND
+           if (.true.) then
+               int = int + 1
+           end if
+
+      end subroutine ticket7
+
       program progfixed
            type mytype  ! mytype
                 integer i
@@ -94,9 +109,9 @@ c a comment
                       call one(a)
                       do 7 j=1,20
                          call two(a)
-  7                   x=x+j
+    7                 x=x+j
                       continue
-  90            continue
+   90           continue
                 continue
               end block
            enddo loop
@@ -131,7 +146,7 @@ c a comment
            endif wv
            if (.false.) goto 88
            if (.false.) goto 99999
-  88       if ('x' .eq. "abc''d") l=1
+   88      if ('x' .eq. "abc''d") l=1
 99999      continue
            if ('x' .eq. "abc''d") l=1
            continue
@@ -173,14 +188,14 @@ c a comment
                 print *,0
            endselect
 
-      end program
+      end program progfixed
 
       subroutine one(a)
            continue
         entry myentry
            continue
            return
-      end subroutine
+      end subroutine one
       subroutine two(a)
            continue
 d              print *,'debug i=',i
@@ -199,7 +214,7 @@ c next line starts with <sp><sp><sp><sp><tab>
 c next line starts with <sp><sp><sp><sp><sp><tab>
      6     5
            return
-      endsubroutine
+      end subroutine two
       subroutine three(a)
            continue
            return
@@ -207,7 +222,7 @@ c next line starts with <sp><sp><sp><sp><sp><tab>
       subroutine four(a)
            continue
            return
-      endsubroutine four
+      end subroutine four
       subrou
      xtine five
            continue
@@ -249,7 +264,7 @@ defined(q)
            type domain_data
                 real, dimension(:, :), allocatable :: temperature
                 integer:: ibound, icopy, todomain
-           end type
+           end type domain_data
 
            type(domain_data), dimension(2), target :: dom
            allocate(dom(1) % temperature(20, 20))
@@ -258,7 +273,7 @@ defined(q)
       end subroutine nok
 
 
-      ! testing with indentfix:
+      ! testing with findentfix:
       subroutine testfix
            implicit none
            integer i,j,k
@@ -273,6 +288,44 @@ c             comment
                     enddo
 C FINDENTFIX: enddo
               enddo
+* findentFIX: do;do
+                    continue
+* findentfix:    enddo;enddo
               continue
            enddo
       end subroutine testfix
+      subroutine testpointer
+           integer, pointer :: subroutinesub
+           integer, target :: i
+           subroutinesub=>i     ! must not be recognized as subroutine statement
+      end subroutine testpointer
+
+      subroutine omp
+           integer i,j,k
+C$         integer m,n,
+c$         ! comment in omp sentinel
+! normal comment
+*$
+*$   1      o,p
+           print *,i,j,k
+!$         print*, m,n,o,p
+!$         do 100 i=1,20
+!$            do 100 j=1,i
+c$               continue
+c$100      continue
+c$omp parallel
+c$omp do
+           do i=1,20
+              continue
+           enddo
+c$omp end parallel
+      end subroutine omp
+      subroutine label_excercise
+           do 10
+     x      0 i=1,10
+              continue
+  100      continue
+           do 02 0 i=1,10
+              continue
+   20      continue
+      end subroutine label_excercise

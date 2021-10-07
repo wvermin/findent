@@ -5,6 +5,8 @@ rp()
    pwd
 }
 
+. ../src/env.sh
+
 export FINDENT=`rp ../src`/findent
 export WFINDENT=`rp ../scripts`/wfindent
 if [ "$WINDOWS" = yes ]; then

@@ -3,29 +3,44 @@
 /* Define to 1 if you have the <algorithm> header file. */
 #undef HAVE_ALGORITHM
 
-/* Define to 1 if you have the <cstdio> header file. */
-#undef HAVE_CSTDIO
+/* Define to 1 if you have the <assert.h> header file. */
+#undef HAVE_ASSERT_H
+
+/* Define to 1 if you have the <deque> header file. */
+#undef HAVE_DEQUE
+
+/* Define to 1 if you have the <errno.h> header file. */
+#undef HAVE_ERRNO_H
+
+/* Define to 1 if you have the <getopt.h> header file. */
+#undef HAVE_GETOPT_H
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the <iomanip> header file. */
+#undef HAVE_IOMANIP
+
 /* Define to 1 if you have the <iostream> header file. */
 #undef HAVE_IOSTREAM
+
+/* Define to 1 if you have the <map> header file. */
+#undef HAVE_MAP
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
-/* Define to 1 if you have the <queue> header file. */
-#undef HAVE_QUEUE
+/* Define to 1 if you have the <set> header file. */
+#undef HAVE_SET
 
 /* Define to 1 if you have the <sstream> header file. */
 #undef HAVE_SSTREAM
 
-/* Define to 1 if you have the <stack> header file. */
-#undef HAVE_STACK
-
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
@@ -45,11 +60,14 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
+/* Define to 1 if you have the <typeinfo> header file. */
+#undef HAVE_TYPEINFO
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define to 1 if you have the <vector> header file. */
-#undef HAVE_VECTOR
+/* Define to 1 if you have the <utility> header file. */
+#undef HAVE_UTILITY
 
 /* Name of package */
 #undef PACKAGE

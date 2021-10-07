@@ -34,11 +34,16 @@ SUBMODULE (ancestor) descendant
   CONTAINS              
     MODULE SUBROUTINE sub1(arg1) 
 
-      INTEGER :: arg 1
+      INTEGER :: arg1
       arg1 = 1
       i = 2                     
       j = 3                    
     END SUBROUTINE
+
+    module function fun1(arg1)
+       integer :: arg1
+       fun1 = 10
+    end
 
     MODULE PROCEDURE sub2     
       arg2 = 1
@@ -55,6 +60,9 @@ module some_module
    type name
         character(22) :: n
     end type
+    type isname
+    integer i
+    end type
 
 complex ccc
 interface myinterface
@@ -65,8 +73,8 @@ end interface
 interface anotherinterface
    module procedure funccc
 !
-!  trata
-   module procedure funcccc
+!  ticket 8
+   module procedure funcccc, funcy
 end interface
 abstract interface
      character*8 recursive function func(x)
@@ -79,6 +87,28 @@ contains
        real :: x
        funcc = 'a'
      end function funcc
+#if 0
+! gfortran does not handle NON_RECURSIVE
+     integer non_recursive function norecur(x)
+     real::x
+     norecur = x*10
+     end function norecur
+#endif
+#if 0
+! test non-standards
+       real function myfunc()
+            continue
+            end subroutine myfunc(something)
+       subroutine mysub
+            continue
+            end subroutine mysub(something)
+       procedure myproc
+            continue
+            end procedure myproc(something)
+       program myprog
+            continue
+            end program myprog(something)
+#endif
      integer(kind=4) pure function funccc(x)
         real, intent(in) :: x
         funccc = 2
@@ -87,9 +117,9 @@ contains
         type(onetype) :: x
         funcccc = x
      end function
-     integer elemental function funcx(x)
-        integer, intent(in) :: x
-        funcx = x
+     double precision function funcy(x)
+        double precision :: x
+        funcy = x
      end function
 #define GCC_VERSION (__GNUC__ * 10000  + __GNUC_MINOR__ * 100  + __GNUC_PATCHLEVEL__)
           /* Test for GCC >= 4.8.0 */
@@ -169,6 +199,24 @@ contains
        end function f1
  end module
 
+ subroutine ticket7
+    integer :: int
+   real :: float
+   logical :: bool
+
+#define COND                      \
+  if (float > 1.) then;           \
+    if (bool) write(*, *) 'nope'; \
+end if
+
+   COND
+   if (.true.) then
+      int = int + 1
+   end if
+
+ end subroutine 
+
+
 program progfree
    type mytype  ! mytype
       integer i
@@ -184,14 +232,20 @@ program progfree
    loop: do i=1,20
    continue
    enddo loop
-   loop1 : do i=1,20
+   loop1 : do , i=1,20
    continue
    enddo loop1
    end = 10
    do while(i.eq.0)
    continue
    enddo
+   do , while(i.eq.0)
+   continue
+   enddo
    do concurrent(i=1:10)
+   x(i) = 0
+   enddo
+   do , concurrent(i=1:10)
    x(i) = 0
    enddo
 
@@ -356,7 +410,7 @@ END ASSOCIATE
                                                    end
 
 subroutine multiline_preproc
-#ifdef one\   
+#ifdef one\
 two\
 three
 do i=1,10
@@ -385,7 +439,7 @@ dom(1) % temperature(:, 1) = 1.
 end subroutine nok
 
 
-         ! testing with indentfix:
+ ! testing with findentfix:
          subroutine testfix
             implicit none
             integer i,j,k
@@ -403,3 +457,26 @@ end subroutine nok
          continue
          enddo
          end subroutine testfix
+
+  subroutine omp
+ integer i,j,k
+!$ integer m,n, &
+!$ o,p
+print *,i,j,k
+!$ print*, m,n,o,p
+!$ do i=1,20
+continue
+!$ enddo
+end
+
+subroutine label_excercise
+   do 010&
+   &0 i=1,10
+      continue
+01&
+&00 continue
+continue
+120 do i=1,10
+       continue
+    enddo
+end

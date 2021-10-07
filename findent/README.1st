@@ -1,32 +1,71 @@
-findent: indents/beautifies/converts Fortran sources
+# -copyright-
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# 
+#-# License: BSD-3-Clause
+#-#  Redistribution and use in source and binary forms, with or without
+#-#  modification, are permitted provided that the following conditions
+#-#  are met:
+#-#  1. Redistributions of source code must retain the above copyright
+#-#     notice, this list of conditions and the following disclaimer.
+#-#  2. Redistributions in binary form must reproduce the above copyright
+#-#     notice, this list of conditions and the following disclaimer in the
+#-#     documentation and/or other materials provided with the distribution.
+#-#  3. Neither the name of the copyright holder nor the names of its
+#-#     contributors may be used to endorse or promote products derived
+#-#     from this software without specific prior written permission.
+#-#   
+#-#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+#-#  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#-#  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+#-#  A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE HOLDERS OR
+#-#  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+#-#  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#-#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+#-#  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+#-#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+#-#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+#-#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
- - findent supports Fortran-2008
- - findent can convert from fixed form to free form
- - binaries for Unix and Windows (findent and findent.exe respectively)
+findent: Indents/beautifies/converts Fortran sources.
+         Prints dependencies based on:
+	  - definitions and uses of modules and submodules
+	  - include, #include and ??include statements
+	 Findent can emit a script that uses findent to
+	 create a dependencies file for use in an Makefile.
+
+ - findent supports Fortran-66 up to Fortran-2018
+ - findent can convert from fixed form to free form and vice-versa
+ - findent honours cpp and coco preprocess statements
+ - findent is validated against all constructs in 
+   'Modern Fortran explained, Incorporating Fortran 2018, Metcalf e.a.'
+ - findent honours OpenMP conditionals
+ - findent runs in Unix and Windows
  - high speed: 50K - 100K lines per second
- - since version 2.7.0, findent is very vim-aware an can be used
-   in equalprg and indentexpr
  - wrapper for processing one or more files in one call available
       for Unix and Windows (wfindent and wfindent.bat respectively)
- - vim, gedit, emacs users: findent optionally emits configuration files
+ - vim, gedit, emacs: findent optionally emits configuration files
    for these editors to use findent as a plugin.
  - gui frontent available in a separate package: jfindent
 
-Unix-Linux users: 
+Unix-Linux users with a 'decent' shell and make: 
     prerequisites: gnumake, g++
     make findent and wfindent:    
-             download findent-x.y.tgz
+               download findent-x.y.tgz
              $ tar xf findent-x.y.z.tgz
              $ cd findent-x.y
 	     $ ./configure --prefix=<Your installation directory, default /usr/local>
 	     $ make clean
              $ make
+	       On systems with sudo (Debian, Ubuntu, Linux Mint, ...):
 	     $ sudo make install
-		if bison or flex are found, they will
-		be used to regenerate the parser and lexer
-		sources. See ./configure --help
+	       On systems without sudo (Redhat, Scientific Linux, ...):
+	     $ su -c 'make install'
+	       if bison or flex are found, they will
+	       be used to regenerate the parser and lexer
+	       sources. See ./configure --help
 
-    You can create an Windows executable (requires package mingw32):
+    You can create an Windows executable 
+       (requires Ubuntu package g++-mingw-w64-i686):
 	     $ ./configure --with-windows
              $ make clean
 	     $ make
@@ -35,6 +74,26 @@ Unix-Linux users:
 	   findent.exe will be available in src/
 	   wfindent.bat is available in scripts/
 
+Unix-Linux users for whom above recipe does not work:
+    prerequisites: a Bourne shell (sh, bash), C++ compiler
+    make findent:    
+               download findent-x.y.tgz
+             $ tar xf findent-x.y.z.tgz
+             $ cd findent-x.y
+	     edit simplemake.sh to fill in the correct values of
+	        the name of the C++ compiler, default: g++
+		the compile flags, default: -O2
+		the name of the program to create, default: findent
+	     $ sh simplemake.sh
+	     copy the generated program to the desired location
+	     ( e.g. $HOME/bin).
+    make wfindent:
+             in the directory 'scripts' you find a template
+	     for wfindent: wfindent.tmpl
+	     edit wfindent.tmpl: change 'findent-location' into
+	     the path to findent e.g. /usr/local/bin/findent.
+	     Copy wfindent.tmpl to the desired location, e.g.:
+	     $ cp wfindent.tmpl $HOME/bin/wfindent
 
 Windows users: download findent-x.y.zip
                $ unzip findent-x.y.zip
@@ -48,6 +107,17 @@ Usage:    $ findent -h
 Examples: $ findent < in.f90 > out.f90
           $ findent -i4 -Rr < in.f > out.f90
           $ wfindent -i4 -Rr *.f
+
+Usage with Make:
+
+          $ findent --makefdeps > makefdeps
+	  $ chmod +x makefdeps
+	  use something like the following in your Makefile:
+	    include deps
+	    dep deps:
+	    	   ./makefdeps *.f90 > deps
+	   Of course, if makefdeps is not adequate for you, you 
+	   can create your own script, possibly inspired by makefdeps.
 
 (g)vim users:
    Install findent, the following command shows instructions
@@ -74,5 +144,3 @@ emacs users:
 
    findent --emacs_help
 
-
-# $Id: README.1st 262 2018-04-05 13:37:35Z willem_vermin $

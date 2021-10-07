@@ -1,6 +1,6 @@
 # findent
-indent and convert Fortran sources
- - findent supports Fortran-2008, including OpenMP conditionals
+indent, relabel and convert Fortran sources
+ - findent supports Fortran-2018, including OpenMP conditionals
  - findent can convert from fixed form to free form and vice-versa
  - high speed: 50K - 100K lines per second
  - configuration files and instructions for vim, gedit and emacs
@@ -8,6 +8,6 @@ indent and convert Fortran sources
    in equalprg and indentexpr
  - wrapper for processing one or more files in one call available
       for Unix and Windows (wfindent and wfindent.bat respectively)
- - gui frontent available in a separate package: jfindent
 
-The newest version of findent (3.0.1) is located at findent.sourceforge.net .
+The newest version of findent is also located at https://sourceforge.net/projects/findent/ .
+The bleeding edge is at https://www.ratrabbit.nl/ratrabbit/findent/index.html

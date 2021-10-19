@@ -37,8 +37,8 @@ class Fixed : public Fortran
    public:
       Fixed(Findent *f) : Fortran(f) {}
       void build_statement(Fortranline &line, bool &f_more, bool &pushback);
-      void output(lines_t &lines,lines_t *freelines = 0);
-      void output_converted(lines_t &lines);
+      void output(lines_t &lines,bool contains_hollerith,lines_t *freelines = 0);
+      void output_converted(lines_t &lines, bool ch);
 
    private:
       bool wizard(void);

@@ -174,6 +174,10 @@ void Fortran::do_relabel()
 	       subfunprog = "";
 	       switch(props.kind)
 	       {
+		  case PROCEDURE:
+		     if (subfunprog.size() == 0)
+			subfunprog = "procedure";
+		     //fall through
 		  case SUBROUTINE:
 		     if (subfunprog.size() == 0)
 			subfunprog = "subroutine";
@@ -419,6 +423,7 @@ void Fortran::do_relabel()
 		  case ENDPROGRAM:
 		  case ENDFUNCTION:
 		  case ENDSUBROUTINE:
+		  case ENDPROCEDURE:
 		  case CONTAINS:
 		     //
 		     // only valid if this is not part of a multiline statement

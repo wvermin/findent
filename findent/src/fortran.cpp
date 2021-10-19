@@ -637,8 +637,9 @@ void Fortran::indent_and_output()
    while(1)
    {
       Line_prep p(rest);
+      bool ch = p.contains_hollerith;
       propstruct props = parseline(p); 
-      labellength = props.stlabel.size();
+      labellength      = props.stlabel.size();
       if (labellength > 0)
 	 //
 	 // if there was a previous labeled do, handle it:
@@ -887,7 +888,7 @@ void Fortran::indent_and_output()
 	 }
 	 if(first_time)  // check to handle multi-statement line like x=1;y=3
 	 {
-	    output_line();
+	    output_line(ch);
 	    first_time = 0;
 	 }
       }
@@ -897,7 +898,7 @@ void Fortran::indent_and_output()
    }
 }               // end of indent_and_output
 
-void Fortran::output_line()
+void Fortran::output_line(bool ch)
 {
    if (c_lines.empty())
       return;
@@ -921,9 +922,9 @@ void Fortran::output_line()
    }
 
    if (fi->input_format == fi->output_format)
-      output(c_lines);
+      output(c_lines,ch);
    else
-      output_converted(c_lines);
+      output_converted(c_lines,ch);
 }           // end of output_line
 
 void Fortran::handle_refactor()

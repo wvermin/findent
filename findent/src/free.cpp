@@ -143,7 +143,7 @@ void Free::build_statement(Fortranline &line, bool &f_more, bool &pushback)
 }           // end of build_statement
 
 
-void Free::output(lines_t &lines, lines_t *fixedlines)
+void Free::output(lines_t &lines, bool contains_hollerith, lines_t *fixedlines)
 {
    //
    // output lines input: free format, output: free format
@@ -163,6 +163,7 @@ void Free::output(lines_t &lines, lines_t *fixedlines)
       mylabel_left   = true;
    align_state  = 0;
    align_indent = -1;
+   bool do_align_paren  = fi->flags.align_paren && !contains_hollerith;
 
    while (!lines.empty())
    {
@@ -330,7 +331,7 @@ void Free::output(lines_t &lines, lines_t *fixedlines)
 	       }
 	    }
 
-	    if (fi->flags.align_paren)
+	    if (do_align_paren)
 	       align_indent = get_paren_align(lineout,align_state);
 	    D(O("align_indent");O(align_indent););
 	    lines.pop_front();
@@ -360,7 +361,7 @@ void Free::output(lines_t &lines, lines_t *fixedlines)
 	    }
 	    else
 	       lineout = insert_omp(blanks(M(std::max(cur_indent,0))),ompstr)+line; 
-	    if (fi->flags.align_paren)
+	    if (do_align_paren)
 	    {
 	       align_indent = get_paren_align(lineout,align_state);
 	    }
@@ -457,12 +458,12 @@ void Free::output(lines_t &lines, lines_t *fixedlines)
    }
 }      // end of output
 
-void Free::output_converted(lines_t &lines)
+void Free::output_converted(lines_t &lines,bool ch)
 {
    D(O("free::output_converted "););
    lines_t fixedlines;
 
-   output(lines, &fixedlines);
+   output(lines, ch, &fixedlines);
 
    Globals oldgl = *gl;
    gl->global_format      = FIXED;
@@ -481,7 +482,7 @@ void Free::output_converted(lines_t &lines)
    }
    f.cur_indent  = cur_indent;
    f.labellength = labellength;
-   f.output(fixedlines);
+   f.output(fixedlines, ch);
    (*gl) = oldgl;
 
 }   // end of output_converted

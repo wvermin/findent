@@ -26,16 +26,16 @@
 #-#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 #-#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-Extra maintainer script:
+Extra maintainer scripts:
 
   - bootstrap: 
-      Distribute version to various files.
-      autoreconf -fvi
-      Creates the output of flex and bison for usage on
+      * Adds copyright to files (see addcopyright.sh)
+      * autoreconf -fvi
+      * Creates the output of flex and bison for usage on
 	 systems that do not have bison and/or flex installed.
 	 (make sure YOU have bison and flex installed)
-      make distclean
+      * make distclean
 
-  - addcopyright:
+  - addcopyright.sh:
       called in bootstrap to add copyright to files.
 

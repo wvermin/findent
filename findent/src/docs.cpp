@@ -206,10 +206,10 @@ void Docs::usage(bool man)
    manout(" ","        findent will stop relabeling, but will continue indenting and/or converting.");
    manout("--relabel_reset=<n>           ","1: reset label numbering at start of subroutine/function/program.");
    manout(" ","0: do not reset label numbering.");
-   manout("--query_relabel=<n>               ","generate report. " + no_env);
-   manout(" "," n=0: do not generate report.");
+   manout("--query_relabel[=<n>]             ","generate report. " + no_env);
+   manout(" "," n=0, or flag omitted: do not generate report.");
    manout(" "," n=1: generate summary (only error message or OK message).");
-   manout(" "," n=2: generate report of original and renumbered labels.");
+   manout(" "," n=2: generate report of original and renumbered labels (default).");
    manout(" "," NOTE: if n >= 0, no output of the fortran source.");
    manout("--safe                            ","ignore next flags marked with "+no_env+" (used by wfindent).");
    if(doman)
@@ -254,8 +254,12 @@ void Docs::usage(bool man)
    manout("-kd, --indent_continuation=default","continuation lines not preceded");
    manout(" ","  by '&' are default indented.");
    manout(" ","     NOTE: free to free only.");
-   manout("--align-paren=<n>                ","1/0: align continuation lines not preceded");
-   manout(" ","  by '&' with preceding unmatched left parenthesis. (default: 0)");
+   manout("--align_paren[=<n>]              ","align continuation lines not preceded");
+   manout(" ","  by '&' with preceding unmatched left parenthesis.");
+   manout(" "," n=0, or flag omitted: do not align.");
+   manout(" "," n=1: do align (default).");
+   manout(" ","     NOTE: free to free only.");
+   manout(" ","     NOTE: for statements containing an hollerith, this flag is ignored.");
    manout("  ","Next defaults are: all - all/2.");
    manout("-c<n>, --indent_case=<n>          ","CASE      negative indent.");
    manout(" ","     NOTE: also for RANK, TYPEIS and CLASSIS.");

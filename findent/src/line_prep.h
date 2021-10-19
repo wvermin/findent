@@ -59,6 +59,8 @@ class Line_prep
 
       enum { is_invalid=1, is_none, is_string, is_stlabel, is_dotop };
 
+      bool contains_hollerith;
+
       Line_prep(const std::string &s, const intpairs_t *p = 0) { set_line(s, p); }
 
       Line_prep()                           {}

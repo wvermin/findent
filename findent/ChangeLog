@@ -1,3 +1,11 @@
+findent-4.1.3:
+	pre1: relabel.cpp: add relabel support for module procedure
+	pre2: disable --align_paren=1 for statements containing Hollerith
+	      constants.
+	      flags.cpp: --align-paren is now synonymous with --align-paren=1
+	                 --query-relabel is now synonymous with --query-relabel=2
+	pre3: line_prep.cpp: add some comment
+	      
 findent-4.1.2:
 	pre1: docs.cpp: minor adaption
 	pre2: Add old-DEC statements TYPE, ACCEPT, DECODE, ENCODE

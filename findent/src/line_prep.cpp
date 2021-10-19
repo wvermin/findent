@@ -58,6 +58,8 @@ void Line_prep::set_line(const std::string &s, const intpairs_t *p)
 
    struct whats vstruct,nonestruct;
 
+   contains_hollerith    = false;
+
    nonestruct.type       = is_none;
    nonestruct.value      = "";
    nonestruct.stringtype = ' ';
@@ -73,6 +75,13 @@ void Line_prep::set_line(const std::string &s, const intpairs_t *p)
    // sc will contain sv, placeholders replaced by SPACEnnnSPACE where nnn is the index in
    //    wv that describes the placeholder
    // rest will contain the not-parsed part of the line
+   //
+   // optional parameter p contains at input the positions of s in the original lines.
+   // if p != 0, then:
+   //  pv will contain the positions, with respect to sv
+   //  pc will contain the positions, with respect to sc
+   //  prest will contain the positions with respect to rest
+   // p etc is used while relabelling
    //    
    // examples: (place_holder = ' ')
    //   s:  [123  format(5habcde  ,i5  ,'foo'  'bar')]
@@ -331,6 +340,8 @@ void Line_prep::set_line(const std::string &s, const intpairs_t *p)
 		     break;
 		  case 'h': case 'H':
 		     sl   += c;
+		     contains_hollerith = true;
+
 		     if (nhol > 0)
 		     {
 			v     = "";

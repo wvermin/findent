@@ -73,9 +73,9 @@ class Fortran
 
       virtual void build_statement(Fortranline &line, bool &f_more, bool &pushback) = 0;
 
-      virtual void output(lines_t &lines,lines_t *freelines = 0) = 0;
+      virtual void output(lines_t &lines,bool contains_hollerith,lines_t *freelines = 0) = 0;
 
-      virtual void output_converted(lines_t &lines) = 0;
+      virtual void output_converted(lines_t &lines, bool ch) = 0;
 
       void         get_full_statement(void);
 
@@ -235,7 +235,7 @@ class Fortran
       void  handle_pre(Fortranline &line, bool &p_more);
       bool  is_findentfix(Fortranline &line);
       bool  output_pre(lines_t &lines, lines_t *outlines);
-      void  output_line(void);
+      void  output_line(bool ch);
       void  handle_refactor(void);
       Fortranline getnext(bool &eof, bool use_wb = 1);
       //Fortranline mygetline(bool &eof, bool keep_lines = 0);

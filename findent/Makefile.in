@@ -337,7 +337,7 @@ AUTOMAKE_OPTIONS = gnu
 SUBDIRS = src scripts test vim gedit emacs doc deps
 MAINTAINERCLEANFILES = config.h.in~
 EXTRA_DIST = bootstrap README LICENCE README.1st README.windows  \
-	     README.2nd  simplemake.sh
+	     README.2nd  simplemake.sh addcopyright.sh
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive

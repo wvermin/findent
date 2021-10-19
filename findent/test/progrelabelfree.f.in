@@ -1,4 +1,40 @@
 ! --relabel=3100,20 -I8
+        module points
+           type :: point
+              real :: x,y
+           end type point
+           interface
+              real module function point_dist(a,b)
+                 type(point), intent(in) :: a,b
+              end function point_dist
+           end interface
+           interface inter
+              module procedure fun
+           end interface
+        contains
+           real function fun(x)
+              real x
+              fun = a+10
+           end
+        end module
+
+        submodule (points) points_a
+        contains
+           subroutine x
+              goto 1
+1 continue
+           end subroutine
+
+           module procedure point_dist
+              continue
+              goto 10
+10 continue
+              write(*,*) "hoppa"
+              point_dist = sqrt((a%x-b%x)**2+(a%y-b%y)**2)
+           end procedure
+        end submodule
+
+
          subroutine mysub(*,i,k,*,*)
             return 1
          end

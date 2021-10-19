@@ -33,7 +33,7 @@ SUBDIRS = src scripts test vim gedit emacs doc deps
 MAINTAINERCLEANFILES = config.h.in~
 
 EXTRA_DIST = bootstrap README LICENCE README.1st README.windows  \
-	     README.2nd  simplemake.sh
+	     README.2nd  simplemake.sh addcopyright.sh
 
 maintainer-clean-local:
 	rm -rf bin share autom4te.cache

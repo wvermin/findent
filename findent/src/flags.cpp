@@ -201,8 +201,8 @@ int Flags::get_flags(int argc, char *argv[])
       {"indent_continuation", required_argument, 0, 'k'                  },
       {"indent-continuation", required_argument, 0, 'k'                  },
 
-      {"align_paren"        , required_argument, 0, DO_ALIGN_PAREN       },
-      {"align-paren"        , required_argument, 0, DO_ALIGN_PAREN       },
+      {"align_paren"        , optional_argument, 0, DO_ALIGN_PAREN       },
+      {"align-paren"        , optional_argument, 0, DO_ALIGN_PAREN       },
 
       {"last_indent"        , no_argument      , 0, DO_LAST_INDENT       },
       {"last-indent"        , no_argument      , 0, DO_LAST_INDENT       },
@@ -242,8 +242,8 @@ int Flags::get_flags(int argc, char *argv[])
       {"relabel_reset"      , required_argument, 0, DO_RELABEL_RESET     },
       {"relabel-reset"      , required_argument, 0, DO_RELABEL_RESET     },
 
-      {"query_relabel"      , required_argument, 0, DO_QUERY_RELABEL     },
-      {"query-relabel"      , required_argument, 0, DO_QUERY_RELABEL     },
+      {"query_relabel"      , optional_argument, 0, DO_QUERY_RELABEL     },
+      {"query-relabel"      , optional_argument, 0, DO_QUERY_RELABEL     },
 
 #ifdef USEESOPE
       {"indent_segment"     , required_argument, 0, DO_SEGMENT           },
@@ -532,8 +532,11 @@ int Flags::get_flags(int argc, char *argv[])
 	    include_left       = (atoi(optarg) != 0);     // --include_left=0/1
 	    break;
 	 case DO_ALIGN_PAREN:
-	    optargcheck;
-	    align_paren = (atoi(optarg) != 0);
+	    align_paren = 1;
+	    if(optarg != 0 && strlen(optarg) > 0)
+	    {
+	       align_paren = (atoi(optarg) != 0);
+	    }
 	    break;
 	 case DO_INDENT_CONTAINS:
 	    optargcheck;
@@ -577,12 +580,18 @@ int Flags::get_flags(int argc, char *argv[])
 	 case DO_QUERY_RELABEL:
 	    if(end_env_found)
 	    {
-	       optargcheck;
-	       query_relabel = atoi(optarg);
-	       if(query_relabel < 0 || query_relabel > 2)
-		  query_relabel = 0;
-	       if(query_relabel != 0)
-		  relabel = 1;
+	       query_relabel = 2;
+	       relabel       = 1;
+	       if(optarg != 0 && strlen(optarg) > 0)
+	       {
+		  query_relabel = atoi(optarg);
+		  if(query_relabel < 0 || query_relabel > 2)
+		     query_relabel = 0;
+		  if(query_relabel == 0)
+		     relabel = 0;
+		  else
+		     relabel = 1;
+	       }
 	    }
 	    break;
 	 case DO_REFACTOR_END:

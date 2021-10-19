@@ -167,7 +167,7 @@ void Fixed::build_statement(Fortranline &line, bool &f_more, bool &pushback)
 }           // end of build_statement
 
 
-void Fixed::output(lines_t &lines,lines_t *freelines)
+void Fixed::output(lines_t &lines,bool contains_hollerith,lines_t *freelines)
 {
    D(O("entering Fixed::output"););
    //
@@ -176,6 +176,7 @@ void Fixed::output(lines_t &lines,lines_t *freelines)
    // lines optionally start with comments and/or preprocessor lines
    // lines ends with a fortran line
    //
+   (void) contains_hollerith;  // not used
    const std::string continuations = 
       "123456789" 
       "abcdefghijklmnopqrstuvwxyz" 
@@ -453,12 +454,12 @@ void Fixed::output(lines_t &lines,lines_t *freelines)
 }     // end of output
 
 
-void Fixed::output_converted(lines_t &lines)
+void Fixed::output_converted(lines_t &lines, bool ch)
 {
    D(O("fixed::output_converted "););
    lines_t freelines;
 
-   output(lines, &freelines);
+   output(lines, ch, &freelines);
 
    Globals oldgl = *gl;
    gl->global_format = FREE;
@@ -477,7 +478,7 @@ void Fixed::output_converted(lines_t &lines)
    }
    f.cur_indent  = cur_indent;
    f.labellength = labellength;
-   f.output(freelines);
+   f.output(freelines, ch);
    (*gl) = oldgl;
 }    // end of output_converted
 

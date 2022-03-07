@@ -1,5 +1,5 @@
 # -copyright-
-#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021,2022 Willem Vermin wvermin@gmail.com
 #-# 
 #-# License: BSD-3-Clause
 #-#  Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([findent], [4.1.3], [wvermin@gmail.com])
+AC_INIT([findent], [4.2.0], [wvermin@gmail.com])
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/findent.cpp])

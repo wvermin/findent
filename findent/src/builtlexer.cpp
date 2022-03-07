@@ -2893,7 +2893,7 @@ goto find_rule; \
 char *yytext;
 #line 1 "../src/lexer.l"
 /* -copyright-
-#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021,2022 Willem Vermin wvermin@gmail.com
 #-# 
 #-# License: BSD-3-Clause
 #-#  Redistribution and use in source and binary forms, with or without

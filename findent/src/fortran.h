@@ -1,5 +1,5 @@
 /* -copyright-
-#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021,2022 Willem Vermin wvermin@gmail.com
 #-# 
 #-# License: BSD-3-Clause
 #-#  Redistribution and use in source and binary forms, with or without
@@ -124,6 +124,8 @@ class Fortran
       bool              refactor_end_found;
       rprops_store_t    rprops_store;
       rprops_t          rprops;          // to store routines (module, subroutine ...)
+
+      std::string remred(const std::string &s, int from, int &state);
 
       int M(const int k)
       {

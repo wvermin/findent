@@ -1,6 +1,6 @@
 #!/bin/sh
 # -copyright-
-#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021,2022 Willem Vermin wvermin@gmail.com
 #-# 
 #-# License: BSD-3-Clause
 #-#  Redistribution and use in source and binary forms, with or without
@@ -806,6 +806,44 @@ eof
 rc=`expr $rc + $?`
 
 cat << eof > prog
+program paren
+   x = y + &
+      fun(a, &
+      abcd ,&
+      z)
+   x = y +  &
+              z + &
+      a; call sub (a, &
+!comment
+      b, &
+      c)
+   x = y +  a; call sub (a, &
+      b, &
+      c)
+
+   print *,'abc'; call sub(a,&
+      b,&
+      c)
+#if 0
+   write(10,'20) x; call sub(a,&
+      b,&
+      c)
+   '
+   write(10           '   20) x; call sub(a,&
+      b,&
+      c)
+   write(10"20) x; call sub(a,&
+      b,&
+      c)
+   "
+#endif
+contains
+   subroutine sub(a,b,c)
+   end
+   function fun(a,b,c)
+      fun=a
+   end
+end program
 subroutine gnikit
  x = p + fun (a,&
   b,&
@@ -833,9 +871,54 @@ subroutine gnikit
   7, &
   8] &
    )
+contains
+ subroutine sub1(a,b,c,d)
+    integer d(3)
+   end
+   function fun(a,b,c)
+      fun=a
+   end
   end
 eof
 cat << eof > expect
+        program paren
+           x = y + &
+              fun(a, &
+                  abcd ,&
+                  z)
+           x = y +  &
+              z + &
+              a; call sub (a, &
+!comment
+                           b, &
+                           c)
+           x = y +  a; call sub (a, &
+                                 b, &
+                                 c)
+
+           print *,'abc'; call sub(a,&
+                                   b,&
+                                   c)
+#if 0
+           write(10,'20) x; call sub(a,&
+                 b,&
+                 c)
+           '
+           write(10           '   20) x; call sub(a,&
+                                                  b,&
+                                                  c)
+           write(10"20) x; call sub(a,&
+                 b,&
+                 c)
+           "
+#endif
+        contains
+           subroutine sub(a,b,c)
+           end
+           function fun(a,b,c)
+              fun=a
+           end
+        end program
         subroutine gnikit
            x = p + fun (a,&
                         b,&
@@ -863,12 +946,57 @@ cat << eof > expect
                       7, &
                       8] &
                      )
+        contains
+           subroutine sub1(a,b,c,d)
+              integer d(3)
+           end
+           function fun(a,b,c)
+              fun=a
+           end
         end
 eof
 ../doit "--align_paren --align-paren --align_paren=1 --align-paren=1" "-ifree -I8" " Test026: --align_paren: free"
 rc=`expr $rc + $?`
 
 cat << eof > expect
+        program paren
+           x = y + &
+              fun(a, &
+                  abcd ,&
+                  z)
+           x = y +  &
+              z + &
+              a; call sub (a, &
+!comment
+                           b, &
+                           c)
+           x = y +  a; call sub (a, &
+                                 b, &
+                                 c)
+
+           print *,'abc'; call sub(a,&
+                                   b,&
+                                   c)
+#if 0
+           write(10,'20) x; call sub(a,&
+                 b,&
+                 c)
+           '
+           write(10           '   20) x; call sub(a,&
+                                                  b,&
+                                                  c)
+           write(10"20) x; call sub(a,&
+                 b,&
+                 c)
+           "
+#endif
+        contains
+           subroutine sub(a,b,c)
+           end
+           function fun(a,b,c)
+              fun=a
+           end
+        end program
         subroutine gnikit
            x = p + fun (a,&
                         b,&
@@ -896,12 +1024,57 @@ cat << eof > expect
                       7, &
                       8] &
                      )
+        contains
+           subroutine sub1(a,b,c,d)
+              integer d(3)
+           end
+           function fun(a,b,c)
+              fun=a
+           end
         end
 eof
 ../doit "--align_paren --align-paren --align_paren=1 --align-paren=1 " "-ifree -I8 --label_left=0" " Test027: --align_paren --label_left=0: free"
 rc=`expr $rc + $?`
 
 cat << eof > expect
+        program paren
+           x = y + &
+              fun(a, &
+              abcd ,&
+              z)
+           x = y +  &
+              z + &
+              a; call sub (a, &
+!comment
+              b, &
+              c)
+           x = y +  a; call sub (a, &
+              b, &
+              c)
+
+           print *,'abc'; call sub(a,&
+              b,&
+              c)
+#if 0
+           write(10,'20) x; call sub(a,&
+              b,&
+              c)
+           '
+           write(10           '   20) x; call sub(a,&
+              b,&
+              c)
+           write(10"20) x; call sub(a,&
+              b,&
+              c)
+           "
+#endif
+        contains
+           subroutine sub(a,b,c)
+           end
+           function fun(a,b,c)
+              fun=a
+           end
+        end program
         subroutine gnikit
            x = p + fun (a,&
               b,&
@@ -929,12 +1102,57 @@ cat << eof > expect
               7, &
               8] &
               )
+        contains
+           subroutine sub1(a,b,c,d)
+              integer d(3)
+           end
+           function fun(a,b,c)
+              fun=a
+           end
         end
 eof
 ../doit "-kd" "-ifree -I8 -k-" " Test028: -k- -kd: free"
 rc=`expr $rc + $?`
 
 cat << eof > expect
+        program paren
+           x = y + &
+              fun(a, &
+              abcd ,&
+              z)
+           x = y +  &
+              z + &
+              a; call sub (a, &
+!comment
+              b, &
+              c)
+           x = y +  a; call sub (a, &
+              b, &
+              c)
+
+           print *,'abc'; call sub(a,&
+              b,&
+              c)
+#if 0
+           write(10,'20) x; call sub(a,&
+              b,&
+              c)
+           '
+           write(10           '   20) x; call sub(a,&
+              b,&
+              c)
+           write(10"20) x; call sub(a,&
+              b,&
+              c)
+           "
+#endif
+        contains
+           subroutine sub(a,b,c)
+           end
+           function fun(a,b,c)
+              fun=a
+           end
+        end program
         subroutine gnikit
            x = p + fun (a,&
               b,&
@@ -962,12 +1180,57 @@ cat << eof > expect
               7, &
               8] &
               )
+        contains
+           subroutine sub1(a,b,c,d)
+              integer d(3)
+           end
+           function fun(a,b,c)
+              fun=a
+           end
         end
 eof
 ../doit "--indent_continuation=default --indent-continuation=default" "-I8 -ifree  -k- " " Test029: -k- --indent_continuation=default: free"
 rc=`expr $rc + $?`
 
 cat << eof > expect
+program paren
+   x = y + &
+      fun(a, &
+      abcd ,&
+      z)
+   x = y +  &
+      z + &
+      a; call sub (a, &
+!comment
+      b, &
+      c)
+   x = y +  a; call sub (a, &
+      b, &
+      c)
+
+   print *,'abc'; call sub(a,&
+      b,&
+      c)
+#if 0
+   write(10,'20) x; call sub(a,&
+      b,&
+      c)
+   '
+   write(10           '   20) x; call sub(a,&
+      b,&
+      c)
+   write(10"20) x; call sub(a,&
+      b,&
+      c)
+   "
+#endif
+contains
+   subroutine sub(a,b,c)
+   end
+   function fun(a,b,c)
+      fun=a
+   end
+end program
 subroutine gnikit
    x = p + fun (a,&
       b,&
@@ -995,9 +1258,134 @@ subroutine gnikit
       7, &
       8] &
       )
+contains
+   subroutine sub1(a,b,c,d)
+      integer d(3)
+   end
+   function fun(a,b,c)
+      fun=a
+   end
 end
 eof
 ../doit "-q" "--safe" " Test030: -k- --indent_continuation=default: free"
+rc=`expr $rc + $?`
+
+cat << eof > prog
+subroutine remred
+ x       = p       +fun        (a,           &
+  b,&
+  c)
+100 format(4habcd             , &
+       4hx(bc,&
+       i5)
+
+101 format("abcd      "             , &
+       'pqr  st    '    ,                  &
+       i5)
+
+      call      sub1(a,   "hello              &
+   world  "     ,  &
+   10)
+!$      call      sub1(a,   "hello              &
+!$   world  "     ,  &
+!$   10)
+      call      sub1(a,   'hello              &
+   world  '     ,  &
+   10)
+#if 0
+   write(10   '  6)       '  a    b    c  '
+   write(10   "  6)       ",  a,    b,    c  ! this    is    not    fortran
+#endif
+  end
+eof
+cat << eof > expect
+        subroutine remred
+           x = p +fun (a, &
+              b,&
+              c)
+100        format(4habcd             , &
+              4hx(bc,&
+              i5)
+
+101        format("abcd      " , &
+              'pqr  st    ' , &
+              i5)
+
+           call sub1(a, "hello              &
+              world  " , &
+              10)
+!$         call sub1(a, "hello              &
+!$            world  " , &
+!$            10)
+           call sub1(a, 'hello              &
+              world  ' , &
+              10)
+#if 0
+           write(10 ' 6) '  a    b    c  '
+           write(10 "  6)       ", a, b, c ! this    is    not    fortran
+#endif
+        end
+eof
+../doit "--ws-remred --ws_remred" "-ifree -I8" " Test031: --ws-remred free"
+rc=`expr $rc + $?`
+
+cat << eof > prog
+       subroutine remred
+        x       = p       +fun        (a,           
+     1     b,
+     2            c)
+100   format(4habcd             , 
+     1 4hx(bc,
+     2 i5)
+
+101    format("abcd      "             , 
+     1 'pqr  st    '    ,                  
+     2 i5)
+
+       call      sub1(a,   "hello              
+     1  world  "     ,
+     2  10)
+c$       call      sub1(a,   "hello              
+!$   1  world  "     ,
+c$   2  10)
+      call      sub1(a,   'hello              
+     1 world  '     ,
+     2 10)
+#if 0
+       write(10   '  6)       '  a    b    c  '
+      write(10   "  6)       ",  a,    b,    c  ! this    is    not    fortran
+#endif
+      end
+eof
+cat << eof > expect
+          subroutine remred
+             x = p +fun (a,
+     1          b,
+     2                 c)
+  100        format(4habcd             ,
+     1        4hx(bc,
+     2        i5)
+
+  101        format("abcd      " ,
+     1       'pqr  st    ' ,
+     2       i5)
+
+             call sub1(a, "hello
+     1  world  " ,
+     2        10)
+c$           call sub1(a, "hello
+!$   1  world  " ,
+c$   2       10)
+             call sub1(a, 'hello
+     1 world  ' ,
+     2        10)
+#if 0
+             write(10 ' 6) '  a    b    c  '
+             write(10 "  6)       ", a, b, c ! this    is    not    fortran
+#endif
+          end
+eof
+../doit "--ws-remred --ws_remred" "-ifixed -I4" " Test032: --ws-remred fixed"
 rc=`expr $rc + $?`
 
 . ../postlude

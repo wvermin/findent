@@ -1,5 +1,5 @@
 /* -copyright-
-#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021,2022 Willem Vermin wvermin@gmail.com
 #-# 
 #-# License: BSD-3-Clause
 #-#  Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,8 @@ class Flags
       DO_VERSION,
       DO_VIM_FINDENT,
       DO_VIM_FORTRAN,
-      DO_VIM_HELP
+      DO_VIM_HELP,
+      DO_WS_REMRED
    };
 
    bool apply_indent         ; // 1: output indented line, else output original lines
@@ -104,6 +105,7 @@ class Flags
    int  relabel_increment    ; // increment of relabeling
    bool return_format        ; // 1: return 2 if format==free, 4 if format==fixed
    bool safe                 ; // 1: disable flages like -q, default: 0
+   bool ws_remred            ; // 1: remove redundand space
    bool upcase_end_type      ; // 1: use 'END SUBROUTINE' etc in stead of 'end subroutine'
    bool honour_omp           ; // 1: treat openmp continuation lines as code,
    //                             0: treat them as comment

@@ -1,5 +1,5 @@
 /* -copyright-
-#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021,2022 Willem Vermin wvermin@gmail.com
 #-# 
 #-# License: BSD-3-Clause
 #-#  Redistribution and use in source and binary forms, with or without
@@ -996,6 +996,152 @@ void Fortran::handle_refactor()
    }
 }
 
+
+// remove redundant space, replace multiple spaces outside strings and comments with one space.
+// comments start with '!'
+// s: line or continuation line. If s is the first line, state must be set to 0
+// from: first <from> characters of s will not be touched or interpreted
+// state: used by remred. Must be zero when remred is called for the first line.
+// 
+
+std::string Fortran::remred(const std::string &s, int from, int &state)
+{
+   enum {start=0,instrings,instringd,eatspace,incode,incomment}; 
+   std::string r = s.substr(0,from);
+   static int prevc;  // used to detect e.g. WRITE(10'5) X
+   for (int i = from; i<(int)s.size(); i++)
+   {
+      int c = s[i];
+      switch(state)
+      {
+	 case start:
+	    prevc = -1;
+	    switch(c)
+	    {
+	       case '\'':
+		  r += c;
+		  state = instrings;
+		  prevc = c;
+		  break;
+	       case '"':
+		  r += c;
+		  state = instringd;
+		  prevc = c;
+		  break;
+	       case ' ':
+	       case '\t':
+		  r += ' ';
+		  state = eatspace;
+		  break;
+	       case '!':
+		  r += c;
+		  state = incomment;
+		  break;
+	       default:
+		  r += c;
+		  state = incode;
+		  prevc = c;
+		  break;
+	    }
+	    break;
+	 case instrings:
+	    switch(c)
+	    {
+	       case '\'':
+		  r += c;
+		  state = start;
+		  break;
+	       default:
+		  r += c;
+		  break;
+	    }
+	    break;
+	 case instringd:
+	    switch(c)
+	    {
+	       case '"':
+		  r += c;
+		  state = start;
+		  break;
+	       default:
+		  r += c;
+		  break;
+	    }
+	    break;
+	 case eatspace:
+	    switch(c)
+	    {
+	       case ' ':
+	       case '\t':
+		  break;
+	       case '\'':
+		  r += c;
+		  if(!myisalnum(prevc))
+		     state = instrings;
+		  else
+		     state = incode;
+		  prevc = c;
+		  break;
+	       case '"':
+		  r += c;
+		  state = instringd;
+		  prevc = c;
+		  break;
+	       case '!':
+		  r += c;
+		  prevc = -1;
+		  state = incomment;
+		  break;
+	       default:
+		  r += c;
+		  prevc = c;
+		  state = incode;
+		  break;
+	    }
+	    break;
+	 case incode:
+	    switch(c)
+	    {
+	       case ' ':
+	       case '\t':
+		  r += c;
+		  state = eatspace;
+		  break;
+	       case '\'':
+		  r += c;
+		  if(!myisalnum(prevc))
+		     state = instrings;
+		  prevc = c;
+		  break;
+	       case '"':
+		  r += c;
+		  state = instringd;
+		  prevc = c;
+		  break;
+	       case '!':
+		  r += c;
+		  prevc = -1;
+		  state = incomment;
+		  break;
+	       default:
+		  r += c;
+		  prevc = c;
+		  break;
+	    }
+	    break;
+	 case incomment:
+	    r += c;
+	    break;
+      }
+   }
+   switch(state)
+   {
+      case incomment:
+	 state = start;
+	 break;
+   }
+   return r;
+}
 
 #undef Cur_indent
 #undef FLAGS

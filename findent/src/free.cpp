@@ -1,5 +1,5 @@
 /* -copyright-
-#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021,2022 Willem Vermin wvermin@gmail.com
 #-# 
 #-# License: BSD-3-Clause
 #-#  Redistribution and use in source and binary forms, with or without
@@ -158,12 +158,14 @@ void Free::output(lines_t &lines, bool contains_hollerith, lines_t *fixedlines)
    bool expect_continuation = 0;
    bool prev_expect_continuation;
 
-   bool mylabel_left = fi->flags.label_left;
+   bool mylabel_left    = fi->flags.label_left;
    if(!to_mycout) // want labels left if converting to fixed
-      mylabel_left   = true;
-   align_state  = 0;
-   align_indent = -1;
+      mylabel_left      = true;
+   align_state          = 0;
+   align_indent         = -1;
    bool do_align_paren  = fi->flags.align_paren && !contains_hollerith;
+   bool do_remred       = fi->flags.ws_remred && !contains_hollerith;
+   int remredstate      = 0;
 
    while (!lines.empty())
    {
@@ -187,6 +189,7 @@ void Free::output(lines_t &lines, bool contains_hollerith, lines_t *fixedlines)
 	 ompstr = "";
 	 cmpstr = "";
       }
+
 
       if(output_pre(lines,fixedlines))
 	 continue;
@@ -225,7 +228,6 @@ void Free::output(lines_t &lines, bool contains_hollerith, lines_t *fixedlines)
 	    // but the comment does not start in column 1
 	    //
 	    if(to_mycout)
-	       //mycout << insert_omp(blanks(M(std::max(fi->cur_indent,1))),ompstr);
 	       mycout << insert_omp(blanks(M(std::max(cur_indent,1))),ompstr);
 	    else
 	       //os << cmpstr << blanks(std::max(fi->cur_indent,1));
@@ -293,12 +295,12 @@ void Free::output(lines_t &lines, bool contains_hollerith, lines_t *fixedlines)
 	    // In that case the actual value of labellength is not usable here, we
 	    // will handle it separately.
 	    //
-	    if (labellength > (int)firstline.size() && lastchar(firstline) == '&')
+	    if (labellength >= (int)firstline.size()-1 && lastchar(firstline) == '&')
+	       // was: if (labellength > (int)firstline.size() && lastchar(firstline) == '&')
 	    {
 	       if(to_mycout)
 	       {
-		  lineout = firstline;
-		  mycout << lineout << endline;
+		  mycout << firstline << endline;
 	       }
 	       else
 	       {
@@ -313,14 +315,14 @@ void Free::output(lines_t &lines, bool contains_hollerith, lines_t *fixedlines)
 	       std::string label     = firstline.substr(0,labellength);
 	       firstline             = trim(firstline.substr(labellength));
 
-	       //int l = M(std::max(fi->cur_indent - labellength,1));  // put at least one space after label
 	       int l = M(std::max(cur_indent - labellength,1));  // put at least one space after label
 	       if(to_mycout)
 	       {
 		  if (lines.front().omp())
 		     l = M(std::max((int)(l-ompstr.length()),1));
 		  lineout = ompstr + label + blanks(l) + firstline;
-		  //mycout << ompstr << label << blanks(l) << firstline << endline;
+		  if (do_remred)
+		     lineout = remred(lineout, l+ompstr.size()+label.size(), remredstate);
 		  mycout << lineout << endline;
 	       }
 	       else
@@ -354,18 +356,25 @@ void Free::output(lines_t &lines, bool contains_hollerith, lines_t *fixedlines)
 	    std::string lineout;
 	    //mycout << insert_omp(blanks(M(std::max(cur_indent,0))),ompstr) <<
 	    //  line << endline;
+	    int l;
 	    if (align_indent >=0)
 	    {
-	       lineout = insert_omp(blanks(M(std::max(align_indent,0))),ompstr)+line;
-	       D(O("align_indent");O(align_indent););
+	       l = M(std::max(align_indent,0));
+	       lineout = insert_omp(blanks(l),ompstr)+line;
+	       l += ompstr.size();
 	    }
 	    else
-	       lineout = insert_omp(blanks(M(std::max(cur_indent,0))),ompstr)+line; 
-	    if (do_align_paren)
 	    {
-	       align_indent = get_paren_align(lineout,align_state);
+	       l = M(std::max(cur_indent,0));
+	       lineout = insert_omp(blanks(l),ompstr)+line; 
+	       l += ompstr.size();
 	    }
+	    if (do_align_paren)
+	       align_indent = get_paren_align(lineout,align_state);
 	    D(O("align_indent");O(align_indent);O(lineout););
+
+	    if (do_remred)
+	       lineout = remred(lineout, l, remredstate);
 
 	    mycout << lineout << endline;
 	 }
@@ -393,10 +402,17 @@ void Free::output(lines_t &lines, bool contains_hollerith, lines_t *fixedlines)
 
       if (lines.front().firstchar() == '&')  // continuation line starting with '&'
       {
+	 int l;
 	 if(to_mycout)
-	    //mycout << insert_omp(blanks(M(std::max(fi->cur_indent,0))),ompstr) <<
-	    mycout << insert_omp(blanks(M(std::max(cur_indent,0))),ompstr) <<
-	       lines.front().trim() << endline;
+	 {
+	    l = M(std::max(cur_indent,0));
+	    //mycout << insert_omp(blanks(M(std::max(cur_indent,0))),ompstr) <<
+	    //  lines.front().trim() << endline;
+	    std::string lineout = insert_omp(blanks(l),ompstr) + lines.front().trim();
+	    if (do_remred)
+	       lineout = remred(lineout, l+ompstr.size(), remredstate);
+	    mycout << lineout << endline;
+	 }
 	 else
 	 {
 	    os << insert_omp(blanks(5),cmpstr) << conchar << rm_last_amp(lines.front().trim().substr(1));
@@ -416,6 +432,8 @@ void Free::output(lines_t &lines, bool contains_hollerith, lines_t *fixedlines)
 	 int l;
 	 l = M(std::max(align_indent,0));
 	 std::string lineout = insert_omp(blanks(l),ompstr) + lines.front().trim();
+	 if (do_remred)
+	    lineout = remred(lineout, l+ompstr.size(), remredstate);
 	 mycout << lineout << endline;
 	 align_indent = get_paren_align(ltrim(lineout),align_state);
 	 D(O("align_indent");O(align_indent);O(lineout););
@@ -431,7 +449,15 @@ void Free::output(lines_t &lines, bool contains_hollerith, lines_t *fixedlines)
 	    l = M(std::max(cur_indent,0));
 
 	 if(to_mycout)
-	    mycout << insert_omp(blanks(l),ompstr) << lines.front().trim() << endline;
+	 {
+	    std::string lineout = insert_omp(blanks(l),ompstr) + lines.front().trim();
+	    if (do_remred)
+	       lineout = remred(lineout, l+ompstr.size(), remredstate);
+	    mycout << lineout << endline;;
+	    if (do_align_paren)
+	       align_indent = get_paren_align(lineout,align_state);
+	    D(O("indentation of & ");O(align_indent);O(lineout););
+	 }
 	 else
 	 {
 	    os << insert_omp(blanks(5),cmpstr) << conchar << rm_last_amp(lines.front().rtrim());
@@ -447,7 +473,17 @@ void Free::output(lines_t &lines, bool contains_hollerith, lines_t *fixedlines)
       // continuation lines
       //
       if(to_mycout)
-	 mycout << insert_omp(lines.front().rtrim(),ompstr) << endline;
+      {
+	 std::string lineout = insert_omp(lines.front().rtrim(),ompstr);
+	 D(O("no & ");O(lineout););
+	 //mycout << insert_omp(lines.front().rtrim(),ompstr) << endline;
+	 if (do_remred)
+	 {
+	    int l = num_leading_spaces(lineout);
+	    lineout = remred(lineout, l+ompstr.size(), remredstate);
+	 }
+	 mycout << lineout << endline;
+      }
       else
       {
 	 os << insert_omp(blanks(5),cmpstr) << conchar << rm_last_amp(lines.front().rtrim());
@@ -559,6 +595,7 @@ static int get_paren_align(const std::string& line, int& state)
    static int indent;
    static int previndent;
    static int startindent;
+   static int prevc;       // used to detect e.g. WRITE(10'5) X
    if (state == 0)
    {
       stack.clear();
@@ -567,6 +604,7 @@ static int get_paren_align(const std::string& line, int& state)
       nextstate = start1;
       previndent= 0;
       indent    = 0;
+      prevc     = -1;
       for (int i=0; i<(int)line.size(); ++i)
 	 if(line[i] != ' ')
 	 {
@@ -576,32 +614,41 @@ static int get_paren_align(const std::string& line, int& state)
    }
    for (int i=0; i<(int)line.size(); ++i)
    {
-      char c = line[i];
+      int c = line[i];
       switch (state)
       {
 	 case start1:
 	    switch(c)
 	    {
 	       case '"': case '\'':
-		  quote = c;
-		  nextstate = state;
-		  state = inquote;
+
+		  if (c == '"' || !myisalnum(prevc))
+		  {
+		     quote = c;
+		     nextstate = state;
+		     state = inquote;
+		  }
 		  break;
 	       case '(': case '[':
 		  PUSH(i);
 		  state = lparen;
 		  break;
 	       case '!':
-		  goto endline;
+		  goto end_of_line;
 		  break;
 	    }
+	    if (!isblank(c))
+	       prevc = c;
 	    break;
 	 case inquote:
 	    switch(c)
 	    {
 	       case '"': case '\'':
 		  if (quote == c)
+		  {
+		     prevc = c;
 		     state = nextstate;
+		  }
 		  break;
 	    }
 	    break;
@@ -609,11 +656,14 @@ static int get_paren_align(const std::string& line, int& state)
 	    switch(c)
 	    {
 	       case '"': case '\'':
-		  POP;
-		  PUSH(i);
-		  quote = c;
-		  nextstate = lparen1;
-		  state = inquote;
+		  if (c == '"' || !myisalnum(prevc))
+		  {
+		     POP;
+		     PUSH(i);
+		     quote = c;
+		     nextstate = lparen1;
+		     state = inquote;
+		  }
 		  break;
 	       case '(': case '[':
 		  PUSH(i);
@@ -627,7 +677,8 @@ static int get_paren_align(const std::string& line, int& state)
 		     state = lparen;
 		  break;
 	       case '!':
-		  goto endline;
+		  prevc = c;
+		  goto end_of_line;
 		  break;
 	       default:
 		  if (c != '/' && ! isspace(c))
@@ -638,14 +689,19 @@ static int get_paren_align(const std::string& line, int& state)
 		  }
 		  break;
 	    }
+	    if (!isblank(c))
+	       prevc = c;
 	    break;
 	 case lparen1:
 	    switch(c)
 	    {
 	       case '"': case '\'':
-		  quote = c;
-		  nextstate = lparen1;
-		  state = inquote;
+		  if (c == '"' || !myisalnum(prevc))
+		  {
+		     quote = c;
+		     nextstate = lparen1;
+		     state = inquote;
+		  }
 		  break;
 	       case '(': case '[':
 		  PUSH(i);
@@ -659,13 +715,16 @@ static int get_paren_align(const std::string& line, int& state)
 		     state = lparen1;
 		  break;
 	       case '!':
-		  goto endline;
+		  prevc = c;
+		  goto end_of_line;
 		  break;
 	    }
+	    if (!isblank(c))
+	       prevc = c;
 	    break;
       }
    }
-endline:
+end_of_line:
    previndent = indent;
    if (stack.size() == 0)
       return -1;

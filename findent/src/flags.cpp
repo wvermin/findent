@@ -1,5 +1,5 @@
 /* -copyright-
-#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021,2022 Willem Vermin wvermin@gmail.com
 #-# 
 #-# License: BSD-3-Clause
 #-#  Redistribution and use in source and binary forms, with or without
@@ -76,6 +76,7 @@ void Flags::set_defaults(void)
    safe                 = 0;
    start_indent         = 0;
    upcase_end_type      = 0;
+   ws_remred            = 0;
 
    set_default_indents();
 }
@@ -292,6 +293,9 @@ int Flags::get_flags(int argc, char *argv[])
 
       {"emacs_findent"      , no_argument      , 0, DO_EMACS_FINDENT     },
       {"emacs-findent"      , no_argument      , 0, DO_EMACS_FINDENT     },
+
+      {"ws_remred"          , optional_argument, 0, DO_WS_REMRED         },
+      {"ws-remred"          , optional_argument, 0, DO_WS_REMRED         },
 
       {"readme"             , no_argument      , 0, DO_README            },
 
@@ -613,6 +617,13 @@ int Flags::get_flags(int argc, char *argv[])
 		  relabel_increment = atoi(p+1);
 	       if (relabel_start <= 0 || relabel_increment <= 0)
 		  relabel = 0;
+	    }
+	    break;
+	 case DO_WS_REMRED:
+	    ws_remred = 1;
+	    if(optarg != 0 && strlen(optarg) > 0)
+	    {
+	       ws_remred = atoi(optarg) != 0;
 	    }
 	    break;
 	 case DO_RELABEL_RESET:

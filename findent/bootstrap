@@ -1,6 +1,6 @@
 #!/bin/sh
 # -copyright-
-#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021,2022 Willem Vermin wvermin@gmail.com
 #-# 
 #-# License: BSD-3-Clause
 #-#  Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,7 @@ make builtparser builtlexer                                    || exit 1
 
 # create autopkg suite in debian directory, if present
 if [ -d $deb ] ; then
+   mkdir -p $deb/tests                                         || exit 1
    cp test/*.f test/*.ref test/*.sh test/doit $deb/tests       || exit 1
    echo "Tests:" > $deb/tests/control                          || exit 1
    for f in $deb/tests/test?.sh $deb/tests/test??.sh ; do

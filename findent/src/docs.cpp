@@ -1,5 +1,5 @@
 /* -copyright-
-#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021,2022 Willem Vermin wvermin@gmail.com
 #-# 
 #-# License: BSD-3-Clause
 #-#  Redistribution and use in source and binary forms, with or without
@@ -95,7 +95,7 @@ void Docs::usage(bool man)
    {
       doman = 1;
       std::cout << ".\\\" DO NOT MODIFY THIS FILE! It was created by findent \\-H"                << std::endl;
-      std::cout << ".TH FINDENT \"1\" \"2021\" \"findent\\-" << VERSION << "\" \"User Commands\"" << std::endl;
+      std::cout << ".TH FINDENT \"1\" \"2022\" \"findent\\-" << VERSION << "\" \"User Commands\"" << std::endl;
       std::cout << ".SH NAME"                                                                     << std::endl;
       std::cout << "findent \\- Indents, converts and relabels Fortran programs."                 << std::endl;
       std::cout << ".SH SYNOPSIS"                                                                 << std::endl;
@@ -211,6 +211,12 @@ void Docs::usage(bool man)
    manout(" "," n=1: generate summary (only error message or OK message).");
    manout(" "," n=2: generate report of original and renumbered labels (default).");
    manout(" "," NOTE: if n >= 0, no output of the fortran source.");
+   manout("--ws_remred[=<n>]                 ","replace redundant white space with one space.");
+   manout(" "," n=0, or flag omitted: do not replace redundant spaces.");
+   manout(" "," NOTE1: use with care, avoid pieces of code with not terminated");
+   manout(" ","        strings and use Fortran code without syntax errors:");
+   manout(" ","        changes are irreversible.");
+   manout(" "," NOTE2: for statements containing an hollerith, this flag is ignored.");
    manout("--safe                            ","ignore next flags marked with "+no_env+" (used by wfindent).");
    if(doman)
    {
@@ -258,8 +264,8 @@ void Docs::usage(bool man)
    manout(" ","  by '&' with preceding unmatched left parenthesis.");
    manout(" "," n=0, or flag omitted: do not align.");
    manout(" "," n=1: do align (default).");
-   manout(" ","     NOTE: free to free only.");
-   manout(" ","     NOTE: for statements containing an hollerith, this flag is ignored.");
+   manout(" ","     NOTE1: free to free only.");
+   manout(" ","     NOTE1: for statements containing an hollerith, this flag is ignored.");
    manout("  ","Next defaults are: all - all/2.");
    manout("-c<n>, --indent_case=<n>          ","CASE      negative indent.");
    manout(" ","     NOTE: also for RANK, TYPEIS and CLASSIS.");

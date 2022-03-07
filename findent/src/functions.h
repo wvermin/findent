@@ -1,5 +1,5 @@
 /* -copyright-
-#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021,2022 Willem Vermin wvermin@gmail.com
 #-# 
 #-# License: BSD-3-Clause
 #-#  Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@
 #-#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 #-#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 #-#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
@@ -90,23 +90,28 @@ inline char lastchar(const std::string &s)
    return s[l-1];
 }
 
+inline bool myisalnum(char c)
+{
+   return(isalnum(c) || c == '_');
+}
+
 extern Simpleostream mycout; 
 
-template <typename T>
-  std::string number2string ( T number )
-  {
-    std::ostringstream ss;
-    ss << number;
-    return ss.str();
-  }
+   template <typename T>
+std::string number2string ( T number )
+{
+   std::ostringstream ss;
+   ss << number;
+   return ss.str();
+}
 
-template <typename T>
-  T string2number ( const std::string &text )
-  {
-    std::istringstream ss(text);
-    T result;
-    return ss >> result ? result : 0;
-  }
+   template <typename T>
+T string2number ( const std::string &text )
+{
+   std::istringstream ss(text);
+   T result;
+   return ss >> result ? result : 0;
+}
 
 bool        cleanfive(const std::string &s);
 

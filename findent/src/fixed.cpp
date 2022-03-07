@@ -1,5 +1,5 @@
 /* -copyright-
-#-# Copyright: 2015,2016,2017,2018,2019,2020,2021 Willem Vermin wvermin@gmail.com
+#-# Copyright: 2015,2016,2017,2018,2019,2020,2021,2022 Willem Vermin wvermin@gmail.com
 #-# 
 #-# License: BSD-3-Clause
 #-#  Redistribution and use in source and binary forms, with or without
@@ -186,6 +186,9 @@ void Fixed::output(lines_t &lines,bool contains_hollerith,lines_t *freelines)
    unsigned int first_indent = 0;
    char prevquote            = ' ';
    bool had_first            = 0;
+   std::string endline       = fi->endline;
+   bool do_remred            = fi->flags.ws_remred && !contains_hollerith;
+   int remredstate           = 0;
 
    std::ostringstream os;
    size_t cindex = 0;
@@ -225,7 +228,7 @@ void Fixed::output(lines_t &lines,bool contains_hollerith,lines_t *freelines)
 	 // a completely blank line, that is simple:
 	 //
 	 if(to_mycout)
-	    mycout << ompstr << fi->endline;
+	    mycout << ompstr << endline;
 	 else
 	 {
 	    os << cmpstr;
@@ -266,7 +269,7 @@ void Fixed::output(lines_t &lines,bool contains_hollerith,lines_t *freelines)
 	 // output comment:
 	 //
 	 if(to_mycout)
-	    mycout << lines.front().trim() << fi->endline;
+	    mycout << lines.front().trim() << endline;
 	 else
 	 {
 	    int l=1;
@@ -297,7 +300,13 @@ void Fixed::output(lines_t &lines,bool contains_hollerith,lines_t *freelines)
 	 // garbage in, garbage out
 	 //
 	 if(to_mycout)
-	    mycout << insert_omp(lines.front().rtrim()) << fi->endline;
+	 {
+	    std::string lineout = insert_omp(lines.front().rtrim());
+	    if (do_remred)
+	       lineout = remred(lineout, ompstr.size(), remredstate);
+	    mycout << lineout << endline;
+	    //mycout << insert_omp(lines.front().rtrim()) << endline;
+	 }
 	 else
 	 {
 	    os << cmpstr << lines.front().rtrim();
@@ -354,10 +363,8 @@ void Fixed::output(lines_t &lines,bool contains_hollerith,lines_t *freelines)
 	    label = std::string(nlabel-label.size(),' ') + label;
 
 	 if(to_mycout)
-	    //mycout << insert_omp(s.substr(0,6));
 	    mycout << ompstr + label+s[5];
 	 else
-	    //os << cmpstr << s.substr(0,5);
 	    os << cmpstr << label + ' ';
 
 	 //
@@ -389,15 +396,26 @@ void Fixed::output(lines_t &lines,bool contains_hollerith,lines_t *freelines)
 	 {
 	    case ' ' :   // no dangling strings, output with indent
 	       if(to_mycout)
-		  //mycout << blanks(M(std::max(adjust_indent+fi->cur_indent,0))) 
-		  mycout << blanks(M(std::max(adjust_indent+cur_indent,0))) 
-		     << trim(s.substr(6));
+	       {
+		  int l = M(std::max(adjust_indent+cur_indent,0));
+		  //mycout << blanks(M(std::max(adjust_indent+cur_indent,0))) 
+		  std::string lineout = blanks(l) + trim(s.substr(6));
+		  if (do_remred)
+		     lineout = remred(lineout, l, remredstate);
+		  mycout << lineout;
+	       }
 	       else
 		  os << trim(s.substr(6));
 	       break;
 	    default:  // dangling string, output asis
 	       if(to_mycout)
-		  mycout << s.substr(6);
+	       {
+		  std::string lineout = s.substr(6);
+		  if (do_remred)
+		     lineout = remred(lineout, 0, remredstate);
+		  mycout << lineout;
+		  //mycout << s.substr(6);
+	       }
 	       else
 		  os << s.substr(6);
 	       break;
@@ -407,7 +425,7 @@ void Fixed::output(lines_t &lines,bool contains_hollerith,lines_t *freelines)
 	 //
 	 prevquote = fixedmissingquote(prevquote + s);
 	 if(to_mycout)
-	    mycout << fi->endline;
+	    mycout << endline;
 	 else
 	 {
 	    char c;
@@ -431,9 +449,15 @@ void Fixed::output(lines_t &lines,bool contains_hollerith,lines_t *freelines)
       }
       //
       // output a line that does not fulfill above conditions
-      //
+      // Never reached?
       if(to_mycout)
-	 mycout << insert_omp(s) << fi->endline;
+      {
+	 std::string lineout = insert_omp(s);
+	 //mycout << insert_omp(s) << endline;
+	 if (do_remred)
+	    lineout = remred(lineout, ompstr.size(), remredstate);
+	 mycout << lineout << endline;
+      }
       else
       {
 	 os << cmpstr << s;

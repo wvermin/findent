@@ -405,7 +405,10 @@ void Free::output(lines_t &lines, bool contains_hollerith, lines_t *fixedlines)
 	 int l;
 	 if(to_mycout)
 	 {
-	    l = M(std::max(cur_indent,0));
+        if (fi->flags.indent_ampersand && prev_expect_continuation)
+           l = M(std::max(cur_indent + fi->flags.cont_indent, 0));
+        else
+           l = M(std::max(cur_indent, 0));
 	    //mycout << insert_omp(blanks(M(std::max(cur_indent,0))),ompstr) <<
 	    //  lines.front().trim() << endline;
 	    std::string lineout = insert_omp(blanks(l),ompstr) + lines.front().trim();

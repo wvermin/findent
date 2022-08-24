@@ -205,6 +205,9 @@ int Flags::get_flags(int argc, char *argv[])
       {"align_paren"        , optional_argument, 0, DO_ALIGN_PAREN       },
       {"align-paren"        , optional_argument, 0, DO_ALIGN_PAREN       },
 
+      {"indent-ampersand"   , required_argument, 0, 'K'                  },
+      {"indent_ampersand"   , required_argument, 0, 'K'                  },
+
       {"last_indent"        , no_argument      , 0, DO_LAST_INDENT       },
       {"last-indent"        , no_argument      , 0, DO_LAST_INDENT       },
 
@@ -326,7 +329,7 @@ int Flags::get_flags(int argc, char *argv[])
       "`~!@#$%^&*()-_=+[{]};:'\"|,<.>/?";
 
    while((c=getopt_long(nflags,allflags,
-	       "a:b:c:C:d:e:E:f:F:hHi:I:j:k:l:L:m:M:o:qQr:R:s:t:vw:x:",
+	       "a:b:c:C:d:e:E:f:F:hHi:I:j:k:Kl:L:m:M:o:qQr:R:s:t:vw:x:",
 	       longopts, &option_index))!=-1)
    {
       switch(c)
@@ -417,6 +420,10 @@ int Flags::get_flags(int argc, char *argv[])
 	    else
 	       cont_indent = atoi(optarg);
 	    break;
+     case 'K': // --indent_ampersand
+        if (end_env_found)
+           indent_ampersand = 1;
+        break;
 	 case 'l' :
 	    optargcheck;
 	    if(std::string(optarg) == "astindent")       // --last_indent

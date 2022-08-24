@@ -90,6 +90,7 @@ class Flags
    bool include_left         ; // 1: put include on the start of the line
    bool include_left_default ;
    bool indent_continuation  ;
+   bool indent_ampersand     ; // indent continuation lines starting with ampersand, too
    bool indent_contain       ;
    bool input_format_gnu     ;
    bool label_left           ; // 1: put statement labels on the start of the line

@@ -1,3 +1,8 @@
+findent-4.2.1:
+	pre1: functions.h: trivial addition in string2number to make cppcheck happy
+	pre3: relabel.cpp, flags.cpp, flags.h, docs.cpp: implement flag --relabel=shuffle
+	pre4: docs.cpp, flags,cpp, flags.h, free.cpp: implement -K, --indent_ampersand, 
+	      thanks to Kai Germaschewski
 findent-4.2.0:
 	pre1: fix insignifcant bug in free.cpp: change test if line is like:
 	      123&

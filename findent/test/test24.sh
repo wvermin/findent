@@ -1388,6 +1388,85 @@ eof
 ../doit "--ws-remred --ws_remred" "-ifixed -I4" " Test032: --ws-remred fixed"
 rc=`expr $rc + $?`
 
+cat << eof > prog
+    subroutine mysub
+    a = &
+    & 3 + &
+    & 4 +&
+    ! comment
+    ! another comment
+    5 +&
+    & 6
+    continue
+
+    !$ x = &
+    !$ & 6 + &
+    !comment
+    !$ & 7 + &
+    !$ 8
+end
+eof
+cat << eof > expect
+    subroutine mysub
+       a = &
+       & 3 + &
+       & 4 +&
+       ! comment
+       ! another comment
+          5 +&
+       & 6
+       continue
+
+!$     x = &
+!$     & 6 + &
+       !comment
+!$     & 7 + &
+!$        8
+    end
+eof
+../doit "-Ia" "-ifree -Ia" " Test033: defaults for indenting continuation lines"
+rc=`expr $rc + $?`
+cat << eof > expect
+    subroutine mysub
+       a = &
+          & 3 + &
+          & 4 +&
+       ! comment
+       ! another comment
+          5 +&
+          & 6
+       continue
+
+!$     x = &
+!$        & 6 + &
+       !comment
+!$        & 7 + &
+!$        8
+    end
+eof
+../doit "-K --indent_ampersand --indent-ampersand" "-ifree -Ia" " Test034: -K --indent_ampersand --indent-ampersand"
+rc=`expr $rc + $?`
+cat << eof > expect
+    subroutine mysub
+       a = &
+                & 3 + &
+                & 4 +&
+       ! comment
+       ! another comment
+                5 +&
+                & 6
+       continue
+
+!$     x = &
+!$              & 6 + &
+       !comment
+!$              & 7 + &
+!$              8
+    end
+eof
+../doit "-K --indent_ampersand --indent-ampersand" "-ifree -Ia -k9" " Test035: -K --indent_ampersand --indent-ampersand -k9"
+rc=`expr $rc + $?`
+
 . ../postlude
 exit $rc
 # vim: indentexpr=none

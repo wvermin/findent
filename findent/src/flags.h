@@ -86,10 +86,12 @@ class Flags
    bool auto_firstindent     ;
    char conchar              ; // continuation character output by fixed2fixed, see manpage
    bool deps                 ; // output dependencies only
+   bool do_shuffle           ; // 1: shuffle labels
    bool end_env_found        ; // signal that parsing flags from environment has been done
    bool include_left         ; // 1: put include on the start of the line
    bool include_left_default ;
    bool indent_continuation  ;
+   bool indent_ampersand     ; // indent continuation lines starting with ampersand, too
    bool indent_contain       ;
    bool input_format_gnu     ;
    bool label_left           ; // 1: put statement labels on the start of the line

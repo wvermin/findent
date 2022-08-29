@@ -1,2 +1,2 @@
-findent-4.2.0:
-	pre1: fix insignifcant bug in free.cpp: change test if line is like:
+findent-4.2.1:
+	pre1: functions.h: trivial addition in string2number to make cppcheck happy

@@ -109,7 +109,7 @@ std::string number2string ( T number )
 T string2number ( const std::string &text )
 {
    std::istringstream ss(text);
-   T result;
+   T result = 0;  // = 0: to make cppcheck happy
    return ss >> result ? result : 0;
 }
 

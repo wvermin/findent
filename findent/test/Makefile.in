@@ -104,10 +104,12 @@ CONFIG_CLEAN_FILES = prelude postlude test-compile.sh doit init.sh \
 	progfreefixed.f.try.f.ref progfreefixed.f esope.f.try.f.ref \
 	esope.f progrelabelfree.f progrelabelfree.f.try.f.ref \
 	progfixedrelabelfixed.f progfixedrelabelfixed.f.try.f.ref \
-	changelog.ref emacs_findent.ref emacs_help.ref \
-	gedit_external.ref gedit_help.ref gedit_plugin.ref \
-	gedit_plugin_py.ref help.ref makefdeps.ref manpage.ref \
-	readme.ref vim_findent.ref vim_fortran.ref vim_help.ref
+	progfixedshufflefixed.f progfixedshufflefixed.f.try.f.ref \
+	progshufflefree.f progshufflefree.f.try.f.ref changelog.ref \
+	emacs_findent.ref emacs_help.ref gedit_external.ref \
+	gedit_help.ref gedit_plugin.ref gedit_plugin_py.ref help.ref \
+	makefdeps.ref manpage.ref readme.ref vim_findent.ref \
+	vim_fortran.ref vim_help.ref
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -352,6 +354,8 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/changelog.ref.in \
 	$(srcdir)/progfixedfree.f.try.f.ref.in \
 	$(srcdir)/progfixedrelabelfixed.f.in \
 	$(srcdir)/progfixedrelabelfixed.f.try.f.ref.in \
+	$(srcdir)/progfixedshufflefixed.f.in \
+	$(srcdir)/progfixedshufflefixed.f.try.f.ref.in \
 	$(srcdir)/progfree-dos.f.in \
 	$(srcdir)/progfree-dos.f.try.f.ref.in $(srcdir)/progfree.f.in \
 	$(srcdir)/progfree.f.try.f.ref.in $(srcdir)/progfree1.f.in \
@@ -360,6 +364,8 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/changelog.ref.in \
 	$(srcdir)/progfreefixed.f.try.f.ref.in \
 	$(srcdir)/progrelabelfree.f.in \
 	$(srcdir)/progrelabelfree.f.try.f.ref.in \
+	$(srcdir)/progshufflefree.f.in \
+	$(srcdir)/progshufflefree.f.try.f.ref.in \
 	$(srcdir)/readme.ref.in $(srcdir)/test-compile.sh.in \
 	$(srcdir)/vim_findent.ref.in $(srcdir)/vim_fortran.ref.in \
 	$(srcdir)/vim_help.ref.in $(top_srcdir)/test-driver
@@ -597,6 +603,14 @@ progrelabelfree.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progrelabel
 progfixedrelabelfixed.f: $(top_builddir)/config.status $(srcdir)/progfixedrelabelfixed.f.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 progfixedrelabelfixed.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixedrelabelfixed.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixedshufflefixed.f: $(top_builddir)/config.status $(srcdir)/progfixedshufflefixed.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progfixedshufflefixed.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progfixedshufflefixed.f.try.f.ref.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progshufflefree.f: $(top_builddir)/config.status $(srcdir)/progshufflefree.f.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+progshufflefree.f.try.f.ref: $(top_builddir)/config.status $(srcdir)/progshufflefree.f.try.f.ref.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 changelog.ref: $(top_builddir)/config.status $(srcdir)/changelog.ref.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@

@@ -1,0 +1,464 @@
+! --relabel=shuffle
+      module points
+         type :: point
+            real :: x,y
+         end type point
+         interface
+            real module function point_dist(a,b)
+               type(point), intent(in) :: a,b
+            end function point_dist
+         end interface
+         interface inter
+            module procedure fun
+         end interface
+      contains
+         real function fun(x)
+            real x
+            fun = a+10
+         end
+      end module
+
+      submodule (points) points_a
+      contains
+         subroutine x
+            goto 1
+    1       continue
+         end subroutine
+
+         module procedure point_dist
+            continue
+            goto 10
+   10       continue
+            write(*,*) "hoppa"
+            point_dist = sqrt((a%x-b%x)**2+(a%y-b%y)**2)
+         end procedure
+      end submodule
+
+      subroutine mysub(*,i,k,*,*)
+         return 1
+      end
+      subroutine mysubomp
+!$       do 10 i=1,20
+!$          do 10 j=1,10
+!$             continue
+!$ 10    continue
+      end subroutine
+
+      subroutine mysub1
+    1    continue
+      end
+
+      subroutine mysub2(i)
+         return
+      end
+
+      function myfun(x,i)
+         goto (50,30,10) i
+#ifdef xyz
+   50    myfun = 10*x; goto 20
+#endif
+   30    myfun = 20*x; goto 20
+   10    myfun = 30*x; goto 20
+#ifndef xyz
+   50    myfun = 20*x; goto 20
+#endif
+   20 end function myfun
+
+
+      program p
+         integer jf(2)
+         jf(1) = 10
+ 3030    continue ;  x=
+     &     y+10 ; continue ; z = 123 +
+     &     12345
+ 1000    continue;  continue ;  continue
+         do 111 i=1,20; do 92 j=1,20 ; do 3010 k=0,4
+                  x = x+1
+ 3010          continue
+   92       continue;
+  111    continue
+         do 1101 i=1,3
+            do 1101, j=1,4
+               do 1101 k=1,2
+ 1101    l=l+i+j+k
+
+         do 961    i=1,3;;x=y;
+  961    continue
+         do 130, i=1,2
+            continue
+  130    continue
+         do 1
+            exit
+    1    continue
+         do 9 while(i .eq. i+1)
+            l = l+10
+    9    continue
+         do 8  , while(j .eq. j+1)
+            do 1001, while(j .eq. j+1)
+ 1001       continue;
+    8    continue
+
+         goto 95; if (0.eq.1) goto 11
+   95    continue
+   11    continue
+
+         if(x) 951,120,2020 ;
+    5    goto 120; goto 951
+ 1102    goto 2020
+         if(x) 951,
+! comment
+     &      120,    !comment
+     &      2020 ;
+    2    goto 120; goto 951
+   91    goto 2020
+
+#if 0
+         if(l) 951,120
+#endif
+         continue
+  951    continue
+  120    continue
+ 2020    continue
+
+         goto( 951, 120,
+!   comment
+     &      2020, 96) 4
+         if(x.eq.2)goto( 951, 120,
+!   comment
+     &      2020, 11),i ; goto 96 ; goto 3
+         assign 96 to ixyz
+         goto ixyz (951,120,2020,96)
+         if(0 .eq. x)goto ixyz, (951,120,
+!  comment
+     &      2020,3); goto 2010
+ 1200    format(3i5)
+   96    read 1200
+         if(1.eq.0) read 1200
+         read 1200,i,j,k
+         if(1.eq.0)read 1200,i,j,k
+    3    print 1200
+         if(1.eq.0)print 1200
+         print 1200,i,
+     &      j,k;goto 2010
+         if(1.eq.0)  print 1200,i,
+     &      j,k;goto 2010
+         close (10)
+         endfile 10
+         read '(i5)', i
+         if(1.eq.0)read '(i5)', i
+         read 511,i,j,k
+         if(1.eq.0)read        511,i,j,k
+         close(10,err=2010)
+         if(1.eq.0)close(10,err=2010)
+         open(10,err=2010)
+         if(1.eq.0)open(10,err=2010)
+         close(jf(1),err=2010)
+         if(1.eq.0)close(jf(1),err=2010)
+         endfile(9,err=2010)
+         if(1.eq.0)endfile(9,err=2010)
+         rewind(9,err=2010)
+         if(1.eq.0)rewind(9,err=2010)
+         flush(9,err=2010)
+         if(1.eq.0)flush(9,err=2010)
+         backspace(9,err=2010)
+         inquire(9,err=2010)
+         wait(9,err=2010)
+         wait(9,end=2010)
+         wait(9,eor=2010)
+         write(jf(i),511)
+         read(*,'(a80)')
+         read(*,fmt="(a80)")
+         read(5,511,err=2010,iostat=i,eor=2010,advance='no',end=2010)
+         if(1.eq.0)backspace(9,err=2010); if(1.eq.0)inquire(9,err=2010)
+         if(1.eq.0)wait(9,err=2010)
+         if(1.eq.0)wait(9,end=2010)
+         if(1.eq.0)wait(9,eor=2010)
+         if(1.eq.0)write(jf(i),511)
+         if(1.eq.0)read(*,'(a80)')
+         if(1.eq.0)read(*,fmt="(a80)")
+         if(1.eq.0)read(5,511,err=2010,iostat=i,eor=2010,advance='no',end=2010)
+         read(5,err=2010,fmt='(3i3)',
+     &    end=2010) i,j,k
+         write(6,511) i,j,k
+         write(*,511) x
+         write(6,fmt=511)i,j,k
+         if(i.eq.0)read(5,err=2010,fmt='(3i3)',
+     &    end=2010) i,j,k
+         if(i.eq.0)write(6,511) i,j,k
+         if(i.eq.0)write(*,511) x
+         if(i.eq.0)write(6,fmt=511)i,j,k
+ 2010    continue
+  511    format(3i5)
+         call mysub(*12345,ixyz,j,*93,*3020)
+         if(1.eq.3)
+     &   call mysub(*12345,ixyz,j,*93,*3020)
+         call mysub1
+         call mysub1()
+         call mysub2(klm)
+         call mysub(*12345,3*400,3**4,*93,*3020)
+         call mysub(*12345,ij*400,3**ij,*93,*3020)
+         call mysub(*12345,ij*klm,3**4,*93,*3020)
+         if(1.eq.0)call mysub1
+         if(1.eq.0)call mysub1()
+         if(1.eq.0)call mysub2(klm)
+         if(1.eq.0)call mysub(*12345,3*400,3**4,*93,*3020)
+         if(1.eq.0)call mysub(*12345,ij*400,3**ij,*93,*3020)
+         if(1.eq.0)call mysub(*12345,ij*klm,3**4,*93,*3020)
+
+12345    continue
+   93    continue
+ 3020    continue
+      contains
+         real function f(x)
+            goto 28
+   28       continue
+            f = 10*x
+         end function f
+         subroutine subx
+            goto 29
+   29       continue
+         end subroutine subx
+      end
+
+      subroutine subx1
+         ! test following the man page
+#if 0
+  102    ...         ! statement or format label
+         IF(...) 103,110,105
+         IF(...) 103,110
+         DO 120 I=X,...
+  120    continue
+         DO 104, I=X,...
+  104    continue
+         DO 101 WHILE(...)
+  101    continue
+         DO 130, WHILE(...)
+  130    continue
+         DO 99
+   99    continue
+         ACCEPT 100...
+         ASSIGN 100 TO I
+         BACKSPACE(...,ERR=100,...)
+         CALL I(...,*100,...,&103,...,$110)
+         CLOSE(...,ERR=100,...)
+         DECODE(...,100,...,ERR=103,...)
+         DELETE(...,ERR=103,...)
+         ENCODE(...,100,...,ERR=103,...)
+         ENDFILE(...,ERR=100,...)
+         FIND(...,ERR=103,...)
+         FLUSH(...,ERR=100,...)
+         GOTO 100
+         GOTO I(100,103,110)
+         GOTO I,(100,103,110)
+         GOTO(100,103,110)...
+         INQUIRE(...,ERR=100,...)
+         OPEN(...,ERR=100,...)
+         PRINT 100...
+         READ 100...
+         READ(...,100,...)
+         READ(...,ERR=100,...,END=103,EOR=110,...,FMT=105)...
+         REREAD 100...
+         REREAD(...,100,...)
+         REREAD(...,ERR=100,...,END=103,EOR=110,...,FMT=105)...
+         REWIND(...,ERR=100,...)
+         REWRITE(...,100) ...
+         REWRITE(...,ERR=100,...,FMT=103,...,EOR=110)...
+         TYPE 100...
+         WAIT(...,ERR=100,...,END=103,...,EOR=110,...)
+         WRITE(...,100) ...
+         WRITE(...,ERR=100,...,FMT=103,...,EOR=110)...
+#endif
+  100    continue
+  103    continue
+  110    continue
+  105    continue
+      end subroutine subx1
+
+      subroutine subx2
+#if 0
+
+         if(...)  ACCEPT 120...
+         if(...)  ASSIGN 120 TO I
+         if(...)  BACKSPACE(...,ERR=120,...)
+         if(...)  CALL I(...,*120,...,&130,...,$110)
+         if(...)  CLOSE(...,ERR=120,...)
+         if(...)  DECODE(...,120,...,ERR=130,...)
+         if(...)  DELETE(...,ERR=130,...)
+         if(...)  ENCODE(...,120,...,ERR=130,...)
+         if(...)  ENDFILE(...,ERR=120,...)
+         if(...)  FIND(...,ERR=130,...)
+         if(...)  FLUSH(...,ERR=120,...)
+         if(...)  GOTO 120
+         if(...)  GOTO I(120,130,110)
+         if(...)  GOTO I,(120,130,110)
+         if(...)  GOTO(120,130,110)...
+         if(...)  INQUIRE(...,ERR=120,...)
+         if(...)  OPEN(...,ERR=120,...)
+         if(...)  PRINT 120...
+         if(...)  READ 120...
+         if(...)  READ(...,120,...)
+         if(...)  READ(...,ERR=120,...,END=130,EOR=110,...,FMT=100)...
+         if(...)  REREAD 120...
+         if(...)  REREAD(...,120,...)
+         if(...)  REREAD(...,ERR=120,...,END=130,EOR=110,...,FMT=100)...
+         if(...)  REWIND(...,ERR=120,...)
+         if(...)  REWRITE(...,120) ...
+         if(...)  REWRITE(...,ERR=120,...,FMT=130,...,EOR=110)...
+         if(...)  TYPE 120...
+         if(...)  WAIT(...,ERR=120,...,END=130,...,EOR=110,...)
+         if(...)  WRITE(...,120) ...
+         if(...)  WRITE(...,ERR=120,...,FMT=130,...,EOR=110)...
+#endif
+  120    continue
+  130    continue
+  110    continue
+  100    continue
+      end subroutine
+
+      subroutine suby1
+         ! same as subx, now with omp
+#if 0
+!$102    ...         ! statement or format label
+!$       IF(...) 120,103,105
+!$       IF(...) 120,103
+!$       DO 110 I=X,...
+!$110    continue
+!$       DO 99, I=X,...
+!$ 99    continue
+!$       DO 104 WHILE(...)
+!$104    continue
+!$       DO 101, WHILE(...)
+!$101    continue
+!$       DO 130
+!$130    continue
+!$       ACCEPT 100...
+!$       ASSIGN 100 TO I
+!$       BACKSPACE(...,ERR=100,...)
+!$       CALL I(...,*100,...,&120,...,$103)
+!$       CLOSE(...,ERR=100,...)
+!$       DECODE(...,100,...,ERR=120,...)
+!$       DELETE(...,ERR=120,...)
+!$       ENCODE(...,100,...,ERR=120,...)
+!$       ENDFILE(...,ERR=100,...)
+!$       FIND(...,ERR=120,...)
+!$       FLUSH(...,ERR=100,...)
+!$       GOTO 100
+!$       GOTO I(100,120,103)
+!$       GOTO I,(100,120,103)
+!$       GOTO(100,120,103)...
+!$       INQUIRE(...,ERR=100,...)
+!$       OPEN(...,ERR=100,...)
+!$       PRINT 100...
+!$       READ 100...
+!$       READ(...,100,...)
+!$       READ(...,ERR=100,...,END=120,EOR=103,...,FMT=105)...
+!$       REREAD 100...
+!$       REREAD(...,100,...)
+!$       REREAD(...,ERR=100,...,END=120,EOR=103,...,FMT=105)...
+!$       REWIND(...,ERR=100,...)
+!$       REWRITE(...,100) ...
+!$       REWRITE(...,ERR=100,...,FMT=120,...,EOR=103)...
+!$       TYPE 100...
+!$       WAIT(...,ERR=100,...,END=120,...,EOR=103,...)
+!$       WRITE(...,100) ...
+!$       WRITE(...,ERR=100,...,FMT=120,...,EOR=103)...
+#endif
+!$100    continue
+!$120    continue
+!$103    continue
+!$105    continue
+      end subroutine suby1
+      subroutine suby2
+#if 0
+!$
+!$       if(...)  ACCEPT 110...
+!$       if(...)  ASSIGN 110 TO I
+!$       if(...)  BACKSPACE(...,ERR=110,...)
+!$       if(...)  CALL I(...,*110,...,&100,...,$120)
+!$       if(...)  CLOSE(...,ERR=110,...)
+!$       if(...)  DECODE(...,110,...,ERR=100,...)
+!$       if(...)  DELETE(...,ERR=100,...)
+!$       if(...)  ENCODE(...,110,...,ERR=100,...)
+!$       if(...)  ENDFILE(...,ERR=110,...)
+!$       if(...)  FIND(...,ERR=100,...)
+!$       if(...)  FLUSH(...,ERR=110,...)
+!$       if(...)  GOTO 110
+!$       if(...)  GOTO I(110,100,120)
+!$       if(...)  GOTO I,(110,100,120)
+!$       if(...)  GOTO(110,100,120)...
+!$       if(...)  INQUIRE(...,ERR=110,...)
+!$       if(...)  OPEN(...,ERR=110,...)
+!$       if(...)  PRINT 110...
+!$       if(...)  READ 110...
+!$       if(...)  READ(...,110,...)
+!$       if(...)  READ(...,ERR=110,...,END=100,EOR=120,...,FMT=130)...
+!$       if(...)  REREAD 110...
+!$       if(...)  REREAD(...,110,...)
+!$       if(...)  REREAD(...,ERR=110,...,END=100,EOR=120,...,FMT=130)...
+!$       if(...)  REWIND(...,ERR=110,...)
+!$       if(...)  REWRITE(...,110) ...
+!$       if(...)  REWRITE(...,ERR=110,...,FMT=100,...,EOR=120)...
+!$       if(...)  TYPE 110...
+!$       if(...)  WAIT(...,ERR=110,...,END=100,...,EOR=120,...)
+!$       if(...)  WRITE(...,110) ...
+!$       if(...)  WRITE(...,ERR=110,...,FMT=100,...,EOR=120)...
+!$
+#endif
+!$110    continue
+!$100    continue
+!$120    continue
+!$130    continue
+      end subroutine
+
+      subroutine old_dec
+#if 0
+         integer buf(20)
+         read(5'1000,err=40) x
+         read(abc '1000,err=40) x
+         read(5#1000,err=40) x
+         read(5#n,err=40) x
+         read(5#n,60,err=40) x
+         write(5#1000,err=40) x
+         write(5#n,err=40) x
+         call sub(&50,$40,*40)
+         reread 10,x,y,z
+         reread(3,10),x,y,z
+         type 60,x,y,z
+         type *,x,y,z
+         type 60
+         type *
+         accept 10,x
+         accept 10
+         accept *,x
+         encode(80,30,buf,x,y,z,err=40)
+         decode(80,20,buf,x,y,z,err=50)
+   60    format(3f10.4)
+   10    format(f10.6)
+   30    format(3f20.10)
+   20    format(3f20.6)
+   40    continue
+   50    continue
+#endif
+      end
+
+      subroutine abc
+         ! no relabel possible, because of intervening preprocessor statement
+         goto i,(20,4321
+#ifdef trala
+     &    ,20)
+#else
+     &     ,145,20)
+#endif
+10000    x=1
+   20    x=1
+ 4321    x=1
+ 4322    x=1
+  145    x=2
+         assign 10000 to i
+
+      end subroutine
+      subroutine xyz
+         ! no relabel possible, because of intervening preprocessor statement in previous subroutine
+    1    continue
+
+      end subroutine

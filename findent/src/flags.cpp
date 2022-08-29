@@ -53,9 +53,11 @@ void Flags::set_defaults(void)
    auto_firstindent     = 0;
    conchar              = ' ';
    deps                 = 0;
+   do_shuffle           = 0;
    end_env_found        = 0;
    honour_omp           = 1;
    include_left         = include_left_default;
+   indent_ampersand     = 0;
    input_format         = UNKNOWN;
    input_format_gnu     = 0;
    input_line_length    = 0;
@@ -202,6 +204,9 @@ int Flags::get_flags(int argc, char *argv[])
       {"indent_continuation", required_argument, 0, 'k'                  },
       {"indent-continuation", required_argument, 0, 'k'                  },
 
+      {"indent_ampersand"   , no_argument,       0, 'K'                  },
+      {"indent-ampersand"   , no_argument,       0, 'K'                  },
+
       {"align_paren"        , optional_argument, 0, DO_ALIGN_PAREN       },
       {"align-paren"        , optional_argument, 0, DO_ALIGN_PAREN       },
 
@@ -326,7 +331,7 @@ int Flags::get_flags(int argc, char *argv[])
       "`~!@#$%^&*()-_=+[{]};:'\"|,<.>/?";
 
    while((c=getopt_long(nflags,allflags,
-	       "a:b:c:C:d:e:E:f:F:hHi:I:j:k:l:L:m:M:o:qQr:R:s:t:vw:x:",
+	       "a:b:c:C:d:e:E:f:F:hHi:I:j:k:Kl:L:m:M:o:qQr:R:s:t:vw:x:",
 	       longopts, &option_index))!=-1)
    {
       switch(c)
@@ -416,6 +421,10 @@ int Flags::get_flags(int argc, char *argv[])
 	       indent_continuation = 0;
 	    else
 	       cont_indent = atoi(optarg);
+	    break;
+	 case 'K': // --indent_ampersand
+	    if (end_env_found)
+	       indent_ampersand = 1;
 	    break;
 	 case 'l' :
 	    optargcheck;
@@ -611,12 +620,20 @@ int Flags::get_flags(int argc, char *argv[])
 	    relabel = 1;
 	    if (optarg != 0 && strlen(optarg) > 0)
 	    {
-	       relabel_start = atoi(optarg);
-	       char *p = strchr(optarg,',');
-	       if (p)
-		  relabel_increment = atoi(p+1);
-	       if (relabel_start <= 0 || relabel_increment <= 0)
-		  relabel = 0;
+	       if(!strcmp(optarg,"shuffle"))
+	       {
+		  do_shuffle = 1;
+	       }
+	       else
+	       {
+		  do_shuffle = 0;
+		  relabel_start = atoi(optarg);
+		  char *p = strchr(optarg,',');
+		  if (p)
+		     relabel_increment = atoi(p+1);
+		  if (relabel_start <= 0 || relabel_increment <= 0)
+		     relabel = 0;
+	       }
 	    }
 	    break;
 	 case DO_WS_REMRED:

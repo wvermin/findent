@@ -29,7 +29,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([findent], [4.2.0], [wvermin@gmail.com])
+AC_INIT([findent], [4.2.1], [wvermin@gmail.com])
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/findent.cpp])
@@ -138,6 +138,10 @@ AC_CONFIG_FILES([test/progrelabelfree.f])
 AC_CONFIG_FILES([test/progrelabelfree.f.try.f.ref])
 AC_CONFIG_FILES([test/progfixedrelabelfixed.f])
 AC_CONFIG_FILES([test/progfixedrelabelfixed.f.try.f.ref])
+AC_CONFIG_FILES([test/progfixedshufflefixed.f])
+AC_CONFIG_FILES([test/progfixedshufflefixed.f.try.f.ref])
+AC_CONFIG_FILES([test/progshufflefree.f])
+AC_CONFIG_FILES([test/progshufflefree.f.try.f.ref])
 
 AC_CONFIG_FILES([test/changelog.ref])
 AC_CONFIG_FILES([test/emacs_findent.ref])

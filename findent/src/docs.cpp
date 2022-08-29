@@ -197,13 +197,18 @@ void Docs::usage(bool man)
    manout(" "," NOTE3: the flag --refactor_procedures is deprecated, use --refactor_end.");
    manout("-RR, --refactor_end=upcase        ","same as -Rr, but 'END SUBROUTINE <name>'.");
    manout(" ","in stead of 'end subroutine <name>' etc.");
-   manout("--relabel, --relabel=<n1>,<n2>    ","relabel: n1 = starting index, n2 is increment (default:1000,10).");
+   manout("--relabel=shuffle                 ","shuffles existing labels,");
+   manout(" "," primarily meant for demo and debugging.");
+   manout(" "," see also the notes under --relabel below.");
+   manout("--relabel, --relabel=<n1>,<n2>    ","renumber labels: n1 = starting index,");
+   manout(" "," n2 is increment (default:1000,10).");
    manout(" "," if n1=0 or n2=0, relabeling is disabled.");
    manout(" "," see also RELABEL below.");
    manout(" "," NOTE1: use only SYNTAX-CORRECT SOURCES with this option.");
    manout(" "," NOTE2: CHECK the functionality of your program after using this option.");
    manout(" "," NOTE3: after finding an error (missing label, ill formatted label list, ...)");
-   manout(" ","        findent will stop relabeling, but will continue indenting and/or converting.");
+   manout(" ","        findent will stop relabeling, but will continue indenting");
+   manout(" ","        and/or converting.");
    manout("--relabel_reset=<n>           ","1: reset label numbering at start of subroutine/function/program.");
    manout(" ","0: do not reset label numbering.");
    manout("--query_relabel[=<n>]             ","generate report. " + no_env);
@@ -252,7 +257,7 @@ void Docs::usage(bool man)
    manout("--indent_changeteam=<n>           ","CHANGE TEAM  indent.");
    manout("-C-, --indent_contains=restart,   ","restart indent after CONTAINS.");
    manout("-k<n>, --indent_continuation=<n>  ","continuation indent except   " );
-   manout(" ","  for lines starting with '&'.");
+   manout(" ","  for lines starting with '&' (see flag -K).");
    manout(" ","     NOTE: free to free only.");
    manout("-k-, --indent_continuation=none   ","continuation lines not preceded");
    manout(" ","  by '&' are untouched.");
@@ -260,6 +265,7 @@ void Docs::usage(bool man)
    manout("-kd, --indent_continuation=default","continuation lines not preceded");
    manout(" ","  by '&' are default indented.");
    manout(" ","     NOTE: free to free only.");
+   manout("-K, --indent_ampersand           ","indent lines starting with '&' (free only).");
    manout("--align_paren[=<n>]              ","align continuation lines not preceded");
    manout(" ","  by '&' with preceding unmatched left parenthesis.");
    manout(" "," n=0, or flag omitted: do not align.");

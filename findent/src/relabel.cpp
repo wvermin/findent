@@ -30,6 +30,7 @@
 #include <iomanip>
 #include <string>
 #include <map>
+#include <vector>
 #include <sstream>
 #include <assert.h>
 #include "findent_types.h"
@@ -58,6 +59,87 @@ static std::string rel_check_labels(void);
 
 static std::string ints2string(const ints_t &list);
 
+static long long int seed;
+static double        myrandom(void);
+static unsigned int  myrandint(unsigned int n);
+static void          smyrandom(unsigned long long i);
+static void          mypermutate(int *a, unsigned int n);
+static void          permutate_labels(void);
+
+//generate random number [0-1)
+// From Communications of the ACM, Vol 31 Oct 1988 number 10
+// pp 1192..1201
+// Stephen K. Park and Keith W. Miller
+//
+// Not thread-safe because of seed
+// 
+// Could have used drand48(), but I need reproducible random
+// numbers to be able to check correct functioning of permutate_labels()
+//
+double myrandom()
+{
+   const int a=16807;
+   const int m=2147483647;
+   seed = (a*seed) % m;
+   return (double)seed/m;
+}
+
+// returns random integer m, such that 0 <= m < n
+unsigned int myrandint(unsigned int n)
+{
+   return myrandom()*n;
+}
+
+// set seed
+void smyrandom(unsigned long long i)
+{
+   seed = i;
+}
+
+// random permutate array a.
+// https://en.wikipedia.org/wiki/Random_permutation#Fisher-Yates_shuffles
+// n (input) number of elements in a
+void mypermutate(int *a, unsigned int n)
+{
+   (void) mypermutate;  // not called, only used as inspiration for permutate_labels()
+   int x;
+   for (unsigned int i=0; i<n-1; i++)
+   {
+      unsigned int j = i + myrandint(n-i);
+      x    = a[i];
+      a[i] = a[j];
+      a[j] = x;
+   }
+}
+
+void permutate_labels(void)
+{
+   std::map<std::string,std::string>::iterator it;
+   std::vector<std::string> l,m;
+
+   int n = labels.size();
+   for (it = labels.begin(); it!=labels.end(); ++it)
+   {
+      l.push_back(it->first);  // use it->second if you want to use generated labels
+      m.push_back(it->first);
+   }
+   std::string x;
+
+   for (int i=0; i<n-1; ++i)
+   {
+      unsigned int j = i + myrandint(n-i);
+      x    = l[i];
+      l[i] = l[j];
+      l[j] = x;
+   }
+
+   for (int i=0; i<n; ++i)
+      labels[m[i]] = l[i];
+
+   l.clear();
+   m.clear();
+}
+
 void Fortran::init_relabel()
 {
    c_lines_store.clear();
@@ -66,6 +148,12 @@ void Fortran::init_relabel()
    labels.clear();
    labeldefs.clear();
    labeluses.clear();
+   if (fi->flags.do_shuffle)
+   {
+      smyrandom(1);
+      myrandom(); 
+      myrandom();
+   }
 }
 
 //
@@ -556,6 +644,13 @@ void Fortran::rel_flush(bool do_c_lines)
 
 void Fortran::rel_doit()
 {
+   if (fi->flags.do_shuffle)
+   {
+      //
+      //  here we shuffle labels
+      //
+      permutate_labels();
+   }
    switch(fi->flags.query_relabel)
    {
       case 0:
@@ -606,11 +701,11 @@ void Fortran::rel_apply()
 {
 
    DL(
-	 for (std::map <std::string,std::string>::iterator it=labels.begin(); it != labels.end(); ++it)
-	 {
-	 D(O("map: ");O(it->first);O(" -> ");O(it->second););
-	 }
-     );
+   for (std::map <std::string,std::string>::iterator it=labels.begin(); it != labels.end(); ++it)
+   {
+      D(O("map: ");O(it->first);O(" -> ");O(it->second););
+   }
+   );
 
    //
    // loop over stored lines
@@ -737,7 +832,7 @@ void Fortran::rel_apply()
 	       for(size_t num = 0; num < labels_found.size(); ++num)
 	       {
 		  int k = pc[label_pos[num]].first;   // line nr in multiline statement
-		  // note: label_pos gives position in encoded line
+						      // note: label_pos gives position in encoded line
 		  D(O(pc.size());O(sc.size());O(sc);O(num););
 		  DL(assert(sc.size() == pc.size()););
 		  int q              = pc[label_pos[num]].second;

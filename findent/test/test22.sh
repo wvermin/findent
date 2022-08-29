@@ -32,7 +32,10 @@ if test -e prelude ; then
 else
    . ./debian/tests/prelude
 fi
+rc=0
 ../test-compile.sh ../progrelabelfree.f
-rc=$?
+rc=`expr $rc + $?`
+../test-compile.sh ../progshufflefree.f
+rc=`expr $rc + $?`
 . ../postlude
 exit $rc

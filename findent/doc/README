@@ -288,6 +288,8 @@ Findent: relabel
    Relevant flags (see the man page):
 
    --relabel
+   --relabel=<startlabel>,<increment>
+   --relabel=shuffle
    --relabel-restart
    --query-relabel
 
@@ -355,6 +357,14 @@ Findent: relabel
        [IF] WAIT(...,ERR=100,...,END=110,...,EOR=120,...)
        [IF] WRITE(...,100) ...
        [IF] WRITE(...,ERR=100,...,FMT=110,...,EOR=120)...
+
+   relabel=shuffle
+   ===============
+
+   In stead of neatly renumbering your labels, you can also choose to randomly 
+   shuffle them, thereby keeping the semantics of your program the same, of course.
+   This option is added for demo purposes and for debugging, and will not be used
+   in a typical development environment.
 
 Findent: usage
 ==============
@@ -875,4 +885,4 @@ of findent.
 I am happy to receive comments, error reports and suggestions for
 improvements.
 
-October 2021, Willem Vermin, wvermin@gmail.com
+June 2022, Willem Vermin, wvermin@gmail.com

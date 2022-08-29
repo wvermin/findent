@@ -50,6 +50,8 @@
 #define DL(x)
 #endif
 
+#define P(x) {std::cerr << "WD: "<< __func__<<" "<<__FILE__ <<":"<<__LINE__<<" "; x; std::cerr << std::endl; }
+
 #define XSTR(x) STR(x)
 #define STR(x) #x
 #define FL  (std::string(__func__) + (" " __FILE__ ":" XSTR(__LINE__) " "))

@@ -1,0 +1,16 @@
+rp()
+{
+   # poor man's realpath
+   cd "$1"
+   pwd
+}
+
+export FINDENT=findent
+export WFINDENT=wfindent
+export FC=gfortran
+
+dir=debian/tests/`basename $0`.tmpdir
+rm -rf $dir
+mkdir -p $dir
+cd $dir
+# vim: filetype=sh

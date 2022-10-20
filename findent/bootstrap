@@ -39,25 +39,27 @@ find src \( -name '*.cpp' -o -name '*.h' -o -name '*.y' -o -name '*.l' -o -name 
 ./addcopyright.sh test/*.sh test/*.am test/*.sh.in doc/*.am emacs/*.am gedit/*.am gedit/*.py \
    scripts/wfindent.tmpl scripts/*.am
 
-head -n 2 ChangeLog > test/changelog.ref.in                    || exit 1
+head -n 2 ChangeLog > test/changelog.ref.in                            || exit 1
 
-autoreconf -fvi                                                || exit 1
-./configure                                                    || exit 1
-make clean                                                     || exit 1
+autoreconf -fvi                                                        || exit 1
+./configure                                                            || exit 1
+make clean                                                             || exit 1
 
 # make builtparser.cpp etc beforehand, so that they can be
 # used as EXTRA_DIST's
-make builtparser builtlexer                                    || exit 1
+make builtparser builtlexer                                            || exit 1
 
 # create autopkg suite in debian directory, if present
 if [ -d $deb ] ; then
-   mkdir -p $deb/tests                                         || exit 1
-   cp test/*.f test/*.ref test/*.sh test/doit $deb/tests       || exit 1
-   echo "Tests:" > $deb/tests/control                          || exit 1
+   mkdir -p $deb/tests                                                 || exit 1
+   cp test/*.f test/*.ref test/*.sh test/doit $deb/tests               || exit 1
+   cp debprelude $deb/tests/prelude                                    || exit 1
+   cp debpostlude $deb/tests/postlude                                  || exit 1
+   echo "Tests:" > $deb/tests/control                                  || exit 1
    for f in $deb/tests/test?.sh $deb/tests/test??.sh ; do
-      echo "     `basename $f`" >> $deb/tests/control          || exit 1
+      echo "     `basename $f`" >> $deb/tests/control                  || exit 1
    done
 fi
 
-make distclean                                                 || exit 1
+make distclean                                                         || exit 1
 echo "bootstrap done"

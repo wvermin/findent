@@ -210,7 +210,7 @@ void Docs::usage(bool man)
    manout(" ","        findent will stop relabeling, but will continue indenting");
    manout(" ","        and/or converting.");
    manout("--relabel_reset=<n>           ","1: reset label numbering at start of subroutine/function/program.");
-   manout(" ","0: do not reset label numbering.");
+   manout(" ","0: do not reset label numbering (default: 1).");
    manout("--query_relabel[=<n>]             ","generate report. " + no_env);
    manout(" "," n=0, or flag omitted: do not generate report.");
    manout(" "," n=1: generate summary (only error message or OK message).");

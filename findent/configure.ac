@@ -29,7 +29,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([findent], [4.2.1], [wvermin@gmail.com])
+AC_INIT([findent],[4.2.3],[wvermin@gmail.com])
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AC_CONFIG_SRCDIR([src/findent.cpp])
@@ -167,5 +167,6 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([iostream string deque map algorithm sstream iomanip set typeinfo utility],[],AC_MSG_ERROR([Exiting])) 
 AC_CHECK_HEADERS([assert.h errno.h getopt.h inttypes.h stdio.h stdlib.h string.h unistd.h],[],AC_MSG_ERROR([Exiting])) 
 
-AC_OUTPUT(Makefile src/Makefile scripts/Makefile test/Makefile vim/Makefile 
-	  gedit/Makefile emacs/Makefile doc/Makefile deps/Makefile)
+AC_CONFIG_FILES([Makefile src/Makefile scripts/Makefile test/Makefile vim/Makefile 
+	  gedit/Makefile emacs/Makefile doc/Makefile deps/Makefile])
+AC_OUTPUT

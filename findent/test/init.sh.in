@@ -26,9 +26,4 @@
 #-#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 #-#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 #-#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# if checking windows executables, we start the wineserver here
-# and make it persistent for some seconds to speed things up
-if test xyes = "x$WINDOWS" ; then
-   wineserver -p10
-fi
 exit 0

@@ -26,6 +26,8 @@
 #-#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 #-#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
+AUTOMAKE_OPTIONS = std-options # checks if installed program runs with --help and --version
+
 AM_LDFLAGS =
 
 if MAKEWIN
@@ -99,7 +101,7 @@ if MAKEMAN
 man1_MANS = findent.1
 
 findent.1: findent
-	: | ./findent -H > $@
+	: | ./findent -H > $@ || : | findent -H > $@ || echo "Could not generate man page" > $@
 
 endif
 

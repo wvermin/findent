@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.8.2.  */
+/* A Bison parser, made by GNU Bison 3.7.5.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
@@ -16,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -46,10 +46,10 @@
    USER NAME SPACE" below.  */
 
 /* Identify Bison output, and Bison version.  */
-#define YYBISON 30802
+#define YYBISON 30705
 
 /* Bison version string.  */
-#define YYBISON_VERSION "3.8.2"
+#define YYBISON_VERSION "3.7.5"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -549,18 +549,12 @@ typedef int yy_state_fast_t;
 # define YY_USE(E) /* empty */
 #endif
 
+#if defined __GNUC__ && ! defined __ICC && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
 /* Suppress an incorrect diagnostic about yylval being uninitialized.  */
-#if defined __GNUC__ && ! defined __ICC && 406 <= __GNUC__ * 100 + __GNUC_MINOR__
-# if __GNUC__ * 100 + __GNUC_MINOR__ < 407
-#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
-    _Pragma ("GCC diagnostic push")                                     \
-    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")
-# else
-#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
+# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                            \
     _Pragma ("GCC diagnostic push")                                     \
     _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")              \
     _Pragma ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
-# endif
 # define YY_IGNORE_MAYBE_UNINITIALIZED_END      \
     _Pragma ("GCC diagnostic pop")
 #else
@@ -789,7 +783,7 @@ static const yytype_uint8 yytranslate[] =
 };
 
 #if YYDEBUG
-/* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
+  /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
        0,    96,    96,    98,    99,   100,   101,   103,   104,   105,
@@ -894,6 +888,30 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
+#ifdef YYPRINT
+/* YYTOKNUM[NUM] -- (External) token number corresponding to the
+   (internal) symbol number NUM (which must be that of a token).  */
+static const yytype_int16 yytoknum[] =
+{
+       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
+     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
+     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
+     285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
+     295,   296,   297,   298,   299,   300,   301,   302,   303,   304,
+     305,   306,   307,   308,   309,   310,   311,   312,   313,   314,
+     315,   316,   317,   318,   319,   320,   321,   322,   323,   324,
+     325,   326,   327,   328,   329,   330,   331,   332,   333,   334,
+     335,   336,   337,   338,   339,   340,   341,   342,   343,   344,
+     345,   346,   347,   348,   349,   350,   351,   352,   353,   354,
+     355,   356,   357,   358,   359,   360,   361,   362,   363,   364,
+     365,   366,   367,   368,   369,   370,   371,   372,   373,   374,
+     375,   376,   377,   378,   379,   380,   381,   382,   383,   384,
+     385,   386,   387,   388,   389,   390,   391,   392,   393,   394,
+     395,   396,   397,   398,   399,   400,   401,   402,   403,   404,
+     405,   406,   407,   408,   409,    37,    44,    42,    61,    58
+};
+#endif
+
 #define YYPACT_NINF (-396)
 
 #define yypact_value_is_default(Yyn) \
@@ -904,8 +922,8 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 #define yytable_value_is_error(Yyn) \
   0
 
-/* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
-   STATE-NUM.  */
+  /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
+     STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
      -95,  -396,  -396,    40,   432,   -85,  -396,  -396,  -396,  -396,
@@ -959,9 +977,9 @@ static const yytype_int16 yypact[] =
      134,  -396,  -396,  -396,   155,  -396
 };
 
-/* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
-   Performed when YYTABLE does not specify something else to do.  Zero
-   means the default is an error.  */
+  /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+     Performed when YYTABLE does not specify something else to do.  Zero
+     means the default is an error.  */
 static const yytype_int16 yydefact[] =
 {
      258,   251,   252,     0,   258,     4,     5,     3,    84,    83,
@@ -1015,7 +1033,7 @@ static const yytype_int16 yydefact[] =
        0,   248,   253,   230,     0,   161
 };
 
-/* YYPGOTO[NTERM-NUM].  */
+  /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
     -396,  -396,  -396,  -396,  -396,  -396,   219,  -396,  -396,  -396,
@@ -1033,7 +1051,7 @@ static const yytype_int16 yypgoto[] =
     -396,  -396,  -215,    16
 };
 
-/* YYDEFGOTO[NTERM-NUM].  */
+  /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
        0,     3,     4,    83,    84,     5,     6,    85,    86,    87,
@@ -1051,9 +1069,9 @@ static const yytype_int16 yydefgoto[] =
      428,   358,   293,     7
 };
 
-/* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
-   positive, shift that token.  If negative, reduce the rule whose
-   number is the opposite.  If YYTABLE_NINF, syntax error.  */
+  /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+     positive, shift that token.  If negative, reduce the rule whose
+     number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
      168,   169,   207,   208,   278,   279,   343,   344,   345,   282,
@@ -1176,8 +1194,8 @@ static const yytype_int16 yycheck[] =
      128,    -1,    -1,   131,   132,    -1,   134,   135
 };
 
-/* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
-   state STATE-NUM.  */
+  /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
+     symbol of state STATE-NUM.  */
 static const yytype_int16 yystos[] =
 {
        0,   126,   127,   161,   162,   165,   166,   283,   276,   277,
@@ -1231,7 +1249,7 @@ static const yytype_int16 yystos[] =
      156,   276,   144,   267,   278,   125
 };
 
-/* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
+  /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int16 yyr1[] =
 {
        0,   160,   161,   162,   162,   162,   162,   163,   163,   163,
@@ -1262,7 +1280,7 @@ static const yytype_int16 yyr1[] =
      275,   276,   277,   278,   279,   280,   281,   282,   283
 };
 
-/* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
+  /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     2,     1,     1,     1,     2,     0,     1,     1,
@@ -1302,7 +1320,6 @@ enum { YYENOMEM = -2 };
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
 #define YYERROR         goto yyerrorlab
-#define YYNOMEM         goto yyexhaustedlab
 
 
 #define YYRECOVERING()  (!!yyerrstatus)
@@ -1343,7 +1360,10 @@ do {                                            \
     YYFPRINTF Args;                             \
 } while (0)
 
-
+/* This macro is provided for backward compatibility. */
+# ifndef YY_LOCATION_PRINT
+#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
+# endif
 
 
 # define YY_SYMBOL_PRINT(Title, Kind, Value, Location)                    \
@@ -1370,6 +1390,10 @@ yy_symbol_value_print (FILE *yyo,
   YY_USE (yyoutput);
   if (!yyvaluep)
     return;
+# ifdef YYPRINT
+  if (yykind < YYNTOKENS)
+    YYPRINT (yyo, yytoknum[yykind], *yyvaluep);
+# endif
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   YY_USE (yykind);
   YY_IGNORE_MAYBE_UNINITIALIZED_END
@@ -1554,7 +1578,6 @@ yyparse (void)
   YYDPRINTF ((stderr, "Starting parse\n"));
 
   yychar = YYEMPTY; /* Cause a token to be read.  */
-
   goto yysetstate;
 
 
@@ -1580,7 +1603,7 @@ yysetstate:
 
   if (yyss + yystacksize - 1 <= yyssp)
 #if !defined yyoverflow && !defined YYSTACK_RELOCATE
-    YYNOMEM;
+    goto yyexhaustedlab;
 #else
     {
       /* Get the current used size of the three stacks, in elements.  */
@@ -1608,7 +1631,7 @@ yysetstate:
 # else /* defined YYSTACK_RELOCATE */
       /* Extend the stack our own way.  */
       if (YYMAXDEPTH <= yystacksize)
-        YYNOMEM;
+        goto yyexhaustedlab;
       yystacksize *= 2;
       if (YYMAXDEPTH < yystacksize)
         yystacksize = YYMAXDEPTH;
@@ -1619,7 +1642,7 @@ yysetstate:
           YY_CAST (union yyalloc *,
                    YYSTACK_ALLOC (YY_CAST (YYSIZE_T, YYSTACK_BYTES (yystacksize))));
         if (! yyptr)
-          YYNOMEM;
+          goto yyexhaustedlab;
         YYSTACK_RELOCATE (yyss_alloc, yyss);
         YYSTACK_RELOCATE (yyvs_alloc, yyvs);
 #  undef YYSTACK_RELOCATE
@@ -1640,7 +1663,6 @@ yysetstate:
         YYABORT;
     }
 #endif /* !defined yyoverflow && !defined YYSTACK_RELOCATE */
-
 
   if (yystate == YYFINAL)
     YYACCEPT;
@@ -1756,530 +1778,530 @@ yyreduce:
   case 8: /* line: abstractinterface  */
 #line 104 "../src/parser.y"
                                               { properties.kind = ABSTRACTINTERFACE; properties.type = DEF;    }
-#line 1760 "parser.cpp"
+#line 1782 "parser.cpp"
     break;
 
   case 9: /* line: assign  */
 #line 105 "../src/parser.y"
                                               { properties.kind = ASSIGN;            properties.type = EXEC;   }
-#line 1766 "parser.cpp"
+#line 1788 "parser.cpp"
     break;
 
   case 10: /* line: assignment  */
 #line 106 "../src/parser.y"
                                               { properties.kind = ASSIGNMENT;        properties.type = EXEC;   }
-#line 1772 "parser.cpp"
+#line 1794 "parser.cpp"
     break;
 
   case 11: /* line: associate  */
 #line 107 "../src/parser.y"
                                               { properties.kind = ASSOCIATE;         properties.type = EXEC;   }
-#line 1778 "parser.cpp"
+#line 1800 "parser.cpp"
     break;
 
   case 12: /* line: blank  */
 #line 108 "../src/parser.y"
                                               { properties.kind = BLANK;             properties.type = NONE;   }
-#line 1784 "parser.cpp"
+#line 1806 "parser.cpp"
     break;
 
   case 13: /* line: block  */
 #line 109 "../src/parser.y"
                                               { properties.kind = BLOCK;             properties.type = EXEC;   }
-#line 1790 "parser.cpp"
+#line 1812 "parser.cpp"
     break;
 
   case 14: /* line: blockdata  */
 #line 110 "../src/parser.y"
                                               { properties.kind = BLOCKDATA;         properties.type = DEF;    }
-#line 1796 "parser.cpp"
+#line 1818 "parser.cpp"
     break;
 
   case 15: /* line: call  */
 #line 111 "../src/parser.y"
                                               { properties.kind = CALL;              properties.type = EXEC;   }
-#line 1802 "parser.cpp"
+#line 1824 "parser.cpp"
     break;
 
   case 16: /* line: calllist  */
 #line 112 "../src/parser.y"
                                               { properties.kind = CALLLIST;          properties.type = NONE;   }
-#line 1808 "parser.cpp"
+#line 1830 "parser.cpp"
     break;
 
   case 17: /* line: case  */
 #line 113 "../src/parser.y"
                                               { properties.kind = CASE;              properties.type = EXEC;   }
-#line 1814 "parser.cpp"
+#line 1836 "parser.cpp"
     break;
 
   case 18: /* line: casedefault  */
 #line 114 "../src/parser.y"
                                               { properties.kind = CASEDEFAULT;       properties.type = EXEC;   }
-#line 1820 "parser.cpp"
+#line 1842 "parser.cpp"
     break;
 
   case 19: /* line: rank  */
 #line 115 "../src/parser.y"
                                               { properties.kind = RANK;              properties.type = EXEC;   }
-#line 1826 "parser.cpp"
+#line 1848 "parser.cpp"
     break;
 
   case 20: /* line: rankdefault  */
 #line 116 "../src/parser.y"
                                               { properties.kind = RANKDEFAULT;       properties.type = EXEC;   }
-#line 1832 "parser.cpp"
+#line 1854 "parser.cpp"
     break;
 
   case 21: /* line: changeteam  */
 #line 117 "../src/parser.y"
                                               { properties.kind = CHANGETEAM;        properties.type = EXEC;   }
-#line 1838 "parser.cpp"
+#line 1860 "parser.cpp"
     break;
 
   case 22: /* line: classdefault  */
 #line 118 "../src/parser.y"
                                               { properties.kind = CLASSDEFAULT;      properties.type = EXEC;   }
-#line 1844 "parser.cpp"
+#line 1866 "parser.cpp"
     break;
 
   case 23: /* line: classis  */
 #line 119 "../src/parser.y"
                                               { properties.kind = CLASSIS;           properties.type = EXEC;   }
-#line 1850 "parser.cpp"
+#line 1872 "parser.cpp"
     break;
 
   case 24: /* line: contains  */
 #line 120 "../src/parser.y"
                                               { properties.kind = CONTAINS;          properties.type = DEF;    }
-#line 1856 "parser.cpp"
+#line 1878 "parser.cpp"
     break;
 
   case 25: /* line: critical  */
 #line 121 "../src/parser.y"
                                               { properties.kind = CRITICAL;          properties.type = DEF;    }
-#line 1862 "parser.cpp"
+#line 1884 "parser.cpp"
     break;
 
   case 26: /* line: do_construct  */
 #line 122 "../src/parser.y"
                                               { properties.kind = DO;                properties.type = EXEC;   }
-#line 1868 "parser.cpp"
+#line 1890 "parser.cpp"
     break;
 
   case 27: /* line: else  */
 #line 123 "../src/parser.y"
                                               { properties.kind = ELSE;              properties.type = EXEC;   }
-#line 1874 "parser.cpp"
+#line 1896 "parser.cpp"
     break;
 
   case 28: /* line: elseif  */
 #line 124 "../src/parser.y"
                                               { properties.kind = ELSEIF;            properties.type = EXEC;   }
-#line 1880 "parser.cpp"
+#line 1902 "parser.cpp"
     break;
 
   case 29: /* line: elsewhere  */
 #line 125 "../src/parser.y"
                                               { properties.kind = ELSEWHERE;         properties.type = EXEC;   }
-#line 1886 "parser.cpp"
+#line 1908 "parser.cpp"
     break;
 
   case 30: /* line: endassociate  */
 #line 126 "../src/parser.y"
                                               { properties.kind = ENDASSOCIATE;      properties.type = ENDDEF; }
-#line 1892 "parser.cpp"
+#line 1914 "parser.cpp"
     break;
 
   case 31: /* line: endblock  */
 #line 127 "../src/parser.y"
                                               { properties.kind = ENDBLOCK;          properties.type = EXEC;   }
-#line 1898 "parser.cpp"
+#line 1920 "parser.cpp"
     break;
 
   case 32: /* line: endblockdata  */
 #line 128 "../src/parser.y"
                                               { properties.kind = ENDBLOCKDATA;      properties.type = ENDDEF; }
-#line 1904 "parser.cpp"
+#line 1926 "parser.cpp"
     break;
 
   case 33: /* line: endcritical  */
 #line 129 "../src/parser.y"
                                               { properties.kind = ENDCRITICAL;       properties.type = ENDDEF; }
-#line 1910 "parser.cpp"
+#line 1932 "parser.cpp"
     break;
 
   case 34: /* line: enddo  */
 #line 130 "../src/parser.y"
                                               { properties.kind = ENDDO;             properties.type = EXEC;   }
-#line 1916 "parser.cpp"
+#line 1938 "parser.cpp"
     break;
 
   case 35: /* line: endenum  */
 #line 131 "../src/parser.y"
                                               { properties.kind = ENDENUM;           properties.type = DEF;    }
-#line 1922 "parser.cpp"
+#line 1944 "parser.cpp"
     break;
 
   case 36: /* line: endforall  */
 #line 132 "../src/parser.y"
                                               { properties.kind = ENDFORALL;         properties.type = EXEC;   }
-#line 1928 "parser.cpp"
+#line 1950 "parser.cpp"
     break;
 
   case 37: /* line: endfunction  */
 #line 133 "../src/parser.y"
                                               { properties.kind = ENDFUNCTION;       properties.type = ENDDEF; }
-#line 1934 "parser.cpp"
+#line 1956 "parser.cpp"
     break;
 
   case 38: /* line: endif  */
 #line 134 "../src/parser.y"
                                               { properties.kind = ENDIF;             properties.type = EXEC;   }
-#line 1940 "parser.cpp"
+#line 1962 "parser.cpp"
     break;
 
   case 39: /* line: endinterface  */
 #line 135 "../src/parser.y"
                                               { properties.kind = ENDINTERFACE;      properties.type = ENDDEF; }
-#line 1946 "parser.cpp"
+#line 1968 "parser.cpp"
     break;
 
   case 40: /* line: endmodule  */
 #line 136 "../src/parser.y"
                                               { properties.kind = ENDMODULE;         properties.type = ENDDEF; }
-#line 1952 "parser.cpp"
+#line 1974 "parser.cpp"
     break;
 
   case 41: /* line: endprocedure  */
 #line 137 "../src/parser.y"
                                               { properties.kind = ENDPROCEDURE;      properties.type = ENDDEF; }
-#line 1958 "parser.cpp"
+#line 1980 "parser.cpp"
     break;
 
   case 42: /* line: endprogram  */
 #line 138 "../src/parser.y"
                                               { properties.kind = ENDPROGRAM;        properties.type = ENDDEF; }
-#line 1964 "parser.cpp"
+#line 1986 "parser.cpp"
     break;
 
   case 43: /* line: endselect  */
 #line 139 "../src/parser.y"
                                               { properties.kind = ENDSELECT;         properties.type = EXEC;   }
-#line 1970 "parser.cpp"
+#line 1992 "parser.cpp"
     break;
 
   case 44: /* line: endsubmodule  */
 #line 140 "../src/parser.y"
                                               { properties.kind = ENDSUBMODULE;      properties.type = ENDDEF; }
-#line 1976 "parser.cpp"
+#line 1998 "parser.cpp"
     break;
 
   case 45: /* line: endsubroutine  */
 #line 141 "../src/parser.y"
                                               { properties.kind = ENDSUBROUTINE;     properties.type = ENDDEF; }
-#line 1982 "parser.cpp"
+#line 2004 "parser.cpp"
     break;
 
   case 46: /* line: endteam  */
 #line 142 "../src/parser.y"
                                               { properties.kind = ENDTEAM;           properties.type = EXEC;   }
-#line 1988 "parser.cpp"
+#line 2010 "parser.cpp"
     break;
 
   case 47: /* line: endtype  */
 #line 143 "../src/parser.y"
                                               { properties.kind = ENDTYPE;           properties.type = ENDDEF; }
-#line 1994 "parser.cpp"
+#line 2016 "parser.cpp"
     break;
 
   case 48: /* line: endwhere  */
 #line 144 "../src/parser.y"
                                               { properties.kind = ENDWHERE;          properties.type = EXEC;   }
-#line 2000 "parser.cpp"
+#line 2022 "parser.cpp"
     break;
 
   case 49: /* line: entry  */
 #line 145 "../src/parser.y"
                                               { properties.kind = ENTRY;             properties.type = DEF;    }
-#line 2006 "parser.cpp"
+#line 2028 "parser.cpp"
     break;
 
   case 50: /* line: enum  */
 #line 146 "../src/parser.y"
                                               { properties.kind = ENUM;              properties.type = DEF;    }
-#line 2012 "parser.cpp"
+#line 2034 "parser.cpp"
     break;
 
   case 51: /* line: forall_construct  */
 #line 147 "../src/parser.y"
                                               { properties.kind = FORALL;            properties.type = EXEC;   }
-#line 2018 "parser.cpp"
+#line 2040 "parser.cpp"
     break;
 
   case 52: /* line: goto  */
 #line 148 "../src/parser.y"
                                               { properties.kind = GOTO;              properties.type = EXEC;   }
-#line 2024 "parser.cpp"
+#line 2046 "parser.cpp"
     break;
 
   case 53: /* line: goto_assigned  */
 #line 149 "../src/parser.y"
                                               { properties.kind = GOTO_ASSIGNED;     properties.type = EXEC;   }
-#line 2030 "parser.cpp"
+#line 2052 "parser.cpp"
     break;
 
   case 54: /* line: goto_computed  */
 #line 150 "../src/parser.y"
                                               { properties.kind = GOTO_COMPUTED;     properties.type = EXEC;   }
-#line 2036 "parser.cpp"
+#line 2058 "parser.cpp"
     break;
 
   case 55: /* line: if  */
 #line 151 "../src/parser.y"
                                               { properties.kind = SIMPLEIF;          properties.type = EXEC;   }
-#line 2042 "parser.cpp"
+#line 2064 "parser.cpp"
     break;
 
   case 56: /* line: if_construct  */
 #line 152 "../src/parser.y"
                                               { properties.kind = IF;                properties.type = EXEC;   }
-#line 2048 "parser.cpp"
+#line 2070 "parser.cpp"
     break;
 
   case 57: /* line: include  */
 #line 153 "../src/parser.y"
                                               { properties.kind = INCLUDE;           properties.type = NONE;   }
-#line 2054 "parser.cpp"
+#line 2076 "parser.cpp"
     break;
 
   case 58: /* line: interface  */
 #line 154 "../src/parser.y"
                                               { properties.kind = INTERFACE;         properties.type = DEF;    }
-#line 2060 "parser.cpp"
+#line 2082 "parser.cpp"
     break;
 
   case 59: /* line: labellist  */
 #line 155 "../src/parser.y"
                                               { properties.kind = LABELLIST;         properties.type = NONE;   }
-#line 2066 "parser.cpp"
+#line 2088 "parser.cpp"
     break;
 
   case 60: /* line: module  */
 #line 156 "../src/parser.y"
                                               { properties.kind = MODULE;            properties.type = DEF;    }
-#line 2072 "parser.cpp"
+#line 2094 "parser.cpp"
     break;
 
   case 61: /* line: moduleprocedure  */
 #line 157 "../src/parser.y"
                                               { properties.kind = PROCEDURE;         properties.type = DEF;    }
-#line 2078 "parser.cpp"
+#line 2100 "parser.cpp"
     break;
 
   case 62: /* line: nwayif  */
 #line 158 "../src/parser.y"
                                               { properties.kind = NWAYIF;            properties.type = EXEC;   }
-#line 2084 "parser.cpp"
+#line 2106 "parser.cpp"
     break;
 
   case 63: /* line: print  */
 #line 159 "../src/parser.y"
                                               { properties.kind = PRINT;             properties.type = EXEC;   }
-#line 2090 "parser.cpp"
+#line 2112 "parser.cpp"
     break;
 
   case 64: /* line: program_stmt  */
 #line 160 "../src/parser.y"
                                               { properties.kind = PROGRAM;           properties.type = DEF;    }
-#line 2096 "parser.cpp"
+#line 2118 "parser.cpp"
     break;
 
   case 65: /* line: procedure  */
 #line 161 "../src/parser.y"
                                               { properties.kind = PROCEDURE;         properties.type = DEF;    }
-#line 2102 "parser.cpp"
+#line 2124 "parser.cpp"
     break;
 
   case 66: /* line: read  */
 #line 162 "../src/parser.y"
                                               { properties.kind = READ;              properties.type = EXEC;   }
-#line 2108 "parser.cpp"
+#line 2130 "parser.cpp"
     break;
 
   case 67: /* line: io  */
 #line 163 "../src/parser.y"
                                               { properties.kind = IO;                properties.type = EXEC;   }
-#line 2114 "parser.cpp"
+#line 2136 "parser.cpp"
     break;
 
   case 68: /* line: iolist  */
 #line 164 "../src/parser.y"
                                               { properties.kind = IOLIST;            properties.type = NONE;   }
-#line 2120 "parser.cpp"
+#line 2142 "parser.cpp"
     break;
 
   case 69: /* line: selectcase  */
 #line 165 "../src/parser.y"
                                               { properties.kind = SELECTCASE;        properties.type = EXEC;   }
-#line 2126 "parser.cpp"
+#line 2148 "parser.cpp"
     break;
 
   case 70: /* line: selectrank  */
 #line 166 "../src/parser.y"
                                               { properties.kind = SELECTRANK;        properties.type = EXEC;   }
-#line 2132 "parser.cpp"
+#line 2154 "parser.cpp"
     break;
 
   case 71: /* line: selecttype  */
 #line 167 "../src/parser.y"
                                               { properties.kind = SELECTTYPE;        properties.type = EXEC;   }
-#line 2138 "parser.cpp"
+#line 2160 "parser.cpp"
     break;
 
   case 72: /* line: simple_end  */
 #line 168 "../src/parser.y"
                                               { properties.kind = END;               properties.type = EXEC;   }
-#line 2144 "parser.cpp"
+#line 2166 "parser.cpp"
     break;
 
   case 73: /* line: subroutine_stmt  */
 #line 169 "../src/parser.y"
                                               { properties.kind = SUBROUTINE;        properties.type = DEF;    }
-#line 2150 "parser.cpp"
+#line 2172 "parser.cpp"
     break;
 
   case 74: /* line: function_stmt  */
 #line 170 "../src/parser.y"
                                               { properties.kind = FUNCTION;          properties.type = DEF;    }
-#line 2156 "parser.cpp"
+#line 2178 "parser.cpp"
     break;
 
   case 75: /* line: submodule  */
 #line 171 "../src/parser.y"
                                               { properties.kind = SUBMODULE;         properties.type = DEF;    }
-#line 2162 "parser.cpp"
+#line 2184 "parser.cpp"
     break;
 
   case 76: /* line: type  */
 #line 172 "../src/parser.y"
                                               { properties.kind = TYPE;              properties.type = DEF;    }
-#line 2168 "parser.cpp"
+#line 2190 "parser.cpp"
     break;
 
   case 77: /* line: typeis  */
 #line 173 "../src/parser.y"
                                               { properties.kind = TYPEIS;            properties.type = EXEC;   }
-#line 2174 "parser.cpp"
+#line 2196 "parser.cpp"
     break;
 
   case 78: /* line: use  */
 #line 174 "../src/parser.y"
                                               { properties.kind = USE;               properties.type = DEF;    }
-#line 2180 "parser.cpp"
+#line 2202 "parser.cpp"
     break;
 
   case 79: /* line: where_construct  */
 #line 175 "../src/parser.y"
                                               { properties.kind = WHERE;             properties.type = EXEC;   }
-#line 2186 "parser.cpp"
+#line 2208 "parser.cpp"
     break;
 
   case 80: /* line: segment  */
 #line 176 "../src/parser.y"
                                               { properties.kind = SEGMENT;           properties.type = EXEC;   }
-#line 2192 "parser.cpp"
+#line 2214 "parser.cpp"
     break;
 
   case 81: /* line: endsegment  */
 #line 177 "../src/parser.y"
                                               { properties.kind = ENDSEGMENT;        properties.type = EXEC;   }
-#line 2198 "parser.cpp"
+#line 2220 "parser.cpp"
     break;
 
   case 87: /* include: INCLUDE QSTRING getstring EOL  */
 #line 189 "../src/parser.y"
                                                        {D(O("include"););}
-#line 2204 "parser.cpp"
+#line 2226 "parser.cpp"
     break;
 
   case 190: /* $@1: %empty  */
 #line 385 "../src/parser.y"
                                  {itemnumber++;}
-#line 2210 "parser.cpp"
+#line 2232 "parser.cpp"
     break;
 
   case 192: /* $@2: %empty  */
 #line 386 "../src/parser.y"
                                  {itemnumber=123456;}
-#line 2216 "parser.cpp"
+#line 2238 "parser.cpp"
     break;
 
   case 194: /* $@3: %empty  */
 #line 387 "../src/parser.y"
                                  {itemnumber=123456;}
-#line 2222 "parser.cpp"
+#line 2244 "parser.cpp"
     break;
 
   case 196: /* item: otheritem  */
 #line 388 "../src/parser.y"
                                    {itemnumber++;}
-#line 2228 "parser.cpp"
+#line 2250 "parser.cpp"
     break;
 
   case 245: /* enable_identifier: %empty  */
 #line 480 "../src/parser.y"
                          {lexer_enable(IDENTIFIER);}
-#line 2234 "parser.cpp"
+#line 2256 "parser.cpp"
     break;
 
   case 246: /* enable_cidentifier: %empty  */
 #line 482 "../src/parser.y"
                          {lexer_enable(CIDENTIFIER);}
-#line 2240 "parser.cpp"
+#line 2262 "parser.cpp"
     break;
 
   case 247: /* enable_skip: %empty  */
 #line 484 "../src/parser.y"
                          {lexer_enable(SKIP);}
-#line 2246 "parser.cpp"
+#line 2268 "parser.cpp"
     break;
 
   case 248: /* enable_skipall: %empty  */
 #line 486 "../src/parser.y"
                          {lexer_enable(SKIPALL);}
-#line 2252 "parser.cpp"
+#line 2274 "parser.cpp"
     break;
 
   case 249: /* enable_skipnoop: %empty  */
 #line 488 "../src/parser.y"
                          {lexer_enable(SKIPNOOP);}
-#line 2258 "parser.cpp"
+#line 2280 "parser.cpp"
     break;
 
   case 250: /* enable_skipnos: %empty  */
 #line 490 "../src/parser.y"
                          {lexer_enable(SKIPNOS);}
-#line 2264 "parser.cpp"
+#line 2286 "parser.cpp"
     break;
 
   case 251: /* getname: %empty  */
 #line 492 "../src/parser.y"
                          {properties.name=lexer_getname();}
-#line 2270 "parser.cpp"
+#line 2292 "parser.cpp"
     break;
 
   case 252: /* getstlabel: %empty  */
 #line 494 "../src/parser.y"
                          {properties.stlabel=lexer_getstlabel();}
-#line 2276 "parser.cpp"
+#line 2298 "parser.cpp"
     break;
 
   case 253: /* getlabel: %empty  */
 #line 496 "../src/parser.y"
                          {properties.labels.push_back(lexer_geti_number());
 	                  properties.label_pos.push_back(lexer_get_pos()-lexer_get_len());}
-#line 2283 "parser.cpp"
+#line 2305 "parser.cpp"
     break;
 
   case 254: /* getlabel1: %empty  */
@@ -2289,7 +2311,7 @@ yyreduce:
 	                     properties.label_pos.push_back(lexer_get_pos()-lexer_get_len());
 			     }
 			  }
-#line 2293 "parser.cpp"
+#line 2315 "parser.cpp"
     break;
 
   case 255: /* getlabel2: %empty  */
@@ -2297,24 +2319,24 @@ yyreduce:
                           {properties.labels.push_back(lexer_geti_number());
 	                   /* minus one for the extra comma, plus two for preceding ',*' */
 	                  properties.label_pos.push_back(lexer_get_pos()-lexer_get_len()-1+2);}
-#line 2301 "parser.cpp"
+#line 2323 "parser.cpp"
     break;
 
   case 256: /* getstring: %empty  */
 #line 509 "../src/parser.y"
                          {properties.stringvalue=lexer_getstring();}
-#line 2307 "parser.cpp"
+#line 2329 "parser.cpp"
     break;
 
   case 257: /* getlr: %empty  */
 #line 511 "../src/parser.y"
                          {properties.lrvalue=lexer_getlr();
                           properties.lrpos=lexer_getlrpos();}
-#line 2314 "parser.cpp"
+#line 2336 "parser.cpp"
     break;
 
 
-#line 2318 "parser.cpp"
+#line 2340 "parser.cpp"
 
       default: break;
     }
@@ -2396,7 +2418,6 @@ yyerrorlab:
      label yyerrorlab therefore never appears in user code.  */
   if (0)
     YYERROR;
-  ++yynerrs;
 
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYERROR.  */
@@ -2457,7 +2478,7 @@ yyerrlab1:
 `-------------------------------------*/
 yyacceptlab:
   yyresult = 0;
-  goto yyreturnlab;
+  goto yyreturn;
 
 
 /*-----------------------------------.
@@ -2465,22 +2486,24 @@ yyacceptlab:
 `-----------------------------------*/
 yyabortlab:
   yyresult = 1;
-  goto yyreturnlab;
+  goto yyreturn;
 
 
-/*-----------------------------------------------------------.
-| yyexhaustedlab -- YYNOMEM (memory exhaustion) comes here.  |
-`-----------------------------------------------------------*/
+#if !defined yyoverflow
+/*-------------------------------------------------.
+| yyexhaustedlab -- memory exhaustion comes here.  |
+`-------------------------------------------------*/
 yyexhaustedlab:
   yyerror (YY_("memory exhausted"));
   yyresult = 2;
-  goto yyreturnlab;
+  goto yyreturn;
+#endif
 
 
-/*----------------------------------------------------------.
-| yyreturnlab -- parsing is finished, clean up and return.  |
-`----------------------------------------------------------*/
-yyreturnlab:
+/*-------------------------------------------------------.
+| yyreturn -- parsing is finished, clean up and return.  |
+`-------------------------------------------------------*/
+yyreturn:
   if (yychar != YYEMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at

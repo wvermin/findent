@@ -3,7 +3,7 @@
 "               as fortran.vim   and use it with Vim > 7.1 and findent:
 "               findent.sourceforge.net
 "               Author: Willem Vermin wvermin@gmail.com
-"               Licence: fair
+"               License: fair
 
 " use findent for indenting,  unless use_findent == 0
 if !exists("g:use_findent")

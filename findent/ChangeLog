@@ -1,3 +1,23 @@
+findent-4.2.3:
+	pre1: Makefile.am: add debprelude, debpostlude
+findent-4.2.2:
+	pre1: test/init.in: remove check for Windows
+	      Makefile.am: when crosscompiling, the man page cannot be
+	      generated with the fresh-baked findent.  Therefore:
+	      First try the fresh-baked findent, if that fails, try the
+	      installed native findent, and if that fails, put a one liner in
+	      the man page. (Issue created by Sebastian Ehlert)
+	      bootstrap: Make autopkgtest working again. 
+	      test/test25.sh: Add test for availability of generated man page.
+	      test/test13.sh: prevent hang if findent does not recognize -h or
+	      --help or -H or --manpage
+	      test/test17.sh: the same for options like --vim-help: i.e.
+	      options that do not read from stdin
+	      src/Makefile.am: add AUTOMAKE_OPTIONS = std-options
+	         to create target installcheck
+	pre2: test25.sh: change test for availability of man page (Not every man
+	      supports flag -l)
+	pre3: make things debian-compliant
 findent-4.2.1:
 	pre1: functions.h: trivial addition in string2number to make cppcheck happy
 	pre3: relabel.cpp, flags.cpp, flags.h, docs.cpp: implement flag --relabel=shuffle
@@ -423,7 +443,7 @@ findent-2.3:
 	   with it's on autoconf setup
 	Makefile.am: added $(DESTDIR) for the man page
 	   adapted to new jfindent location
-	findent.cpp: fix bug in coverting fixed to free when dealing
+	findent.cpp: fix bug in converting fixed to free when dealing
 	   with a preprocessor continuation
 	configure.ac: explicitly include macros in m4, do not
 	   use AC_CONFIG_MACRO_DIR, this seems not to work

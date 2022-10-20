@@ -1,2 +1,2 @@
-findent-4.2.1:
-	pre1: functions.h: trivial addition in string2number to make cppcheck happy
+findent-4.2.3:
+	pre1: Makefile.am: add debprelude, debpostlude

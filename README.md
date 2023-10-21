@@ -9,5 +9,8 @@ indent, relabel and convert Fortran sources
  - wrapper for processing one or more files in one call available
       for Unix and Windows (wfindent and wfindent.bat respectively)
 
-The newest version of findent is also located at https://sourceforge.net/projects/findent/ .
+Alas, it seems I am not able to push to github any more, so the following is relevant:
+
+The newest version of findent is located at https://sourceforge.net/projects/findent/
+
 The bleeding edge is at https://www.ratrabbit.nl/ratrabbit/findent/index.html
